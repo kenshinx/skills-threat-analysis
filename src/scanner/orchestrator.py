@@ -57,39 +57,53 @@ class Orchestrator:
         """Main entry point — runs the full scan pipeline."""
         logger.info("Starting scan %s on %s", self._scan_id, self._skills_dir)
 
-        # Stage 1
-        stage1_results = self._run_stage1()
-        logger.info(
-            "Stage 1 complete: %d total, %d clean, %d suspicious, %d needs_review",
-            len(stage1_results),
-            sum(1 for r in stage1_results if r.stage1.verdict == Verdict.CLEAN),
-            sum(1 for r in stage1_results if r.stage1.verdict == Verdict.SUSPICIOUS),
-            sum(1 for r in stage1_results if r.stage1.verdict == Verdict.NEEDS_REVIEW),
-        )
+        # Check API key first if stage 2 is requested
+        if self._stage in ("2", "full"):
+            import os
+            api_key = os.environ.get(self._api_key_env)
+            if not api_key:
+                logger.error(
+                    "%s not set. Stage 2 requires an API key. "
+                    "Use --stage 1 to run rules-only scan, or set the environment variable.",
+                    self._api_key_env,
+                )
+                return
 
-        if self._stage == "1":
-            # Finalize with stage 1 only
-            for r in stage1_results:
-                r.final_verdict = r.stage1.verdict
-            self._reporter.generate(self._scan_id, stage1_results)
-            logger.info("Stage-1-only scan complete. Report at %s", self._output_dir)
-            return
-
-        # Stage 2 — only for NEEDS_REVIEW items
-        import os
-        api_key = os.environ.get(self._api_key_env)
-        if not api_key:
-            logger.error(
-                "%s not set. Stage 2 requires an API key. "
-                "Use --stage 1 to run rules-only scan, or set the environment variable.",
-                self._api_key_env,
+        # Handle stage 2-only mode
+        if self._stage == "2":
+            # Create ScanResult objects with empty stage1 for all skills
+            stage1_results = [
+                ScanResult(
+                    skill=skill,
+                    stage1=None,
+                    final_verdict=Verdict.NEEDS_REVIEW  # Force all to be analyzed
+                )
+                for skill in load_skills(self._skills_dir)
+            ]
+            results = asyncio.run(self._run_stage2(stage1_results))
+        else:
+            # Normal flow: stage 1 → stage 2 (if not stage 1 only)
+            stage1_results = self._run_stage1()
+            logger.info(
+                "Stage 1 complete: %d total, %d clean, %d suspicious, %d needs_review",
+                len(stage1_results),
+                sum(1 for r in stage1_results if r.stage1.verdict == Verdict.CLEAN),
+                sum(1 for r in stage1_results if r.stage1.verdict ==
+                    Verdict.SUSPICIOUS),
+                sum(1 for r in stage1_results if r.stage1.verdict ==
+                    Verdict.NEEDS_REVIEW),
             )
-            for r in stage1_results:
-                r.final_verdict = r.stage1.verdict
-            self._reporter.generate(self._scan_id, stage1_results)
-            return
 
-        results = asyncio.run(self._run_stage2(stage1_results))
+            if self._stage == "1":
+                # Finalize with stage 1 only
+                for r in stage1_results:
+                    r.final_verdict = r.stage1.verdict
+                self._reporter.generate(self._scan_id, stage1_results)
+                logger.info(
+                    "Stage-1-only scan complete. Report at %s", self._output_dir)
+                return
+
+            results = asyncio.run(self._run_stage2(stage1_results))
 
         # Stage 3 — report
         summary = self._reporter.generate(self._scan_id, results)
@@ -131,10 +145,16 @@ class Orchestrator:
             batch_size=self._batch_size,
         )
 
-        needs_review = [r for r in stage1_results if r.stage1.verdict == Verdict.NEEDS_REVIEW]
-        # SUSPICIOUS from Stage 1 also gets LLM analysis for confidence scoring
-        suspicious = [r for r in stage1_results if r.stage1.verdict == Verdict.SUSPICIOUS]
-        to_analyze = needs_review + suspicious
+        if self._stage == "2":
+            # In stage 2-only mode, analyze all skills
+            to_analyze = stage1_results
+        else:
+            # Normal mode: only analyze NEEDS_REVIEW and SUSPICIOUS
+            needs_review = [
+                r for r in stage1_results if r.stage1.verdict == Verdict.NEEDS_REVIEW]
+            suspicious = [
+                r for r in stage1_results if r.stage1.verdict == Verdict.SUSPICIOUS]
+            to_analyze = needs_review + suspicious
 
         logger.info("Stage 2: analyzing %d skills with LLM", len(to_analyze))
 
@@ -146,7 +166,8 @@ class Orchestrator:
         for batch_start in range(checkpoint_index, len(to_analyze), self._batch_size):
             batch = to_analyze[batch_start:batch_start + self._batch_size]
             items = [
-                (r.skill.id, r.skill.content, r.stage1.matched_rules)
+                (r.skill.id, r.skill.content,
+                 r.stage1.matched_rules if r.stage1 else [])
                 for r in batch
             ]
             stage2_results = await analyzer.analyze_batch(items)

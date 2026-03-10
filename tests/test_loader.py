@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import tempfile
+import zipfile
 from pathlib import Path
 
 from scanner.loader import detect_source, generate_id, load_skills
@@ -74,3 +75,74 @@ class TestLoader:
     def test_load_skills_nonexistent_dir(self):
         skills = list(load_skills("/nonexistent/path"))
         assert len(skills) == 0
+
+    def test_load_skill_from_zip(self):
+        """A directory with a .zip file containing SKILL.md should be loaded."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            skill_dir = Path(tmpdir) / "my-skill"
+            skill_dir.mkdir()
+            # Create a zip with SKILL.md and a reference file
+            zip_path = skill_dir / "my-skill.zip"
+            with zipfile.ZipFile(zip_path, "w") as zf:
+                zf.writestr("SKILL.md", "# Zipped Skill\nDo something useful.")
+                zf.writestr("references/guide.md", "# Reference guide")
+            # detail.json should be ignored
+            (skill_dir / "detail.json").write_text('{"id": 123}')
+
+            skills = list(load_skills(tmpdir))
+            assert len(skills) == 1
+            assert "# Zipped Skill" in skills[0].content
+            assert "Reference guide" in skills[0].content
+            assert "detail.json" not in skills[0].content
+
+    def test_load_zip_clawhub_layout(self):
+        """Clawhub layout: <root>/<author>/<skill-name>/<skill>.zip."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            author_dir = root / "someauthor"
+            skill_dir = author_dir / "cool-tool"
+            skill_dir.mkdir(parents=True)
+            with zipfile.ZipFile(skill_dir / "cool-tool.zip", "w") as zf:
+                zf.writestr("SKILL.md", "# Cool Tool")
+                zf.writestr("scripts/run.md", "run instructions")
+            (skill_dir / "detail.json").write_text("{}")
+
+            skills = list(load_skills(tmpdir))
+            assert len(skills) == 1
+            assert "# Cool Tool" in skills[0].content
+            assert "run instructions" in skills[0].content
+
+    def test_load_zip_with_wrapper_directory(self):
+        """Zip that contains a wrapper directory around skill files."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            skill_dir = Path(tmpdir) / "wrapped-skill"
+            skill_dir.mkdir()
+            with zipfile.ZipFile(skill_dir / "wrapped.zip", "w") as zf:
+                zf.writestr("inner/SKILL.md", "# Wrapped")
+                zf.writestr("inner/assets/notes.txt", "extra notes")
+
+            skills = list(load_skills(tmpdir))
+            assert len(skills) == 1
+            assert "# Wrapped" in skills[0].content
+            assert "extra notes" in skills[0].content
+
+    def test_load_zip_bad_zip_skipped(self):
+        """A corrupt zip file should be skipped without crashing."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            skill_dir = Path(tmpdir) / "bad-skill"
+            skill_dir.mkdir()
+            (skill_dir / "bad.zip").write_bytes(b"not a zip file")
+
+            skills = list(load_skills(tmpdir))
+            assert len(skills) == 0
+
+    def test_load_zip_no_entry_file_skipped(self):
+        """A zip without SKILL.md should be skipped."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            skill_dir = Path(tmpdir) / "no-entry"
+            skill_dir.mkdir()
+            with zipfile.ZipFile(skill_dir / "stuff.zip", "w") as zf:
+                zf.writestr("readme.md", "just a readme")
+
+            skills = list(load_skills(tmpdir))
+            assert len(skills) == 0

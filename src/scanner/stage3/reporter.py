@@ -45,13 +45,15 @@ class Reporter:
             if r.stage2:
                 for t in r.stage2.threats:
                     threat_counter[t.type.value] += 1
-            for m in r.stage1.matched_rules:
-                threat_counter[m.rule_name] += 1
+            if r.stage1:
+                for m in r.stage1.matched_rules:
+                    threat_counter[m.rule_name] += 1
 
             # Source breakdown
             src = r.skill.source
             if src not in source_stats:
-                source_stats[src] = {"total": 0, "malicious": 0, "suspicious": 0}
+                source_stats[src] = {"total": 0,
+                                     "malicious": 0, "suspicious": 0}
             source_stats[src]["total"] += 1
             if v == Verdict.MALICIOUS:
                 source_stats[src]["malicious"] += 1
@@ -81,9 +83,9 @@ class Reporter:
                     "verdict": r.final_verdict.value,
                     "scan_stages": {
                         "stage1": {
-                            "result": r.stage1.verdict.value,
-                            "matched_rules": [m.rule_id for m in r.stage1.matched_rules],
-                            "duration_ms": r.stage1.duration_ms,
+                            "result": r.stage1.verdict.value if r.stage1 else "not_run",
+                            "matched_rules": [m.rule_id for m in r.stage1.matched_rules] if r.stage1 else [],
+                            "duration_ms": r.stage1.duration_ms if r.stage1 else 0,
                         },
                     },
                 }
@@ -104,7 +106,8 @@ class Reporter:
                         "duration_ms": r.stage2.duration_ms,
                     }
                 path = self._threats_dir / f"{r.skill.id}.json"
-                path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+                path.write_text(json.dumps(
+                    report, ensure_ascii=False, indent=2), encoding="utf-8")
 
     def _write_summary_json(self, summary: ScanSummary) -> None:
         data = {
@@ -125,7 +128,8 @@ class Reporter:
             "source_breakdown": summary.source_breakdown,
         }
         path = self._output_dir / "summary.json"
-        path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        path.write_text(json.dumps(data, ensure_ascii=False,
+                        indent=2), encoding="utf-8")
 
     def _write_summary_md(self, summary: ScanSummary, results: list[ScanResult]) -> None:
         lines = [
@@ -166,7 +170,8 @@ class Reporter:
 
         # Top 20 high-risk skills
         high_risk = sorted(
-            [r for r in results if r.final_verdict in (Verdict.MALICIOUS, Verdict.SUSPICIOUS)],
+            [r for r in results if r.final_verdict in (
+                Verdict.MALICIOUS, Verdict.SUSPICIOUS)],
             key=lambda r: (
                 0 if r.final_verdict == Verdict.MALICIOUS else 1,
                 -(r.stage2.confidence if r.stage2 else 0),
