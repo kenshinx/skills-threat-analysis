@@ -70,6 +70,17 @@ class Orchestrator:
             return
 
         # Stage 2 — only for NEEDS_REVIEW items
+        import os
+        if not os.environ.get("ANTHROPIC_API_KEY"):
+            logger.error(
+                "ANTHROPIC_API_KEY not set. Stage 2 requires an API key. "
+                "Use --stage 1 to run rules-only scan, or set the environment variable."
+            )
+            for r in stage1_results:
+                r.final_verdict = r.stage1.verdict
+            self._reporter.generate(self._scan_id, stage1_results)
+            return
+
         results = asyncio.run(self._run_stage2(stage1_results))
 
         # Stage 3 — report

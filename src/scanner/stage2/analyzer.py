@@ -99,6 +99,10 @@ class SemanticAnalyzer:
                     )
                     if attempt < self._max_retries:
                         await asyncio.sleep(2 ** attempt)
+                except TypeError as e:
+                    # Auth errors (missing API key) raise TypeError, no point retrying
+                    logger.error("Skill %s: auth/config error: %s", skill_id, e)
+                    break
 
         elapsed_ms = int((time.monotonic() - start) * 1000)
         return Stage2Result(
