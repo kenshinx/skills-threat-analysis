@@ -61,6 +61,21 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Resume a previously interrupted scan by its scan ID",
     )
     parser.add_argument(
+        "--model",
+        default=None,
+        help="LLM model name for Stage 2 (default: glm-4-plus)",
+    )
+    parser.add_argument(
+        "--api-base",
+        default=None,
+        help="OpenAI-compatible API base URL (default: Volcano Engine ARK)",
+    )
+    parser.add_argument(
+        "--api-key-env",
+        default="ARK_API_KEY",
+        help="Environment variable name for API key (default: ARK_API_KEY)",
+    )
+    parser.add_argument(
         "--verbose", "-v",
         action="store_true",
         help="Enable verbose logging",
@@ -84,6 +99,9 @@ def main(argv: list[str] | None = None) -> None:
         batch_size=args.batch_size,
         concurrency=args.concurrency,
         resume_scan_id=args.resume,
+        model=args.model,
+        api_base=args.api_base,
+        api_key_env=args.api_key_env,
     )
     orchestrator.run()
 

@@ -10,7 +10,7 @@ from pathlib import Path
 from string import Template
 from typing import Any
 
-import anthropic
+import openai
 
 from scanner.models import (
     RuleMatch,
@@ -43,17 +43,26 @@ _SEVERITY_MAP = {
 # Max content length to send to LLM (chars). Truncate longer skills.
 _MAX_CONTENT_LENGTH = 12000
 
+# Default: Volcano Engine ARK API
+_DEFAULT_API_BASE = "https://ark.cn-beijing.volces.com/api/v3"
+_DEFAULT_MODEL = "glm-4-plus"
+
 
 class SemanticAnalyzer:
     def __init__(
         self,
-        model: str = "claude-sonnet-4-20250514",
+        model: str | None = None,
+        api_key: str | None = None,
+        api_base: str | None = None,
         max_retries: int = 3,
         concurrency: int = 3,
         batch_size: int = 5,
     ):
-        self._client = anthropic.AsyncAnthropic()
-        self._model = model
+        self._model = model or _DEFAULT_MODEL
+        self._client = openai.AsyncOpenAI(
+            api_key=api_key or "required-but-set-via-env",
+            base_url=api_base or _DEFAULT_API_BASE,
+        )
         self._max_retries = max_retries
         self._semaphore = asyncio.Semaphore(concurrency)
         self._batch_size = batch_size
@@ -92,15 +101,14 @@ class SemanticAnalyzer:
                         "Skill %s: parse error on attempt %d/%d: %s",
                         skill_id, attempt, self._max_retries, e,
                     )
-                except anthropic.APIError as e:
+                except openai.APIError as e:
                     logger.warning(
                         "Skill %s: API error on attempt %d/%d: %s",
                         skill_id, attempt, self._max_retries, e,
                     )
                     if attempt < self._max_retries:
                         await asyncio.sleep(2 ** attempt)
-                except TypeError as e:
-                    # Auth errors (missing API key) raise TypeError, no point retrying
+                except (TypeError, openai.AuthenticationError) as e:
                     logger.error("Skill %s: auth/config error: %s", skill_id, e)
                     break
 
@@ -111,7 +119,6 @@ class SemanticAnalyzer:
         )
 
     def _build_prompt(self, content: str, matched_rules: list[RuleMatch]) -> str:
-        # Escape skill content to prevent the analysis itself from being injected
         escaped = content[:_MAX_CONTENT_LENGTH]
 
         rules_desc = "None" if not matched_rules else "\n".join(
@@ -124,16 +131,15 @@ class SemanticAnalyzer:
         )
 
     async def _call_llm(self, prompt: str) -> dict[str, Any]:
-        response = await self._client.messages.create(
+        response = await self._client.chat.completions.create(
             model=self._model,
             max_tokens=1024,
             messages=[{"role": "user", "content": prompt}],
         )
-        text = response.content[0].text.strip()
+        text = response.choices[0].message.content.strip()
         # Extract JSON from possible markdown code block
         if text.startswith("```"):
             lines = text.split("\n")
-            # Remove first and last lines (``` markers)
             json_lines = []
             in_block = False
             for line in lines:

@@ -2,27 +2,26 @@
 
 from __future__ import annotations
 
-import asyncio
 import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from scanner.models import RuleMatch, Severity, Stage2Result, Verdict
+from scanner.models import RuleMatch, Severity, Verdict
 from scanner.stage2.analyzer import SemanticAnalyzer
 
 
 @pytest.fixture
 def analyzer():
-    return SemanticAnalyzer(concurrency=1, batch_size=2)
+    return SemanticAnalyzer(api_key="test-key", concurrency=1, batch_size=2)
 
 
 def _make_mock_response(data: dict) -> MagicMock:
-    """Create a mock Anthropic API response."""
+    """Create a mock OpenAI-compatible API response."""
     mock_response = MagicMock()
-    mock_content = MagicMock()
-    mock_content.text = json.dumps(data)
-    mock_response.content = [mock_content]
+    mock_choice = MagicMock()
+    mock_choice.message.content = json.dumps(data)
+    mock_response.choices = [mock_choice]
     return mock_response
 
 
@@ -76,7 +75,7 @@ class TestSemanticAnalyzer:
         }
 
         with patch.object(
-            analyzer._client.messages,
+            analyzer._client.chat.completions,
             "create",
             new_callable=AsyncMock,
             return_value=_make_mock_response(mock_data),
@@ -92,9 +91,9 @@ class TestSemanticAnalyzer:
     @pytest.mark.asyncio
     async def test_analyze_retries_on_parse_error(self, analyzer: SemanticAnalyzer):
         bad_response = MagicMock()
-        bad_content = MagicMock()
-        bad_content.text = "not valid json"
-        bad_response.content = [bad_content]
+        bad_choice = MagicMock()
+        bad_choice.message.content = "not valid json"
+        bad_response.choices = [bad_choice]
 
         good_data = {
             "verdict": "BENIGN",
@@ -112,7 +111,7 @@ class TestSemanticAnalyzer:
             return _make_mock_response(good_data)
 
         with patch.object(
-            analyzer._client.messages,
+            analyzer._client.chat.completions,
             "create",
             side_effect=mock_create,
         ):

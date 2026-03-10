@@ -29,6 +29,9 @@ class Orchestrator:
         batch_size: int = 5,
         concurrency: int = 3,
         resume_scan_id: str | None = None,
+        model: str | None = None,
+        api_base: str | None = None,
+        api_key_env: str = "ARK_API_KEY",
     ):
         self._skills_dir = Path(skills_dir)
         self._output_dir = Path(output_dir)
@@ -37,6 +40,9 @@ class Orchestrator:
         self._severity_filter = severity_filter
         self._batch_size = batch_size
         self._concurrency = concurrency
+        self._model = model
+        self._api_base = api_base
+        self._api_key_env = api_key_env
         self._rule_engine = RuleEngine()
         self._reporter = Reporter(self._output_dir)
 
@@ -71,10 +77,12 @@ class Orchestrator:
 
         # Stage 2 — only for NEEDS_REVIEW items
         import os
-        if not os.environ.get("ANTHROPIC_API_KEY"):
+        api_key = os.environ.get(self._api_key_env)
+        if not api_key:
             logger.error(
-                "ANTHROPIC_API_KEY not set. Stage 2 requires an API key. "
-                "Use --stage 1 to run rules-only scan, or set the environment variable."
+                "%s not set. Stage 2 requires an API key. "
+                "Use --stage 1 to run rules-only scan, or set the environment variable.",
+                self._api_key_env,
             )
             for r in stage1_results:
                 r.final_verdict = r.stage1.verdict
@@ -114,7 +122,11 @@ class Orchestrator:
         return results
 
     async def _run_stage2(self, stage1_results: list[ScanResult]) -> list[ScanResult]:
+        import os
         analyzer = SemanticAnalyzer(
+            model=self._model,
+            api_key=os.environ.get(self._api_key_env),
+            api_base=self._api_base,
             concurrency=self._concurrency,
             batch_size=self._batch_size,
         )
