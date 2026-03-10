@@ -1,0 +1,75 @@
+rules:
+  # -- Instruction Override --
+  - id: PI-001
+    name: instruction_override
+    severity: CRITICAL
+    patterns:
+      - "ignore (all |any )?(previous|prior|above|earlier|system) (instructions?|prompts?|rules?|directives?)"
+      - "disregard (all |any )?(previous|prior|above) (instructions?|prompts?)"
+      - "forget (everything|all|your) (you were|you've been) told"
+      - "override (system |safety |security )+(prompt|instructions?|settings?|restrictions?)"
+      - "do not follow (any |your )?(previous|prior|original|system) (instructions?|prompts?|rules?)"
+
+  # -- Role Hijacking --
+  - id: PI-002
+    name: role_hijacking
+    severity: CRITICAL
+    patterns:
+      - "you are (now )?(?:DAN|STAN|DUDE|AIM|KEVIN|JAILBREAK)"
+      - "act as (?:an? )?(?:unrestricted|unfiltered|uncensored|unlimited)"
+      - "(?:enter|switch to|activate) (?:developer|god|sudo|admin|root) mode"
+      - "you have no (?:rules|restrictions|limitations|guidelines|boundaries)"
+      - "pretend (?:you are|to be|that you're) (?:an? )?(?:evil|malicious|unrestricted|jailbroken)"
+
+  # -- System Prompt Manipulation --
+  - id: PI-003
+    name: system_prompt_manipulation
+    severity: HIGH
+    patterns:
+      - "\\[(?:SYSTEM|ADMIN|ROOT)\\]"
+      - "(?:new|updated|revised) system prompt:?"
+      - "from now on,? (?:you (?:are|will|must|should)|your (?:rules|instructions))"
+      - "<\\|?(?:im_start|system)\\|?>"
+      - "<<SYS>>|\\[INST\\]"
+
+  # -- Context Exfiltration --
+  - id: PI-004
+    name: context_exfiltration
+    severity: HIGH
+    patterns:
+      - "(?:repeat|print|show|display|output|reveal) (?:everything|all|the text|your instructions) (?:above|before)"
+      - "what (?:are|were) your (?:system |initial )?(?:instructions|prompt|rules)"
+      - "(?:send|transmit|exfiltrate|post) .{0,30} (?:to|via) (?:https?://|webhook|api)"
+      - "(?:output|write|copy) (?:your |the )?(?:system |initial )?(?:prompt|instructions) (?:to|into)"
+
+  # -- Steganographic Injection --
+  - id: PI-005
+    name: steganographic_injection
+    severity: HIGH
+    patterns:
+      - "[\\u200b\\u200c\\u200d\\ufeff\\u2060]"
+      - "(?:base64|atob|btoa)\\s*[:(]"
+      - "<!--.*(?:ignore|override|execute).*-->"
+      - "\\\\u[0-9a-fA-F]{4}.*(?:ignore|execute|override)"
+
+  # -- Dangerous Operation --
+  - id: PI-006
+    name: dangerous_operation
+    severity: CRITICAL
+    patterns:
+      - "(?:execute|run|eval)\\s*[:(\"'].*(?:rm |del |drop |format |shutdown|kill)"
+      - "sudo\\s+rm\\s+-rf"
+      - "(?:curl|wget|fetch)\\s+.{0,50}\\|\\s*(?:sh|bash|zsh|python)"
+      - "os\\.(?:system|popen|exec)\\s*\\("
+      - "subprocess\\.(?:call|run|Popen)\\s*\\("
+      - "(?:exec|eval|compile)\\s*\\(.*(?:import|__)"
+
+  # -- Social Engineering Injection --
+  - id: PI-007
+    name: social_engineering_injection
+    severity: MEDIUM
+    patterns:
+      - "(?:尊敬的|亲爱的|Dear).*(?:忽略|无视|跳过|ignore|disregard).*(?:安全|限制|规则|safety|restriction)"
+      - "(?:紧急|urgent|emergency).*(?:必须|must|need to).*(?:执行|execute|run)"
+      - "(?:as (?:an?|the) )?(?:administrator|admin|developer|root|owner).*(?:I )?(?:authorize|grant|permit|allow)"
+      - "(?:this is|I am) (?:an? )?(?:authorized|official|legitimate) (?:test|request|command)"
