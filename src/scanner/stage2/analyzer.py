@@ -111,13 +111,24 @@ class SemanticAnalyzer:
                 try:
                     result = await self._call_llm(prompt)
                     elapsed_ms = int((time.monotonic() - start) * 1000)
-                    return self._parse_response(result, elapsed_ms)
+                    parsed = self._parse_response(result, elapsed_ms)
+                    threat_summary = ", ".join(t.type.value for t in parsed.threats) if parsed.threats else "none"
+                    logger.debug(
+                        "Skill %s: verdict=%s confidence=%.2f threats=[%s] (%dms)",
+                        skill_id, parsed.verdict.value, parsed.confidence,
+                        threat_summary, elapsed_ms,
+                    )
+                    return parsed
                 except LLMRefusalError as e:
+                    elapsed_ms = int((time.monotonic() - start) * 1000)
                     logger.warning(
                         "Skill %s: LLM refused to analyze (content safety filter): %s",
                         skill_id, e,
                     )
-                    elapsed_ms = int((time.monotonic() - start) * 1000)
+                    logger.debug(
+                        "Skill %s: verdict=error (LLM refusal) (%dms)",
+                        skill_id, elapsed_ms,
+                    )
                     return Stage2Result(
                         verdict=Verdict.ERROR,
                         summary="LLM refused to analyze — content triggered safety filter",
@@ -160,6 +171,10 @@ class SemanticAnalyzer:
                         await asyncio.sleep(2 ** attempt)
 
         elapsed_ms = int((time.monotonic() - start) * 1000)
+        logger.debug(
+            "Skill %s: verdict=error (all retries exhausted) (%dms)",
+            skill_id, elapsed_ms,
+        )
         return Stage2Result(
             verdict=Verdict.ERROR, summary="Analysis failed after retries",
             duration_ms=elapsed_ms,

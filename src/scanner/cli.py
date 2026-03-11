@@ -76,9 +76,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Environment variable name for API key (default: ARK_API_KEY)",
     )
     parser.add_argument(
+        "--log-level",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
+        default="INFO",
+        help="Set logging level (default: INFO)",
+    )
+    parser.add_argument(
         "--verbose", "-v",
         action="store_true",
-        help="Enable verbose logging",
+        help="Shorthand for --log-level DEBUG",
     )
     return parser.parse_args(argv)
 
@@ -86,8 +92,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> None:
     args = parse_args(argv)
 
+    log_level = "DEBUG" if args.verbose else args.log_level
     logging.basicConfig(
-        level=logging.DEBUG if args.verbose else logging.INFO,
+        level=getattr(logging, log_level),
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     )
 
