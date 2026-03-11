@@ -23,6 +23,20 @@ from scanner.models import (
 
 logger = logging.getLogger(__name__)
 
+# Patterns indicating the LLM refused to answer (content safety filter).
+_REFUSAL_PATTERNS = [
+    "抱歉", "无法回答", "无法提供", "未找到相关结果",
+    "我不能", "不适合回答", "无法处理",
+    "i can't", "i cannot", "i'm unable", "i am unable",
+    "against my guidelines",
+]
+
+
+class LLMRefusalError(Exception):
+    """Raised when the LLM refuses to analyze content."""
+    pass
+
+
 _PROMPT_TEMPLATE_PATH = Path(__file__).parent / "prompt_template.md"
 _THREAT_TYPE_MAP = {
     "instruction_override": ThreatType.INSTRUCTION_OVERRIDE,
@@ -98,6 +112,17 @@ class SemanticAnalyzer:
                     result = await self._call_llm(prompt)
                     elapsed_ms = int((time.monotonic() - start) * 1000)
                     return self._parse_response(result, elapsed_ms)
+                except LLMRefusalError as e:
+                    logger.warning(
+                        "Skill %s: LLM refused to analyze (content safety filter): %s",
+                        skill_id, e,
+                    )
+                    elapsed_ms = int((time.monotonic() - start) * 1000)
+                    return Stage2Result(
+                        verdict=Verdict.ERROR,
+                        summary="LLM refused to analyze — content triggered safety filter",
+                        duration_ms=elapsed_ms,
+                    )
                 except (json.JSONDecodeError, KeyError, ValueError) as e:
                     logger.warning(
                         "Skill %s: parse error on attempt %d/%d: %s",
@@ -178,6 +203,10 @@ class SemanticAnalyzer:
         if not raw or not raw.strip():
             raise ValueError("LLM returned empty response")
         text = raw.strip()
+        # Detect LLM refusal before attempting JSON parse
+        text_lower = text.lower()
+        if not text_lower.startswith("{") and any(p in text_lower for p in _REFUSAL_PATTERNS):
+            raise LLMRefusalError(f"LLM refused to analyze: {text[:200]}")
         return self._extract_json(text)
 
     @staticmethod
