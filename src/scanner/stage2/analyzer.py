@@ -42,6 +42,8 @@ _SEVERITY_MAP = {
 
 # Max content length to send to LLM (chars). Truncate longer skills.
 _MAX_CONTENT_LENGTH = 12000
+# Max number of matched rules to include in LLM prompt.
+_MAX_RULES_IN_PROMPT = 30
 
 # Default: Volcano Engine ARK API
 _DEFAULT_API_BASE = "https://ark.cn-beijing.volces.com/api/v3"
@@ -107,6 +109,9 @@ class SemanticAnalyzer:
                         skill_id, attempt, self._max_retries, e.message,
                         e.status_code,
                     )
+                    # Don't retry on 400 (bad request / input too long)
+                    if e.status_code == 400:
+                        break
                     if attempt < self._max_retries:
                         await asyncio.sleep(2 ** attempt)
                 except openai.APIConnectionError as e:
@@ -138,10 +143,26 @@ class SemanticAnalyzer:
     def _build_prompt(self, content: str, matched_rules: list[RuleMatch]) -> str:
         escaped = content[:_MAX_CONTENT_LENGTH]
 
-        rules_desc = "None" if not matched_rules else "\n".join(
-            f"- [{m.rule_id}] {m.rule_name} ({m.severity.value}): matched \"{m.matched_text}\""
-            for m in matched_rules
-        )
+        if not matched_rules:
+            rules_desc = "None"
+        else:
+            # Deduplicate rules: keep one example per (rule_id, rule_name) pair
+            seen: dict[str, RuleMatch] = {}
+            for m in matched_rules:
+                if m.rule_id not in seen:
+                    seen[m.rule_id] = m
+            deduped = list(seen.values())[:_MAX_RULES_IN_PROMPT]
+            lines = [
+                f"- [{m.rule_id}] {m.rule_name} ({m.severity.value}): "
+                f"matched \"{m.matched_text[:100]}\""
+                for m in deduped
+            ]
+            if len(matched_rules) > len(deduped):
+                lines.append(
+                    f"- ... and {len(matched_rules) - len(deduped)} more matches omitted"
+                )
+            rules_desc = "\n".join(lines)
+
         return self._prompt_template.safe_substitute(
             skill_content=escaped,
             matched_rules=rules_desc,
@@ -153,22 +174,50 @@ class SemanticAnalyzer:
             max_tokens=1024,
             messages=[{"role": "user", "content": prompt}],
         )
-        text = response.choices[0].message.content.strip()
-        # Extract JSON from possible markdown code block
-        if text.startswith("```"):
-            lines = text.split("\n")
-            json_lines = []
-            in_block = False
-            for line in lines:
-                if line.strip().startswith("```") and not in_block:
-                    in_block = True
-                    continue
-                if line.strip() == "```" and in_block:
-                    break
-                if in_block:
-                    json_lines.append(line)
-            text = "\n".join(json_lines)
-        return json.loads(text)
+        raw = response.choices[0].message.content
+        if not raw or not raw.strip():
+            raise ValueError("LLM returned empty response")
+        text = raw.strip()
+        return self._extract_json(text)
+
+    @staticmethod
+    def _extract_json(text: str) -> dict[str, Any]:
+        """Extract JSON from LLM response, handling various formats."""
+        import re
+
+        # Try direct parse first
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError:
+            pass
+
+        # Extract from markdown code block (```json ... ``` or ``` ... ```)
+        code_block = re.search(r"```(?:json)?\s*\n(.*?)```", text, re.DOTALL)
+        if code_block:
+            try:
+                return json.loads(code_block.group(1).strip())
+            except json.JSONDecodeError:
+                pass
+
+        # Extract first JSON object by finding balanced braces
+        brace_start = text.find("{")
+        if brace_start != -1:
+            depth = 0
+            for i in range(brace_start, len(text)):
+                if text[i] == "{":
+                    depth += 1
+                elif text[i] == "}":
+                    depth -= 1
+                    if depth == 0:
+                        try:
+                            return json.loads(text[brace_start:i + 1])
+                        except json.JSONDecodeError:
+                            break
+
+        raise json.JSONDecodeError(
+            f"No valid JSON found in LLM response: {text[:200]}...",
+            text, 0,
+        )
 
     @staticmethod
     def _parse_response(data: dict[str, Any], elapsed_ms: int) -> Stage2Result:

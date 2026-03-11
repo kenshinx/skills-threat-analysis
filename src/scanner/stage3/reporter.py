@@ -25,6 +25,7 @@ class Reporter:
 
     def _build_summary(self, scan_id: str, results: list[ScanResult]) -> ScanSummary:
         threat_counter: Counter[str] = Counter()
+        threat_skills: dict[str, list[str]] = {}
         source_stats: dict[str, dict] = {}
         clean = suspicious = malicious = needs_review = errors = 0
 
@@ -45,13 +46,17 @@ class Reporter:
             # fall back to Stage 1 (rule matches) otherwise.
             if r.stage2 and r.stage2.threats:
                 for t in r.stage2.threats:
-                    threat_counter[t.type.value] += 1
+                    ttype = t.type.value
+                    threat_counter[ttype] += 1
+                    threat_skills.setdefault(ttype, []).append(r.skill.file_path)
             elif r.stage1:
                 # Deduplicate by rule_name — count each rule type once per skill
                 seen_rules = set()
                 for m in r.stage1.matched_rules:
                     if m.rule_name not in seen_rules:
                         threat_counter[m.rule_name] += 1
+                        threat_skills.setdefault(m.rule_name, []).append(
+                            r.skill.file_path)
                         seen_rules.add(m.rule_name)
 
             # Source breakdown
@@ -75,6 +80,7 @@ class Reporter:
             needs_human_review=needs_review,
             scan_error=errors,
             threat_type_counts=dict(threat_counter.most_common()),
+            threat_type_skills=threat_skills,
             source_breakdown=source_stats,
         )
 
@@ -127,7 +133,11 @@ class Reporter:
                 "scan_error": summary.scan_error,
             },
             "top_threat_types": [
-                {"type": k, "count": v}
+                {
+                    "type": k,
+                    "count": v,
+                    "skills": summary.threat_type_skills.get(k, []),
+                }
                 for k, v in summary.threat_type_counts.items()
             ],
             "source_breakdown": summary.source_breakdown,
@@ -155,11 +165,17 @@ class Reporter:
             "",
             "## Top Threat Types",
             "",
-            "| Threat Type | Count |",
-            "|-------------|-------|",
         ]
         for t_type, count in summary.threat_type_counts.items():
-            lines.append(f"| {t_type} | {count} |")
+            skill_files = summary.threat_type_skills.get(t_type, [])
+            lines.append(f"### {t_type} ({count})")
+            lines.append("")
+            if skill_files:
+                for fp in skill_files:
+                    lines.append(f"- `{fp}`")
+            else:
+                lines.append("- (none)")
+            lines.append("")
 
         lines += [
             "",
