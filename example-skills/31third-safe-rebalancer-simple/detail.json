@@ -1,0 +1,329 @@
+{
+    "task_params": {
+        "owner_handle": "Phips0812",
+        "skill_slug": "31third-safe-rebalancer-simple",
+        "detail_url": "https://clawhub.ai/Phips0812/31third-safe-rebalancer-simple",
+        "skill_name": "31Third Safe Rebalancer (Simple)",
+        "summary": "One-step Safe rebalancer using on-chain 31Third policies.",
+        "version": "0.1.5",
+        "downloads": 377,
+        "stars": 1,
+        "comments": 0,
+        "requires": {},
+        "created_at_ts": 1771606282295.0,
+        "updated_at_ts": 1772203928321.0
+    },
+    "crawled_at": 1773046032.9231355,
+    "detail_content": {
+        "skill_info": {
+            "canonical": null,
+            "forkOf": null,
+            "latestVersion": {
+                "_creationTime": 1772201031662.7625,
+                "_id": "k9712negh6fwf8fx36qjg61zsx81yc5k",
+                "changelog": "- Updated dependencies in package.json and package-lock.json.\n- Improvements made to CLI and troubleshooting scripts.\n- test/cli.test.ts updated to reflect latest CLI behaviors and options.\n- Metadata in skill.json and skill.yaml updated for consistency.",
+                "changelogSource": "auto",
+                "createdAt": 1772201031662.0,
+                "createdBy": "kn70cf1vsrv6mn2hazzrbqtz8x812f1f",
+                "files": [
+                    {
+                        "contentType": "text/markdown",
+                        "path": "SKILL.md",
+                        "sha256": "a7ba6bfe0264c55c806a56f8f8363d073a2b47aafae3c909b84216473b7fa4e0",
+                        "size": 5096.0,
+                        "storageId": "kg2568qvs4fcx9ekx0bnms3yj181yxyg"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "abi/AssetUniversePolicy.json",
+                        "sha256": "6cc2e93ab0bfa2169dba0ec71a21f1e969d86288c909458d4fed1fbcdb4ca15e",
+                        "size": 65811.0,
+                        "storageId": "kg23s2ys2zy7dcf3eygv7bg6v981y98d"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "abi/ExecutorModule.json",
+                        "sha256": "37eb2c3fb01c80b599dd50ddb0114daa7747d7cea844df896af74ca3807f7653",
+                        "size": 142956.0,
+                        "storageId": "kg29bw329mwgmwb8yx52xxjnan81yvnz"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "abi/SlippagePolicy.json",
+                        "sha256": "8afaa1407b4ba14c5c8b9dfdd56c2df33c4835db39533d670a4f37d23b649ab8",
+                        "size": 74294.0,
+                        "storageId": "kg2cw83hdyz7wf3n81vck2sj1981y470"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "abi/StaticAllocationPolicy.json",
+                        "sha256": "2f6fffafafeeedc17e7238cd7cdc5c51117bae68371f4227828fa8607a8165cf",
+                        "size": 123767.0,
+                        "storageId": "kg2e2m0qgh9h9fr7f0ccqfssjh81zvxb"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "dist/abi/AssetUniversePolicy.json",
+                        "sha256": "d46cd3210e8fe51ac4e5d53db46c3cf35d5b8f5504ae1f847455a4a693c5447b",
+                        "size": 67017.0,
+                        "storageId": "kg22ycrf6ecndxxj19v10ca37s81z3dw"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "dist/abi/ExecutorModule.json",
+                        "sha256": "fe2aa409ebac3408abb14278001048180f29d39610b78e9e6d2d33b864b4944e",
+                        "size": 145517.0,
+                        "storageId": "kg29emaq8k9kmwyv88br2k33fs81zx1c"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "dist/abi/SlippagePolicy.json",
+                        "sha256": "b4ac226b5af5c65e097241c94c214a3922ab212dbdee244f792d6af318d79b1f",
+                        "size": 75297.0,
+                        "storageId": "kg2cgsmd4z2wepe6g7t98kmr3181z8xs"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "dist/abi/StaticAllocationPolicy.json",
+                        "sha256": "8f8e595f4a8e1206e421fec7fb75a2dd9c991ce8f669072f3ca02883ea392bc9",
+                        "size": 125222.0,
+                        "storageId": "kg2e86hrk2qgpx0w2xdmg9zm6981ybp8"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "dist/index.js",
+                        "sha256": "6b18761aa2fee2e4ff177c0ba8cc9c623afe20e79a3659ae4af8f3b13934c073",
+                        "size": 14644.0,
+                        "storageId": "kg282g1c7k3m1rqjzyap4t41p981z912"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "dist/scripts/cli.js",
+                        "sha256": "114391a214441d49be4348e8ce6fc9ad3df82a2cd088fded26fa2f2eff07502d",
+                        "size": 1549.0,
+                        "storageId": "kg2fhp3yxrffga4kx98j4yqc0h81zrts"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "dist/src/contracts.js",
+                        "sha256": "cb75cfe0586663cc1336069a14d94830360223c826b12657549967ac11180a76",
+                        "size": 1892.0,
+                        "storageId": "kg23hwbtk09fmw6zyg2y5df0vn81zwkt"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "dist/tests/cli.test.js",
+                        "sha256": "d580325355ea22e8c6522cdc9f99bb17556212e92ed264d1afac4d45449c37a9",
+                        "size": 1541.0,
+                        "storageId": "kg2atprzsmwcx04ergdmwg25r581z2qv"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "dist/tests/rebalance-now.test.js",
+                        "sha256": "13a8c7496903c7c2538414aa42f3e83f98372ef78fb76ff7c786c7066fcf7798",
+                        "size": 5301.0,
+                        "storageId": "kg21c3qqpyefwtkqk8bxtwccf181yqzk"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "index.ts",
+                        "sha256": "14d6e71ebd0426fcdd66efb7a37e3c6264507045f52fc7927287446a73b534ec",
+                        "size": 1511.0,
+                        "storageId": "kg20adx37fgkh1sxm3vy66d7rx81y1td"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "package-lock.json",
+                        "sha256": "dad903e68e8aa87cab7f7d77063d296e04041878644f56dffcbb47b48b8275d1",
+                        "size": 50462.0,
+                        "storageId": "kg2frasaw095qnxn6gm7gxwff981z3fn"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "package.json",
+                        "sha256": "b6e917df39d978c23bc2d63b0a0507a261196bad7defc08a4148f0f5f66546f6",
+                        "size": 896.0,
+                        "storageId": "kg260nf6dn5g01vka2bqkhhvws81y8yv"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "scripts/cli.ts",
+                        "sha256": "196f573b8a8c3357957a34bd80d5c0052db07cc234ae858ba9cc2e5e2485b51b",
+                        "size": 5393.0,
+                        "storageId": "kg22m0mh86pyhsypn2mkst2dh581zahj"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "skill.json",
+                        "sha256": "4a816a3dd773c281f9a83d5f459d8bcabddb0c97f33e81a08a5c0a1d14787606",
+                        "size": 645.0,
+                        "storageId": "kg2czjanvvepsz3f91dchxxyzd81za3z"
+                    },
+                    {
+                        "contentType": "text/yaml",
+                        "path": "skill.yaml",
+                        "sha256": "bbced4e3e31ee5aa65f6f6b1c42a642f1874aa027205ec37b3b1891e6e8df961",
+                        "size": 107.0,
+                        "storageId": "kg2bd2tcwxsjkdykcjb97wd5sh81z63m"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/contracts.ts",
+                        "sha256": "1a03de2e4a1b6f00f691a34c1a4428f8452b4131dcbfc7b3ea80c66e125e3b71",
+                        "size": 1769.0,
+                        "storageId": "kg2bjfj3yzc6e2jff8ern06ma181z7dh"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/rebalance-now.ts",
+                        "sha256": "4b3402283b45b710f66586c98a39688e349f2046dab9e05f5466a1a8acb415d6",
+                        "size": 15659.0,
+                        "storageId": "kg25av3mbffwnwefc3p6saf7f581zjds"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/verify-deployment-config.ts",
+                        "sha256": "a19f69b3525d21271929d0c6417a9aff3cdf0bedec330188e92cbf7b0000ddb4",
+                        "size": 19069.0,
+                        "storageId": "kg24hfxxyyetcsddnyqxp1qbjx81zr04"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "tests/cli.test.ts",
+                        "sha256": "c56424e13904820e50cd184ef1edb13078228f77663ae6b2f64aa86b84da85a7",
+                        "size": 3490.0,
+                        "storageId": "kg25qg6see77d4sm9225rd5ff581zh8v"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "tests/rebalance-now.test.ts",
+                        "sha256": "e3494707f66dbb4e00eb4fcf0140015ee51f7614c1182737707a51dceef7ba76",
+                        "size": 4718.0,
+                        "storageId": "kg25a3tp2330rbmq02hrd05m0d81zm49"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "tests/verify-deployment.test.ts",
+                        "sha256": "00aaa99682aa08f34d04f431ba9ed6296890a1701e07962825f47c7c5688f976",
+                        "size": 4518.0,
+                        "storageId": "kg24swxdjctnd6r5kfxd3rxdjn81yh64"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "tsconfig.json",
+                        "sha256": "48f992942346b7fbd1813604bb0c7129b5a40774042aae32188156569ea1b968",
+                        "size": 375.0,
+                        "storageId": "kg25e0b4g8bve3y3t8jhasfqgs81zpv6"
+                    }
+                ],
+                "fingerprint": "93ebf6106d02ff2f7ef10333b668f96b0f70c99f1fbd5a7dd04da88c9bf2d6a5",
+                "llmAnalysis": {
+                    "checkedAt": 1772201078049.0,
+                    "confidence": "medium",
+                    "dimensions": [
+                        {
+                            "detail": "The SKILL.md describes a rebalancer that legitimately needs an executor wallet private key, RPC URL, chain id, and a 31Third API key — those are coherent with the described purpose. However the registry metadata declares no required environment variables or primary credential while the SKILL.md explicitly requires several sensitive env vars. Also the package contains compiled code and scripts but the skill metadata lists no install spec; these mismatches are incoherent and deserve clarification from the publisher.",
+                            "label": "Purpose & Capability",
+                            "name": "purpose_capability",
+                            "rating": "concern"
+                        },
+                        {
+                            "detail": "The runtime instructions are focused on reading on-chain policies, building targets, calculating and executing rebalancing transactions, which is within the stated scope. They require providing EXECUTOR_WALLET_PRIVATE_KEY (used to sign transactions) — this is necessary for automated execution but is a sensitive secret. The skill warns to never share the Safe owner private key, but still requires an executor private key; ensure you only provide a key with appropriate, limited authority and funds. The SKILL.md mentions copying env vars from the 31Third wizard; it does not indicate any other unrelated file reads or exfiltration.",
+                            "label": "Instruction Scope",
+                            "name": "instruction_scope",
+                            "rating": "note"
+                        },
+                        {
+                            "detail": "SKILL.md instructs using npm install / build (normal for a Node-based tool). The repository includes package.json, lockfile, source, and built dist artifacts. There is no install spec in registry metadata and no explicit vetting of npm dependencies exposed here; running npm install will fetch packages and may execute lifecycle scripts. This is a normal pattern for Node CLIs but it raises the usual npm-install risk (postinstall scripts, supply-chain dependencies) which should be audited before running on sensitive machines.",
+                            "label": "Install Mechanism",
+                            "name": "install_mechanism",
+                            "rating": "concern"
+                        },
+                        {
+                            "detail": "The environment variables required in SKILL.md (SAFE_ADDRESS, EXECUTOR_MODULE_ADDRESS, EXECUTOR_WALLET_PRIVATE_KEY, TOT_API_KEY, RPC_URL, CHAIN_ID) are proportional to the purpose — an executor key is needed to sign on-chain transactions and TOT_API_KEY plausibly for 31Third services. The concern is the metadata omitted declaring these required env vars and credentials, and the skill requests a private key (high sensitivity). Confirming least-privilege for the executor key (or using a signer that doesn't expose the raw private key) is recommended.",
+                            "label": "Credentials",
+                            "name": "environment_proportionality",
+                            "rating": "concern"
+                        },
+                        {
+                            "detail": "The skill does not request permanent/global privileges (always: false). It does not declare any special system paths or modifications to other skills. Default autonomous invocation is allowed, which is standard for skills — but combine that fact with the private key requirement when considering the blast radius.",
+                            "label": "Persistence & Privilege",
+                            "name": "persistence_privilege",
+                            "rating": "ok"
+                        }
+                    ],
+                    "findings": "[base64-block] unexpected: The pre-scan flagged a 'base64-block' pattern in SKILL.md. The provided SKILL.md content is plaintext and visible; nonetheless the detector flags potential embedded/obfuscated content. This is unexpected for a straightforward CLI README and should be checked (search SKILL.md and other files for embedded base64 or hidden payloads).",
+                    "guidance": "High-level steps to decide whether to install: 1) Do not put your Safe owner private key into this tool. If you must provide a private key, use an executor key with minimal authority and minimal funds, or use an external signer/HSM so the raw key is never in env vars. 2) Ask the publisher to fix the metadata: required env vars and install instructions should be declared in the registry entry. The mismatch is a red flag. 3) Audit package.json and package-lock.json before running npm install: check for unusual postinstall scripts, unknown dependencies, or packages with low reputation. 4) Review the repository source (dist and src) for any network calls beyond RPC and 31Third API endpoints — ensure no hard-coded or unexpected external endpoints. 5) Verify the TOT_API_KEY usage and where it’s sent (which domain/IP) and confirm it is only used to query 31Third services. 6) Prefer testing in an isolated environment (ephemeral VM or container) with a throwaway executor key on a testnet or a noncritical Safe before using on mainnet. 7) If you are not comfortable auditing the code, ask for a signed release from the official 31Third project or use an officially distributed client from 31third.com. If the publisher can confirm there is no base64/obfuscated content and update the registry metadata and provide a publishable, audited package.json (no risky postinstall), this would raise confidence.",
+                    "model": "gpt-5-mini",
+                    "status": "suspicious",
+                    "summary": "The skill's code and runtime instructions generally match a Safe rebalancer (it needs an executor private key and RPC access), but there are several internal inconsistencies and modest installation risks you should resolve before trusting it.",
+                    "verdict": "suspicious"
+                },
+                "parsed": {
+                    "clawdis": {
+                        "homepage": "https://31third.com"
+                    },
+                    "frontmatter": {
+                        "description": "One-step Safe rebalancer using on-chain 31Third policies.",
+                        "homepage": "https://31third.com",
+                        "name": "31third-safe-rebalancer-simple"
+                    }
+                },
+                "sha256hash": "2cdeec40e9f6eb8cf48f18b668c8a3cec3308398bd904c70c7967be419dbec80",
+                "skillId": "kd75wsnb9z5emybvvm1psdpgw581gtmc",
+                "version": "0.1.5",
+                "vtAnalysis": {
+                    "analysis": "Type: OpenClaw Skill\nName: 31third-safe-rebalancer-simple\nVersion: 0.1.5\n\nThe OpenClaw AgentSkills skill bundle is classified as benign. The code and documentation are transparently aligned with its stated purpose of rebalancing a Safe using 31Third policies. Sensitive environment variables like `EXECUTOR_WALLET_PRIVATE_KEY` are handled securely by `ethers.js` for local transaction signing, and the `TOT_API_KEY` is sent to the expected `api.31third.com` endpoint as part of its legitimate functionality. Robust input validation and path traversal prevention mechanisms are explicitly implemented in `scripts/cli.ts` for CLI arguments and file operations, mitigating common vulnerabilities. No evidence of data exfiltration to unauthorized endpoints, malicious execution, persistence mechanisms, or obfuscation was found.",
+                    "checkedAt": 1773030604676.0,
+                    "source": "palm",
+                    "status": "clean",
+                    "verdict": "benign"
+                }
+            },
+            "moderationInfo": null,
+            "owner": {
+                "_creationTime": 1770998972469.3276,
+                "_id": "kn70cf1vsrv6mn2hazzrbqtz8x812f1f",
+                "createdAt": 1770998972469.3276,
+                "displayName": "Phips0812",
+                "email": "phips0812@gmail.com",
+                "emailVerificationTime": 1770998972469.0,
+                "githubCreatedAt": 1451993913000.0,
+                "githubFetchedAt": 1771001617765.0,
+                "handle": "Phips0812",
+                "image": "https://avatars.githubusercontent.com/u/16557578?v=4",
+                "name": "Phips0812",
+                "role": "user",
+                "updatedAt": 1772605710252.0
+            },
+            "pendingReview": false,
+            "skill": {
+                "_creationTime": 1771606282295.6968,
+                "_id": "kd75wsnb9z5emybvvm1psdpgw581gtmc",
+                "badges": {},
+                "createdAt": 1771606282295.0,
+                "displayName": "31Third Safe Rebalancer (Simple)",
+                "latestVersionId": "k9712negh6fwf8fx36qjg61zsx81yc5k",
+                "ownerUserId": "kn70cf1vsrv6mn2hazzrbqtz8x812f1f",
+                "slug": "31third-safe-rebalancer-simple",
+                "stats": {
+                    "comments": 0.0,
+                    "downloads": 381.0,
+                    "installsAllTime": 1.0,
+                    "installsCurrent": 1.0,
+                    "stars": 1.0,
+                    "versions": 6.0
+                },
+                "summary": "One-step Safe rebalancer using on-chain 31Third policies.",
+                "tags": {
+                    "latest": "k9712negh6fwf8fx36qjg61zsx81yc5k"
+                },
+                "updatedAt": 1772203928321.0
+            }
+        },
+        "readme": {
+            "path": "SKILL.md",
+            "text": "---\nname: 31third-safe-rebalancer-simple\ndescription: One-step Safe rebalancer using on-chain 31Third policies.\nhomepage: https://31third.com\n---\n\n# 31Third Safe Rebalancer Simple\n\nThis skill is intentionally minimal for non-technical users.\n\nBest practice: use only one command / one tool:\n\n- `rebalance_now`\n- `verify_deployment_config` (post-deploy troubleshooting)\n\nIf you are unsure, use the help command first:\n\n- `npm run cli -- help`\n\n## Prerequisites\n\n- Node.js 22+\n- npm\n\n## Local Setup\n\n```bash\nnpm install\nnpm run build\n```\n\n## Setup\n\n1. Deploy your Safe + policies using the 31Third policy wizard:\n   <https://app.31third.com/safe-policy-deployer>\n2. You need at least two wallets:\n   - Safe owner wallet: never share this private key.\n   - Executor wallet: configured in the wizard on `ExecutorModule`; this private key is used by this skill.\n3. Copy env vars from the final wizard overview.\n\nRequired env vars:\n\n```bash\nSAFE_ADDRESS=0xYourSafe\nEXECUTOR_MODULE_ADDRESS=0xYourExecutorModule\nEXECUTOR_WALLET_PRIVATE_KEY=0x...\nTOT_API_KEY=your_31third_api_key\nRPC_URL=https://mainnet.base.org\nCHAIN_ID=8453\n```\n\n`TOT_API_KEY` can be requested via <https://31third.com/contact> or by emailing `dev@31third.com`.\n\n## What rebalance_now does\n\n1. Reads `AssetUniverse` and `StaticAllocation` policy state from `ExecutorModule`.\n2. Builds `baseEntries` from current Safe balances for AssetUniverse tokens.\n3. Builds `targetEntries` from on-chain StaticAllocation targets.\n4. Calls SDK `calculateRebalancing(...)`.\n5. Executes via SDK `executeRebalancing(...)` using ethers wallet signer.\n6. Waits for confirmation and returns tx hash.\n\nSafety checks:\n\n- Fails if `scheduler != registry`.\n- Fails if executor wallet is not equal to `registry`.\n- Fails if required policies are missing.\n- Loads `driftThresholdBps` from StaticAllocation and skips execution when drift is below threshold.\n- Loads `maxSlippageBps` from SlippagePolicy and uses:\n  - `maxSlippage = policySlippage - 0.1%`\n  - `maxPriceImpact = policySlippage - 0.1%`\n- Uses default `minTradeValue = 0.1`.\n\nPartial policy deployment behavior:\n\n- If AssetUniverse is not deployed, base entries default to `[]`.\n- If SlippagePolicy is not deployed, configured/default slippage values are used.\n- If StaticAllocation is not deployed, auto target fetch is not possible.\n  This is the only fallback case where you should pass manual `targetEntries`.\n  Do this only when StaticAllocation policy is intentionally not deployed.\n  CLI fallback example:\n  `npm run cli -- rebalance-now --target-entries '[{\"tokenAddress\":\"0x...\",\"allocation\":0.5},{\"tokenAddress\":\"0x...\",\"allocation\":0.5}]'`\n\n## CLI\n\n```bash\nnpm run cli -- help\nnpm run cli -- rebalance-now\nnpm run cli -- rebalance-now --target-entries '[{\"tokenAddress\":\"0x...\",\"allocation\":0.5},{\"tokenAddress\":\"0x...\",\"allocation\":0.5}]'\nnpm run cli -- verify-deployment --troubleshooting-file ./summary.txt\nnpm run cli -- verify-deployment --troubleshooting-summary \"Safe=0x...\"\n```\n\n## Troubleshooting & Best Practices\n\nIf your rebalance fails, check these common issues:\n\n### 1. Verify the deployed contracts vs your environment\nUse the `verify-deployment` tool to verify the deployed contracts against your environment.\nCopy the troubleshooting info from the Safe Policy Deployer (Step 4 or Step 5). It has the following schema:\n\n```\nSafe=0x123...456\nExecutorModule=0x123...456 | Deployed\nScheduler=0x123...456\nRegistry=0x123...456\nBatchTrade=0xD20c024560ccA40288C05BAB650ac087ae9b0f6e\nFeedRegistry=0x1d4999242A24C8588c4f5dB7dFF1D74Df6bC746A\nCooldownSec=3600\n\nAssetUniversePolicy=0x123...456 | Deployed\nAssetUniverseAssets:\n- USDC | 0x833589fcd6edb6e08f4c7c32d4f71b54bda02913\n- WETH | 0x4200000000000000000000000000000000000006\n\nStaticAllocationPolicy=0x123...456 | Deployed\nStaticAllocationDriftThresholdPercent=0.50%\nStaticAllocationToleranceThresholdPercent=0.50%\nStaticAllocationTargets:\n- USDC | 0x833589fcd6edb6e08f4c7c32d4f71b54bda02913 | AllocationPercent=10.00%\n- WETH | 0x4200000000000000000000000000000000000006 | AllocationPercent=90.00%\n\nSlippagePolicy=0x123...456 | Deployed\nMaxSlippagePercent=0.50%\n```\n\nIMPORTANT: The framework is deployed with a Safe batch transaction. It might happen that an internal transaction runs\nout of gas and fails. The batch transaction itself still succeeds, but not all policies might be deployed. In this case,\nexecution of rebalancings might fail.\n\n\n### 2. \"Policy failed: to token not allowed\"\nYour `AssetUniverse` policy is blocking the trade.\n- **Fix:** Just use tokens that are allowed by the policy for rebalancing.\n\n### 3. \"Policy failed: minToReceive below...\"\nThe trade slippage is too high.\n- **Cause:** Low liquidity for the token pair (common with Aave `aTokens` or wrapped assets on new chains).\n- **Fix:** Try setting maxSlippage and maxPriceImpact lower on the rebalancing calculation call.\n\n### 4. \"Missing StaticAllocation policy\"\nThe script can't find a target allocation on-chain.\n- **Fix:** Run verify-deployment and if policy not deployed on purpose you can rebalance into any allocation within the AssetUniverse.\n"
+        }
+    }
+}

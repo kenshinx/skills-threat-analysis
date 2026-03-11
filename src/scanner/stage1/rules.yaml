@@ -48,7 +48,7 @@ rules:
     severity: HIGH
     patterns:
       - "[\\u200b\\u200c\\u200d\\ufeff\\u2060]"
-      - "(?:base64|atob|btoa)\\s*[:(]"
+      - "(?:base64|atob|btoa)\\s*[:(].*(?:ignore|override|execute|eval|system|prompt)"
       - "<!--.*(?:ignore|override|execute).*-->"
       - "\\\\u[0-9a-fA-F]{4}.*(?:ignore|execute|override)"
 
@@ -60,8 +60,8 @@ rules:
       - "(?:execute|run|eval)\\s*[:(\"'].*(?:rm |del |drop |format |shutdown|kill)"
       - "sudo\\s+rm\\s+-rf"
       - "(?:curl|wget|fetch)\\s+.{0,50}\\|\\s*(?:sh|bash|zsh|python)"
-      - "os\\.(?:system|popen|exec)\\s*\\("
-      - "subprocess\\.(?:call|run|Popen)\\s*\\("
+      - "os\\.(?:system|popen|exec)\\s*\\(.*(?:rm |del |drop |curl|wget|eval)"
+      - "subprocess\\.(?:call|run|Popen)\\s*\\(.*(?:rm |del |drop |curl.*\\||wget.*\\|)"
       - "(?:exec|eval|compile)\\s*\\(.*(?:import|__)"
 
   # -- Social Engineering Injection --
@@ -71,5 +71,5 @@ rules:
     patterns:
       - "(?:尊敬的|亲爱的|Dear).*(?:忽略|无视|跳过|ignore|disregard).*(?:安全|限制|规则|safety|restriction)"
       - "(?:紧急|urgent|emergency).*(?:必须|must|need to).*(?:执行|execute|run)"
-      - "(?:as (?:an?|the) )?(?:administrator|admin|developer|root|owner).*(?:I )?(?:authorize|grant|permit|allow)"
-      - "(?:this is|I am) (?:an? )?(?:authorized|official|legitimate) (?:test|request|command)"
+      - "(?:as (?:an?|the) )(?:administrator|admin|developer|root|owner).{0,30}(?:I )?(?:authorize|grant|permit|allow) (?:you|this|access)"
+      - "(?:this is|I am) (?:an? )?(?:authorized|official|legitimate) (?:test|request|command).{0,30}(?:ignore|override|bypass|skip)"

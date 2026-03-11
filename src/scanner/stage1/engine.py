@@ -16,6 +16,11 @@ _RULES_PATH = Path(__file__).parent / "rules.yaml"
 _CODE_BLOCK_RE = re.compile(r"```[\s\S]*?```|`[^`]+`", re.MULTILINE)
 _BLOCKQUOTE_RE = re.compile(r"^>.*$", re.MULTILINE)
 
+# Emoji ranges used to detect ZWJ sequences (U+200D between emoji codepoints)
+_EMOJI_RANGE_RE = re.compile(
+    "[\U0001F300-\U0001FAFF\U00002600-\U000027BF\U0001F900-\U0001F9FF]"
+)
+
 
 class RuleEngine:
     def __init__(self, rules_path: str | Path | None = None):
@@ -45,6 +50,9 @@ class RuleEngine:
                 for m in pattern.finditer(content):
                     if self._is_in_masked_range(m.start(), m.end(), masked_ranges):
                         continue
+                    # Skip U+200D (ZWJ) when it's part of an emoji sequence
+                    if m.group() == "\u200d" and self._is_emoji_zwj(content, m.start()):
+                        continue
                     matches.append(RuleMatch(
                         rule_id=rule["id"],
                         rule_name=rule["name"],
@@ -72,6 +80,16 @@ class RuleEngine:
             if start >= r_start and end <= r_end:
                 return True
         return False
+
+    @staticmethod
+    def _is_emoji_zwj(content: str, pos: int) -> bool:
+        """Check if U+200D at pos is a ZWJ joiner between emoji characters."""
+        def _is_emoji_char(ch: str) -> bool:
+            return bool(_EMOJI_RANGE_RE.match(ch))
+
+        before = content[pos - 1] if pos > 0 else ""
+        after = content[pos + 1] if pos + 1 < len(content) else ""
+        return _is_emoji_char(before) or _is_emoji_char(after)
 
     @staticmethod
     def _classify(matches: list[RuleMatch]) -> Verdict:

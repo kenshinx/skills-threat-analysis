@@ -1,0 +1,223 @@
+{
+    "task_params": {
+        "owner_handle": "Cooperun",
+        "skill_slug": "openclaw-diagnostics",
+        "detail_url": "https://clawhub.ai/Cooperun/openclaw-diagnostics",
+        "skill_name": "OpenClaw Diagnostics",
+        "summary": "Diagnoses and troubleshoots OpenClaw config, channel, group message, cron job, and authentication issues using logs and built-in knowledge base.",
+        "version": "1.0.0",
+        "downloads": 62,
+        "stars": 1,
+        "comments": 0,
+        "requires": {},
+        "created_at_ts": 1772762234551.0,
+        "updated_at_ts": 1773034634399.0
+    },
+    "crawled_at": 1773050600.7107449,
+    "detail_content": {
+        "skill_info": {
+            "canonical": null,
+            "forkOf": null,
+            "latestVersion": {
+                "_creationTime": 1772762234551.921,
+                "_id": "k9704p2frfc2z9y531ja4zv90982chae",
+                "changelog": "Initial release - Offline OpenClaw diagnostics with built-in 335-page knowledge base, zero LLM dependency, lightweight shell scripts",
+                "changelogSource": "user",
+                "createdAt": 1772762234551.0,
+                "createdBy": "kn7fv9szg51epswcrre32bvk49823dzb",
+                "files": [
+                    {
+                        "contentType": "text/markdown",
+                        "path": "SKILL.md",
+                        "sha256": "0143b377ac42e1cba26ffdd8f08fa41bbac266cea3ebb6f211bfd96e8eb7adf8",
+                        "size": 4353.0,
+                        "storageId": "kg2cyrc1y2yepc5p4cpd773mw582cnyb"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "assets/default-snapshot.json",
+                        "sha256": "a60a1119b868c144a620afa85f941747945067c8344df42e917226e8d493e4b0",
+                        "size": 3358210.0,
+                        "storageId": "kg224fygc3k8gngd0ta1qrhxwx82ccvn"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "assets/update-meta.json",
+                        "sha256": "c4854e9909ccd6154166e9f72aabea739b83ba78d95a6b41a7944cf3e8105564",
+                        "size": 104.0,
+                        "storageId": "kg20as1kr522vafm306hbdxbcx82d10z"
+                    },
+                    {
+                        "contentType": "text/markdown",
+                        "path": "references/common-issues.md",
+                        "sha256": "c03b1aeeed5336b23b2a1b7fd93f87e525353a47434a083ec1336b7fdc2de8c6",
+                        "size": 3237.0,
+                        "storageId": "kg2828tvf3w2k0y7sqks4k5f3s82cnv8"
+                    },
+                    {
+                        "contentType": "text/markdown",
+                        "path": "references/knowledge-base-index.md",
+                        "sha256": "ee90b6492a4766cdaab2ddaa7ade674dc1ba623c1b863708db107842b695a937",
+                        "size": 2680.0,
+                        "storageId": "kg2bevz3agbyde9mw3tq2ab6js82dj15"
+                    },
+                    {
+                        "contentType": "application/x-sh",
+                        "path": "scripts/check-common-issues.sh",
+                        "sha256": "840d023a83a42fd4747d51a3baa163be8e644d99d3554592c670740c324cb2e9",
+                        "size": 2601.0,
+                        "storageId": "kg2ch31a7axy23n6zpk1v8wmkn82dchv"
+                    },
+                    {
+                        "contentType": "application/x-sh",
+                        "path": "scripts/get-diagnostic-info.sh",
+                        "sha256": "3b0353df34c9195717b1b570685d2167ff105f7688fa5e6231582cde61e097cc",
+                        "size": 1133.0,
+                        "storageId": "kg2a84k17cbmx0z2ekbwmhhv9s82c5mc"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "scripts/update-knowledge-base.ts",
+                        "sha256": "9da93ef8476cedf49517f630c589da3ea885f178f0d9670d501f0c761dae6011",
+                        "size": 11512.0,
+                        "storageId": "kg23qq3eq6mfh4jptek6a1vgx982c6v2"
+                    }
+                ],
+                "fingerprint": "94a68bfb355a95399f730c3776347edd9a75445d712ad76bfe8b1ed3a95819a7",
+                "llmAnalysis": {
+                    "checkedAt": 1772762266693.0,
+                    "confidence": "medium",
+                    "dimensions": [
+                        {
+                            "detail": "The skill's name/description match what the scripts do (gather local OpenClaw config, status, and logs and consult a bundled docs snapshot). However the package does not declare that it expects the OpenClaw CLI or that it will read $HOME/.openclaw/openclaw.json, which is inconsistent with its actual behavior.",
+                            "label": "Purpose & Capability",
+                            "name": "purpose_capability",
+                            "rating": "note"
+                        },
+                        {
+                            "detail": "Runtime instructions and included scripts explicitly read the user's OpenClaw config and logs (~$HOME/.openclaw/openclaw.json and calling `openclaw logs`/`openclaw status`). That is appropriate for diagnostics, but SKILL.md gives the skill broad discretion to load and print those files; this can expose secrets. The SKILL.md also instructs running update-knowledge-base (network fetch) which will contact docs.openclaw.ai to download many pages.",
+                            "label": "Instruction Scope",
+                            "name": "instruction_scope",
+                            "rating": "concern"
+                        },
+                        {
+                            "detail": "No install spec (instruction-only with shipped scripts and assets). The update script fetches docs from a single official-looking domain (docs.openclaw.ai). No ad-hoc binary downloads or extract-from-unknown-URLs were found.",
+                            "label": "Install Mechanism",
+                            "name": "install_mechanism",
+                            "rating": "ok"
+                        },
+                        {
+                            "detail": "The skill requests no env vars in metadata but its scripts access the user's home config and may print auth-related fields from openclaw.json or from `openclaw logs` output. This access is plausible for a diagnostics tool but the lack of declared config paths or a required-binary entry is a mismatch and increases risk of accidental secret exposure.",
+                            "label": "Credentials",
+                            "name": "environment_proportionality",
+                            "rating": "concern"
+                        },
+                        {
+                            "detail": "always is false and the skill writes only to its own assets directory when updating the knowledge base. It does not appear to modify other skills or global agent settings.",
+                            "label": "Persistence & Privilege",
+                            "name": "persistence_privilege",
+                            "rating": "ok"
+                        }
+                    ],
+                    "findings": "[system-prompt-override] unexpected: Pre-scan flagged a system-prompt-override pattern in SKILL.md. The visible SKILL.md content does not contain an obvious system-prompt override block, so this may be a false positive or hidden/obfuscated content; recommend manual inspection for any injected instructions that attempt to change agent prompts or behavior.\n[base64-block] unexpected: Scanner found a base64-block pattern. The included files do not obviously contain long base64 strings in the visible excerpts, so this could be a false positive or indicate embedded/obfuscated payloads in files (check assets and scripts for encoded data before running).\n[unicode-control-chars] unexpected: Scanner detected unicode-control-chars patterns that can hide or alter displayed text. The SKILL.md and references should be examined for non-printing characters that might hide instructions or malicious strings.",
+                    "guidance": "This skill appears to be a legitimate OpenClaw diagnostics tool, but it will read and print files from $HOME/.openclaw (including openclaw.json) and may call your local openclaw CLI; those files can contain tokens or secrets. Before installing or running: 1) Inspect ~/.openclaw/openclaw.json for sensitive fields and consider redacting secrets or running the scripts in a sandbox; 2) Review scripts/get-diagnostic-info.sh and scripts/check-common-issues.sh (already included) and the entire update-knowledge-base.ts for any unexpected endpoints or embedded data; 3) Because the SKILL.md/meta do not declare the config path or required binary, assume it will access local OpenClaw credentials and logs — if you cannot risk disclosure, do not enable autonomous invocation and run the scripts manually instead; 4) The pre-scan flags (prompt-override, base64, unicode control chars) may be false positives but warrant a manual check of SKILL.md and assets for obfuscated content. If the publisher/source is unknown or untrusted, prefer to run diagnostics locally rather than grant the skill ongoing or autonomous privileges.",
+                    "model": "gpt-5-mini",
+                    "status": "suspicious",
+                    "summary": "The skill largely matches its described diagnostic purpose, but it reads local OpenClaw config/logs and performs network updates without declaring those accesses, and automated scanners flagged potential prompt-injection patterns — review before trusting or enabling it.",
+                    "verdict": "suspicious"
+                },
+                "parsed": {
+                    "frontmatter": {},
+                    "metadata": {
+                        "_clawhubQuality": {
+                            "decision": "pass",
+                            "evaluatedAt": 1772762233817.0,
+                            "reason": "Quality checks passed.",
+                            "score": 86.0,
+                            "signals": {
+                                "bodyChars": 3304.0,
+                                "bodyWords": 487.0,
+                                "bulletCount": 15.0,
+                                "cjkChars": 0.0,
+                                "genericSummary": false,
+                                "headingCount": 18.0,
+                                "templateMarkerHits": 0.0,
+                                "uniqueWordRatio": 0.433264887063655
+                            },
+                            "similarRecentCount": 0.0,
+                            "trustTier": "low"
+                        }
+                    }
+                },
+                "sha256hash": "40ba90a4ca4c1cbbfee9be0042ec2b078447869b938f9b203ad308e4caaf1fba",
+                "skillId": "kd77ty9xt0411efbb4v7y4gx6s82d4f0",
+                "version": "1.0.0",
+                "vtAnalysis": {
+                    "analysis": "Type: OpenClaw Skill\nName: openclaw-diagnostics\nVersion: 1.0.0\n\nThe skill bundle is designed for OpenClaw diagnostics but includes scripts (`get-diagnostic-info.sh` and `check-common-issues.sh`) that read the `~/.openclaw/openclaw.json` configuration file, which typically contains sensitive API keys and channel credentials. Specifically, `get-diagnostic-info.sh` outputs the entire raw configuration to the agent's context without any redaction, creating a significant risk of credential exposure. While these actions are consistent with the stated diagnostic purpose, the lack of secret filtering and the inclusion of a network-enabled update script (`update-knowledge-base.ts`) that fetches remote content from `docs.openclaw.ai` represent a high-risk profile.",
+                    "checkedAt": 1773034634228.0,
+                    "source": "palm",
+                    "status": "suspicious",
+                    "verdict": "suspicious"
+                }
+            },
+            "moderationInfo": {
+                "engineVersion": "v2.0.0",
+                "isHiddenByMod": false,
+                "isMalwareBlocked": false,
+                "isPendingScan": false,
+                "isRemoved": false,
+                "isSuspicious": true,
+                "reasonCodes": [
+                    "suspicious.llm_suspicious",
+                    "suspicious.vt_suspicious"
+                ],
+                "summary": "Detected: suspicious.llm_suspicious, suspicious.vt_suspicious",
+                "updatedAt": 1773034634399.0,
+                "verdict": "suspicious"
+            },
+            "owner": {
+                "_creationTime": 1772350110442.5256,
+                "_id": "kn7fv9szg51epswcrre32bvk49823dzb",
+                "createdAt": 1772350110442.5256,
+                "displayName": "Cooperun",
+                "email": "18852005213@163.com",
+                "emailVerificationTime": 1772779690446.0,
+                "githubCreatedAt": 1521992251000.0,
+                "githubProfileSyncedAt": 1772779691842.0,
+                "handle": "Cooperun",
+                "image": "https://avatars.githubusercontent.com/u/37776768?v=4",
+                "name": "Cooperun",
+                "role": "user",
+                "updatedAt": 1772970717362.0
+            },
+            "pendingReview": false,
+            "skill": {
+                "_creationTime": 1772762234551.9207,
+                "_id": "kd77ty9xt0411efbb4v7y4gx6s82d4f0",
+                "badges": {},
+                "createdAt": 1772762234551.0,
+                "displayName": "OpenClaw Diagnostics",
+                "latestVersionId": "k9704p2frfc2z9y531ja4zv90982chae",
+                "ownerUserId": "kn7fv9szg51epswcrre32bvk49823dzb",
+                "slug": "openclaw-diagnostics",
+                "stats": {
+                    "comments": 0.0,
+                    "downloads": 62.0,
+                    "installsAllTime": 0.0,
+                    "installsCurrent": 0.0,
+                    "stars": 1.0,
+                    "versions": 1.0
+                },
+                "summary": "Diagnoses and troubleshoots OpenClaw config, channel, group message, cron job, and authentication issues using logs and built-in knowledge base.",
+                "tags": {
+                    "latest": "k9704p2frfc2z9y531ja4zv90982chae"
+                },
+                "updatedAt": 1773034634399.0
+            }
+        },
+        "readme": {
+            "path": "SKILL.md",
+            "text": "---\nname: openclaw-diagnostics\ndescription: OpenClaw configuration diagnostics and troubleshooting expert. Use when users encounter OpenClaw config issues, channel connection problems, group messages not responding, cron jobs not executing, authentication failures, or need help understanding OpenClaw settings. Triggers: diagnose, troubleshoot, why no reply, config problem, openclaw issue, log analysis.\n---\n\n# OpenClaw Diagnostics\n\nConfiguration diagnostics and troubleshooting skill for OpenClaw, powered by built-in AI without external dependencies.\n\n## Quick Diagnostics\n\nWhen a user reports an OpenClaw issue:\n\n### 1. Gather Diagnostic Info\n\n```bash\n~/.openclaw/workspace/skills/openclaw-diagnostics/scripts/get-diagnostic-info.sh\n```\n\n### 2. Run Basic Checks\n\n```bash\n~/.openclaw/workspace/skills/openclaw-diagnostics/scripts/check-common-issues.sh\n```\n\n### 3. Analyze Based on Issue Type\n\nRefer to `references/common-issues.md` for diagnostic rules.\n\n## Diagnostic Workflow\n\n```\nUser reports issue\n        ↓\nGather info (config + status + logs)\n        ↓\nRun basic checks\n        ↓\nLookup relevant docs from knowledge base\n        ↓\nAnalyze and provide diagnosis\n        ↓\nSuggest fixes\n```\n\n## Knowledge Base\n\nThe skill includes a built-in knowledge base with 335 OpenClaw documentation pages.\n\n**Location:** `assets/default-snapshot.json`\n\n**Structure:**\n```json\n{\n  \"meta\": { \"pageCount\": 335, \"snapshotDate\": \"...\", \"sizeBytes\": 3240482 },\n  \"index\": [{ \"slug\": \"...\", \"title\": \"...\", \"url\": \"...\", \"description\": \"...\" }],\n  \"pages\": { \"slug\": \"markdown content...\" }\n}\n```\n\n**To lookup a document:**\n1. Read `references/knowledge-base-index.md` to find relevant slugs\n2. Load `assets/default-snapshot.json`\n3. Access `pages[slug]` for content\n\n**Common Document Slugs:**\n\n| Topic | Slugs |\n|-------|-------|\n| Group Messages | `008888be`, `0bfb808e` |\n| Pairing | `919c126f` |\n| Message Routing | `a99b0ed8` |\n| Automation Troubleshooting | `a632126a` |\n| Auth Monitoring | `87e3285b` |\n| Cron Jobs | `b239629c` |\n| Channels Overview | `6569d3b4` |\n| WhatsApp | `d09047a0` |\n| Telegram | `d423ce29` |\n| Feishu | `90a33c43` |\n\n### Updating Knowledge Base\n\nThe knowledge base can be updated to get the latest OpenClaw documentation.\n\n**Requirements:** Network connection (no LLM needed)\n\n**Check for updates:**\n```bash\ncd ~/.openclaw/workspace/skills/openclaw-diagnostics\nnpx tsx scripts/update-knowledge-base.ts --check\n```\n\n**Update to latest:**\n```bash\ncd ~/.openclaw/workspace/skills/openclaw-diagnostics\nnpx tsx scripts/update-knowledge-base.ts\n```\n\n**Force update:**\n```bash\nnpx tsx scripts/update-knowledge-base.ts --force\n```\n\n**Features:**\n- Version checking based on sitemap lastmod\n- No LLM required - lightweight and fast\n- Remembers previously skipped versions\n\n## Common Issues\n\n### Group Messages Not Responding\n\n1. **Check basics:**\n   - Is the bot in the group?\n   - Did the user @ mention the bot?\n   - Is Gateway running?\n\n2. **Check config:**\n   - `ackReactionScope`: `group-mentions` means only reply to @ messages\n   - `groupPolicy`: `open` allows all groups, `allowlist` requires whitelist\n\n3. ⚠️ **Don't misdiagnose:** `groupPolicy: \"open\"` is valid config, not \"empty\"\n\n### DM Not Responding\n\nCheck pairing status and `allowFrom` configuration.\n\n### Cron Jobs Not Running\n\n1. Confirm Gateway is running\n2. Check cron expression\n3. Check logs for trigger confirmation\n4. Check mute hours settings\n\n### Channel Connection Issues\n\n1. Run `openclaw status` to check status\n2. Check channel-specific config\n3. Look for errors in logs\n\n## Diagnosis Principles\n\n1. **Confirm basics first** - Don't skip simple checks\n2. **Check logs** - Logs usually contain the most direct error info\n3. **Don't over-diagnose** - If config is valid, don't suggest \"improvements\"\n4. **Reference docs** - Cite relevant document slugs in diagnosis\n\n## Resources\n\n### scripts/\n- `get-diagnostic-info.sh` - Get config, status, and logs\n- `check-common-issues.sh` - Common issue checker\n- `update-knowledge-base.ts` - Update knowledge base (requires tsx)\n\n### assets/\n- `default-snapshot.json` - Built-in knowledge base (335 docs)\n- `update-meta.json` - Update tracking (created after first check)\n\n### references/\n- `knowledge-base-index.md` - Document index by category\n- `common-issues.md` - Diagnostic rules for common issues\n"
+        }
+    }
+}

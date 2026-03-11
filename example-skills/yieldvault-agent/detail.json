@@ -1,0 +1,560 @@
+{
+    "task_params": {
+        "owner_handle": "alannetwork",
+        "skill_slug": "yieldvault-agent",
+        "detail_url": "https://clawhub.ai/alannetwork/yieldvault-agent",
+        "skill_name": "YieldVault Agent",
+        "summary": "Autonomous yield farming agent for BNB Chain with deterministic execution, smart contract integration, and automated decision-making.",
+        "version": "1.0.0",
+        "downloads": 329,
+        "stars": 0,
+        "comments": 0,
+        "requires": {},
+        "created_at_ts": 1771367913373.0,
+        "updated_at_ts": 1773029992929.0
+    },
+    "crawled_at": 1773049500.0663025,
+    "detail_content": {
+        "skill_info": {
+            "canonical": {
+                "owner": {
+                    "handle": "alannetwork",
+                    "userId": "kn73kaksf5bkk7x727vgvtq6a181ac43"
+                },
+                "skill": {
+                    "displayName": "Yield Farming Agent",
+                    "slug": "yield-farming-agent"
+                }
+            },
+            "forkOf": {
+                "kind": "duplicate",
+                "owner": {
+                    "handle": "alannetwork",
+                    "userId": "kn73kaksf5bkk7x727vgvtq6a181ac43"
+                },
+                "skill": {
+                    "displayName": "Yield Farming Agent",
+                    "slug": "yield-farming-agent"
+                },
+                "version": null
+            },
+            "latestVersion": {
+                "_creationTime": 1771367913373.8088,
+                "_id": "k977erwp71n2knwf95hyzjkfm981as2k",
+                "changelog": "Autonomous yield farming agent with deterministic execution",
+                "changelogSource": "user",
+                "createdAt": 1771367913373.0,
+                "createdBy": "kn73kaksf5bkk7x727vgvtq6a181ac43",
+                "files": [
+                    {
+                        "contentType": "text/markdown",
+                        "path": "COMPLETION_REPORT.md",
+                        "sha256": "feb306a52dbfe7ed3c38a52d7a0b3c9608b82855019f6a1c9e9047cda1b719e4",
+                        "size": 10559.0,
+                        "storageId": "kg2069xemcfyha6mq9dw2ncmqh81azn5"
+                    },
+                    {
+                        "contentType": "text/markdown",
+                        "path": "EXAMPLES.md",
+                        "sha256": "9356ad445387083b375c163ad6e3328c986a9465de1fc7d71a86c5ab62736032",
+                        "size": 7214.0,
+                        "storageId": "kg2benee72pdpxtt542zd0vndx81byn0"
+                    },
+                    {
+                        "contentType": "text/markdown",
+                        "path": "FILES_MANIFEST.md",
+                        "sha256": "5aa8ff646647324079839afe2a188be7318c39127e1b384953f0f6887bb6f7a3",
+                        "size": 7654.0,
+                        "storageId": "kg29a44gjhwj358edc8xk7080h81a20s"
+                    },
+                    {
+                        "contentType": "text/markdown",
+                        "path": "FINAL_CHECKLIST.md",
+                        "sha256": "d1cf8acab064a9cd403eea15bc4520f17aefc4c52fa6cc938be8d2a569cd40ef",
+                        "size": 8540.0,
+                        "storageId": "kg291m99rxwb2sxh2j8w271gkx81bt29"
+                    },
+                    {
+                        "contentType": "text/markdown",
+                        "path": "FINAL_SUMMARY.md",
+                        "sha256": "eed59047cd9e9333518815c6bd2ec19beb86527fac4d7a1b0f491972fd617046",
+                        "size": 16384.0,
+                        "storageId": "kg28srf1z645xsdvkc228amn1981aqpj"
+                    },
+                    {
+                        "contentType": "text/markdown",
+                        "path": "INTEGRATION_GUIDE.md",
+                        "sha256": "8cc5cafada0830b84e95404074a2606d65f3b2d7e42d5b264fcdbe8ec24a7ab9",
+                        "size": 11794.0,
+                        "storageId": "kg2fzjxnc6990tmadg71xvkze181aw07"
+                    },
+                    {
+                        "contentType": "text/markdown",
+                        "path": "INTEGRATION_MANIFEST.md",
+                        "sha256": "8a85f271baecdb8053d63dae395f398583b5356f1b511c844af5a8c0107985ea",
+                        "size": 13245.0,
+                        "storageId": "kg2b4m3v445ey7xa3t5s5xpjk981a0h2"
+                    },
+                    {
+                        "contentType": "text/markdown",
+                        "path": "LIVE_EXECUTION_GUIDE.md",
+                        "sha256": "23c786d0f263f47d9e52910281412d4187a62dff0a777985fcc585c061b4183b",
+                        "size": 11364.0,
+                        "storageId": "kg2fs2cckmnhvfs5y6k5gj0qnn81bpjc"
+                    },
+                    {
+                        "contentType": "text/markdown",
+                        "path": "QUICKSTART.md",
+                        "sha256": "eec325807623695af9c08b924351c7bcef5f42599a76ea8cac8913fb8193e79a",
+                        "size": 6007.0,
+                        "storageId": "kg20881rszjjrn5hznqe2n0nfd81axjy"
+                    },
+                    {
+                        "contentType": "text/markdown",
+                        "path": "QUICK_TEST.md",
+                        "sha256": "a146e801ae93cce9579d0ed506e65fbe53399a7c47058022a288e390b7d5690b",
+                        "size": 1955.0,
+                        "storageId": "kg203x3ms4m176fjhsb31ky6v581azwz"
+                    },
+                    {
+                        "contentType": "text/markdown",
+                        "path": "README.md",
+                        "sha256": "180cef6d4fa611ffd53ef1d68fbd6934aac69b52ded9d1fbeb353521419baf05",
+                        "size": 9132.0,
+                        "storageId": "kg2ft5bpzbxfsf4krys89t57xx81ahtg"
+                    },
+                    {
+                        "contentType": "text/markdown",
+                        "path": "RESPUESTAS_PREGUNTAS.md",
+                        "sha256": "0a6587dd216a8b9305d07054903ec24d33abc9078b89d8113253583b00e62f5c",
+                        "size": 12489.0,
+                        "storageId": "kg2dnq3jryq9r6x8wmxb0t8gc181baf9"
+                    },
+                    {
+                        "contentType": "text/markdown",
+                        "path": "SKILL.md",
+                        "sha256": "0d9144a7836c18b45ca6484017462ce573595f65a326e240fdc74be6e9a357ec",
+                        "size": 3896.0,
+                        "storageId": "kg2abzv68bfc8skhsa3nrsjjvx81a3qn"
+                    },
+                    {
+                        "contentType": "text/markdown",
+                        "path": "SKILL_COMPLETION_REPORT.md",
+                        "sha256": "0aa4118a277b1017414e28e56ef63494c923385f7f2bec261f92cb83a8a3f84b",
+                        "size": 18015.0,
+                        "storageId": "kg2fyt4v7h1hbb8vnt20nsjx8981a91z"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "blockchain-reader.js",
+                        "sha256": "743a3a362ec91f06b6db3ad2b09c9fe22e5a41b7caa6eac8929c6c1894183d17",
+                        "size": 7033.0,
+                        "storageId": "kg26e76250xxv0g6khb5zyhecs81bwbp"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "config.default.json",
+                        "sha256": "ebed015e9dd3f6dec1af3febeef663c740203a46e4d21ddf0855b01aff8d0e77",
+                        "size": 116.0,
+                        "storageId": "kg253j193b069ftw2dvjfwfhqx81bwp0"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "config.deployed.json",
+                        "sha256": "a9bf9ebbc90bd24c5e710379d044a981d58f190f364a96d8c7495bf350b828c7",
+                        "size": 10355.0,
+                        "storageId": "kg26ta0vb3dg0pypgb675cg9w181ax7h"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "config.mainnet.json",
+                        "sha256": "35c05be0c00311e3c8779cc530f461fbc1df4b370ee6b505f71c618be35efc36",
+                        "size": 117.0,
+                        "storageId": "kg24bb2d3m8xpzegkxtjhmkjd181b0d0"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "config.scheduler.json",
+                        "sha256": "fca6dcd61a70180ca4bb29c655e2fe45a8559ac49f773ef8eb9b0dd89c697625",
+                        "size": 2383.0,
+                        "storageId": "kg25rg1n63tcj37b8eqb4bvsq581bfmn"
+                    },
+                    {
+                        "contentType": "text/markdown",
+                        "path": "contracts/ABI_USAGE.md",
+                        "sha256": "ef81fd31892798395a63fbc004ded67b63360a4fe2560c9a7fc9a8946c3d905f",
+                        "size": 2193.0,
+                        "storageId": "kg2c5jzpr95c0fk2d7d45k6zpd81bnsn"
+                    },
+                    {
+                        "contentType": "text/markdown",
+                        "path": "contracts/DEPLOYMENT.md",
+                        "sha256": "95ce4d535231560892a72aab4dce9154d891ccabab0287777a15b3962544c1d7",
+                        "size": 9823.0,
+                        "storageId": "kg2cxs7wdpdh9h6404aeepm7s181bz2y"
+                    },
+                    {
+                        "contentType": "text/markdown",
+                        "path": "contracts/DEPLOYMENT_SUMMARY.md",
+                        "sha256": "1c79e563366cc8ad0a8884513f237de993185d10effe2d5cdfe2d56eb62091a4",
+                        "size": 10541.0,
+                        "storageId": "kg27m2t0repcg1js0hj30ma5jn81a8r6"
+                    },
+                    {
+                        "contentType": "text/plain",
+                        "path": "contracts/QUICKSTART.txt",
+                        "sha256": "e880fb73929e2088e49b0eff6e642360f6886075f4ef3ec33f9618bb4477e0dc",
+                        "size": 6300.0,
+                        "storageId": "kg29g4h6zzvsw3m8y9v9jchk7181b786"
+                    },
+                    {
+                        "contentType": "text/markdown",
+                        "path": "contracts/README.md",
+                        "sha256": "0babd54f0a976e9ae44022b4b525f384574ec2e9f19287e12e77987089d1e74a",
+                        "size": 11421.0,
+                        "storageId": "kg23mwyw5a4kp7swrh4njn7dt581akxz"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "contracts/abi/YieldVault.d.ts",
+                        "sha256": "d6ff601dfda193acb31038374f53f4e36b33b739a6d43d03ce60f38591dcaee2",
+                        "size": 121.0,
+                        "storageId": "kg216mhzcf7r86zs4w1k4gbpv581aqxr"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "contracts/abi/YieldVault.js",
+                        "sha256": "8e4b7bb61bb9bcc385f576623d8925eca99a4f369da1ad3720f1f1c5a4d24f46",
+                        "size": 8329.0,
+                        "storageId": "kg294kxqewqq07rr2vagsjyk8h81bgxb"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "contracts/abi/YieldVault.json",
+                        "sha256": "6b23bc624c9dd71de014be03b05d3b0a277842f941781667761b197b82107c52",
+                        "size": 8277.0,
+                        "storageId": "kg26eqp0e4qfzdkqh6xvayae2581a9qk"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "contracts/artifacts/build-info/a5d75f9256251cc8c46c7f853791cdf4.json",
+                        "sha256": "2157f66e3c4c52127f3ea679ac34acbb94c300bc2bd3f1c6e7f245c0c9948238",
+                        "size": 575718.0,
+                        "storageId": "kg2f1qyw1mz3n5mm9k0ypzdwq581ajey"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "contracts/artifacts/contracts/YieldVault.sol/IERC20.dbg.json",
+                        "sha256": "5b9f7a434265103d31720ad4510a5e5f15706276adfdc32e1896ed8d577ba189",
+                        "size": 105.0,
+                        "storageId": "kg202xsrrrbsxtqdm2nr6r8bhd81bk70"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "contracts/artifacts/contracts/YieldVault.sol/IERC20.json",
+                        "sha256": "9a85592434030fcbcadbd9b4ff2da4647ad2e3803f571218c959e941f6906aaf",
+                        "size": 2168.0,
+                        "storageId": "kg22pm6jj69ffb67g113xmz8y981b31d"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "contracts/artifacts/contracts/YieldVault.sol/YieldVault.dbg.json",
+                        "sha256": "5b9f7a434265103d31720ad4510a5e5f15706276adfdc32e1896ed8d577ba189",
+                        "size": 105.0,
+                        "storageId": "kg25pgjzy192vwv93ffdbxn0b181b20n"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "contracts/artifacts/contracts/YieldVault.sol/YieldVault.json",
+                        "sha256": "d6fbc2b62a9bbafe644cf744c192d9db0250f77d60075ef1221fb7e3473a33cd",
+                        "size": 37629.0,
+                        "storageId": "kg2frc1061y8crseqqftvtqjan81b3h7"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "contracts/cache/solidity-files-cache.json",
+                        "sha256": "a9985be457bbcaf39dfd40ab9334a19383529f53d2f43e1a7a7b8fbcc7e4b9f6",
+                        "size": 1004.0,
+                        "storageId": "kg21gypyh7dnar16txzgb5fkx981b0bk"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "contracts/deploy.js",
+                        "sha256": "63aabc506b2b3c6038d585d286d4c0e5bcbfdee24bf32a733ef720091209f4e1",
+                        "size": 8348.0,
+                        "storageId": "kg2dphkpnp6gjqsdzeknahxmed81bm1n"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "contracts/deployments.json",
+                        "sha256": "187aa28c1761044c126b95bfb3731b83ce8d3c4c969ec60c12fb82321f021c28",
+                        "size": 1164.0,
+                        "storageId": "kg2033t3j07tcejp61qk17y1vd81bdyn"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "contracts/hardhat.config.js",
+                        "sha256": "ba1a821e8b06a790175c33b4ab3d9cdaf87fc1c8af815d37ebfa51413310896c",
+                        "size": 1244.0,
+                        "storageId": "kg22wp99bpt28vbs1wwyb05kr981bwkn"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "contracts/package-lock.json",
+                        "sha256": "98bf19cd251c4a2a9dd3fdb494b2fd94a2fdec8ec0a3ba6594e4b1e3c732d0c7",
+                        "size": 427949.0,
+                        "storageId": "kg2dt5ch1r570t10tg8m8afrad81adbd"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "contracts/package.json",
+                        "sha256": "f983fb67809b40de8e114a98b6e46f16b88df3f85687fac624c56ec92ad56eb9",
+                        "size": 1123.0,
+                        "storageId": "kg22k6erdyk0j02ba4vmmd25d981bfem"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "contracts/scripts/check-balance.js",
+                        "sha256": "297cb48a0dccc2486986d5b0849691db93e3d68bf582c6bb3d3cf1dedfabc5b9",
+                        "size": 1735.0,
+                        "storageId": "kg26qw220xhwcqm46a6zk6h6fd81b9va"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "contracts/scripts/deploy.js",
+                        "sha256": "52c086cf6c6542e1042f8f31abbb3255d48d3182186de20a3f333cf6d4ef2eba",
+                        "size": 4079.0,
+                        "storageId": "kg22ndjqavkgm0j1wfhhaczwkn81avcb"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "contracts/scripts/generate-abi.js",
+                        "sha256": "1d8cf0178cf7df99ee146c54a5769083e87ba2ee784f6836631e0e5d8c760d65",
+                        "size": 12123.0,
+                        "storageId": "kg29wwwgecwdgzpry98xke04z581am11"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "execution.example.json",
+                        "sha256": "f20f5cbb62bd4f7991db9c0d60e7521e140d154cbe5123eac03d8ad24c2ffdb1",
+                        "size": 2086.0,
+                        "storageId": "kg2dg3hmcrctyqev882p385jcn81bs6z"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "index.js",
+                        "sha256": "45bd3f110dc3c6cd02c5b52f4bbe644f4e63be2d76d040b288b4492effdfbc19",
+                        "size": 8537.0,
+                        "storageId": "kg291sv6j98a766b1hz4q0qqgd81b6yf"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "mockdata.json",
+                        "sha256": "3e962dffbb5a188392bde887f7c74d3e3bdd897a79f7a18a1170ba7970e0b108",
+                        "size": 1918.0,
+                        "storageId": "kg2bt91ceg7y9k2nthan5xye6s81a41a"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "notifications.js",
+                        "sha256": "7219b91eebca9ee49ac8490ad2e42afc8c28ba5c26b7da6cec88cb068ac9153b",
+                        "size": 13630.0,
+                        "storageId": "kg22aw3scsv08gzh0zmwqrxx3981b73j"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "package-lock.json",
+                        "sha256": "9203004934aa5dcbdeb74a453150a9b6c8c51000e1fb36d72dc8376dc81a01d2",
+                        "size": 32680.0,
+                        "storageId": "kg276naaj7hra8hjfsgh7f323981b3m1"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "package.json",
+                        "sha256": "26a1abb9aaab3d9723c6fe820cdaefd04176805895c677f203ace38d87451b54",
+                        "size": 562.0,
+                        "storageId": "kg2br94wnj52awd0ytwe078j2581bese"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "scheduler.js",
+                        "sha256": "973445f0151390604412dcf422d5a6a3d528c032685b89ea66926fa7959136c0",
+                        "size": 16655.0,
+                        "storageId": "kg29h3x9zgyw72p2dp910jw2t581bjg7"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "test.js",
+                        "sha256": "55a01a5faa0d8ddcd243a0d16fefd8d77c56b285d3d3858d4aef14ad09e2e558",
+                        "size": 6097.0,
+                        "storageId": "kg240r8a3c6z3acap3fqn8hqbs81af4b"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "test.live.js",
+                        "sha256": "020485e6389460dc5d233606f749e9b53d5fa8f2b5563bae9329a7104e54684b",
+                        "size": 13524.0,
+                        "storageId": "kg2d8c5gzatdyhb66q874c2j8s81ac5e"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "test.live.mock.js",
+                        "sha256": "d9e73bbc0a673f96cf3dc2d33d05b57a1a82083122a5fb93e1b954f868675acc",
+                        "size": 13568.0,
+                        "storageId": "kg213kh3ckw2pagm50perpws5d81aawa"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "tx-executor.js",
+                        "sha256": "2d456b01da0ce859643a688be4895229f4a5ea044c7bcc479f66588a1def29bf",
+                        "size": 12445.0,
+                        "storageId": "kg290qd0mvrknsn36dc2d7hafd81br16"
+                    }
+                ],
+                "fingerprint": "900c8dc93f736d266be12481340db7c153fc33a0c413bb663cc10f0a193fe77f",
+                "llmAnalysis": {
+                    "checkedAt": 1771367945353.0,
+                    "confidence": "high",
+                    "dimensions": [
+                        {
+                            "detail": "The skill legitimately needs RPC endpoints, a signing wallet (private key or hardware wallet), and notification credentials (Telegram bot token/chat id) to perform on‑chain transactions and alerts. However the registry metadata declares no required env vars/primary credential and no required binaries, which is inconsistent with the code (tx-executor, scheduler, notifications) that signs and broadcasts transactions and calls external APIs.",
+                            "label": "Purpose & Capability",
+                            "name": "purpose_capability",
+                            "rating": "concern"
+                        },
+                        {
+                            "detail": "SKILL.md instructs running npm, deploying contracts, copying config.deployed.json to .env.local and editing RPC/contract addresses and starting scheduler.js. It claims 'no hardcoded private keys (use environment variables)' but does not list which env vars must be set. The runtime instructions and included files (tx-executor.js, scheduler.js, notifications.js) will read secrets/config and perform network I/O and blockchain transactions — this is within the stated purpose, but the instructions are vague about exact secret names and do not align with the metadata's 'no required env vars'.",
+                            "label": "Instruction Scope",
+                            "name": "instruction_scope",
+                            "rating": "note"
+                        },
+                        {
+                            "detail": "There is no explicit install spec, which keeps install risk low, but the package includes many code files, artifacts, and package-lock files and instructs to run npm install in the contracts directory. That means executing third‑party code locally. No external download URLs or URL shortcut patterns were observed in the provided SKILL.md, but running the code will execute network calls and may install packages declared in package.json/package-lock.json — inspect those before running.",
+                            "label": "Install Mechanism",
+                            "name": "install_mechanism",
+                            "rating": "note"
+                        },
+                        {
+                            "detail": "The skill requires high‑value secrets in practice (wallet private key or hardware wallet access, RPC endpoint, Telegram bot token, possibly keeper/keeperAddress credentials) to function. The registry says 'Required env vars: none' and 'Primary credential: none', which is not proportional to the actions the code performs (sign & broadcast transactions). This mismatch is a significant omission and increases risk of accidental secret exposure if the user doesn't carefully supply/store credentials.",
+                            "label": "Credentials",
+                            "name": "environment_proportionality",
+                            "rating": "concern"
+                        },
+                        {
+                            "detail": "The skill is not marked always:true and does not request system‑wide persistence in metadata. It runs a scheduler to autonomously invoke decisions and execute transactions when started — autonomy is expected for this use case. There is no indication it modifies other skills or global agent configuration.",
+                            "label": "Persistence & Privilege",
+                            "name": "persistence_privilege",
+                            "rating": "ok"
+                        }
+                    ],
+                    "findings": "[base64-block] unexpected: The prompt scanner detected a 'base64-block' pattern in SKILL.md content. Base64 blocks in documentation or runtime instructions can be benign (embedded examples) but can also be used for hidden payloads or prompt injection. The SKILL.md content shown does not obviously include a base64 payload, so you should search the full repository for base64 strings and inspect their purpose before running code.",
+                    "guidance": "This skill contains the expected components for an autonomous on‑chain yield‑farming agent (decision engine, blockchain reader, tx executor, scheduler, Telegram alerts) and will need credentials and network endpoints to operate — but the registry metadata does not declare them. Before installing or running:\n\n- Do NOT run scheduler/tx-executor on mainnet or with real funds until you audit the code. Run everything offline or on a throwaway testnet account first.\n- Inspect package.json and package-lock.json to see what NPM packages will be installed. Audit dependencies and lockfile for unexpected packages or remote install scripts.\n- Grep the repository for process.env usage and for strings like PRIVATE_KEY, WALLET, TELEGRAM_TOKEN, BOT_TOKEN, RPC_URL, KEEPER_ADDRESS. Confirm exactly which env vars the code reads and how they are used.\n- Open tx-executor.js and scheduler.js and confirm where private key material is loaded and used. Prefer hardware wallet or KMS integration rather than a plaintext private key in env or config. If the code expects an env var for a raw private key, treat that as high risk.\n- Inspect notifications.js to confirm it only sends alerts to the configured Telegram API and does not exfiltrate data to unknown endpoints. Search for any hardcoded URLs, IPs, or base64 blobs in all files.\n- Verify contract addresses and ABI files are from trusted sources; artifacts can embed sensitive data or keys in rare cases.\n- Check INTEGRATION_GUIDE and config files to see whether any example configs include private keys; never use those directly.\n- If you plan to run on mainnet, require: hardware wallet/multi‑sig signing, Chainlink oracles as recommended, a formal smart contract audit, emergency pause mechanism, and minimal initial capital.\n\nGiven the clear metadata/code mismatch (no declared required env vars vs code that needs secrets) and the pre-scan base64 indicator, proceed cautiously — treat this skill as 'suspicious' until you confirm how it handles secrets and network endpoints.",
+                    "model": "gpt-5-mini",
+                    "status": "suspicious",
+                    "summary": "The skill's code and runtime instructions match an autonomous yield‑farming agent, but registry metadata and install declarations omit required credentials and environment data (wallet keys, RPC endpoints, Telegram token) and there are other inconsistencies that warrant review before use.",
+                    "verdict": "suspicious"
+                },
+                "parsed": {
+                    "frontmatter": {
+                        "description": "Autonomous yield farming agent for BNB Chain with deterministic execution, smart contract integration, and automated decision-making.",
+                        "name": "yieldvault-agent"
+                    },
+                    "metadata": {
+                        "_clawhubQuality": {
+                            "decision": "pass",
+                            "evaluatedAt": 1771367911418.0,
+                            "reason": "Quality checks passed.",
+                            "score": 100.0,
+                            "signals": {
+                                "bodyChars": 3072.0,
+                                "bodyWords": 426.0,
+                                "bulletCount": 29.0,
+                                "cjkChars": 0.0,
+                                "genericSummary": false,
+                                "headingCount": 20.0,
+                                "templateMarkerHits": 0.0,
+                                "uniqueWordRatio": 0.568075117370892
+                            },
+                            "similarRecentCount": 1.0,
+                            "trustTier": "low"
+                        }
+                    }
+                },
+                "sha256hash": "9a8a2fd217a78e7a7b8e5a05e38f157d3a06a0ad0c4ba93edde501f72f701ebc",
+                "skillId": "kd7ccnncm9j6t9c54mvd4781w581aqrs",
+                "version": "1.0.0",
+                "vtAnalysis": {
+                    "analysis": "Type: OpenClaw Skill\nName: yieldvault-agent\nVersion: 1.0.0\n\nThe skill is classified as suspicious due to the high-risk vulnerability of directly using a private key from an environment variable (`WALLET_PRIVATE_KEY`) for signing blockchain transactions in `tx-executor.js` and configured in `config.scheduler.json`. While the documentation (e.g., `FINAL_CHECKLIST.md`, `RESPUESTAS_PREGUNTAS.md`, `SKILL_COMPLETION_REPORT.md`) explicitly acknowledges this as a critical security risk for mainnet and recommends hardware wallet integration, the current implementation presents a significant vulnerability if deployed without these mitigations. There is no evidence of intentional malicious behavior such as data exfiltration or unauthorized command execution; the code's functionality aligns with its stated purpose of autonomous yield farming.",
+                    "checkedAt": 1773029992766.0,
+                    "source": "palm",
+                    "status": "suspicious",
+                    "verdict": "suspicious"
+                }
+            },
+            "moderationInfo": {
+                "engineVersion": "v2.0.0",
+                "isHiddenByMod": false,
+                "isMalwareBlocked": false,
+                "isPendingScan": false,
+                "isRemoved": false,
+                "isSuspicious": true,
+                "reasonCodes": [
+                    "suspicious.llm_suspicious",
+                    "suspicious.vt_suspicious"
+                ],
+                "summary": "Detected: suspicious.llm_suspicious, suspicious.vt_suspicious",
+                "updatedAt": 1773029992929.0,
+                "verdict": "suspicious"
+            },
+            "owner": {
+                "_creationTime": 1771366610466.3926,
+                "_id": "kn73kaksf5bkk7x727vgvtq6a181ac43",
+                "createdAt": 1771366610466.3926,
+                "displayName": "Alan Estrada",
+                "email": "alanestrada@cloudmex.io",
+                "emailVerificationTime": 1771366610466.0,
+                "githubCreatedAt": 1550021471000.0,
+                "githubProfileSyncedAt": 1771366610556.0,
+                "handle": "alannetwork",
+                "image": "https://avatars.githubusercontent.com/u/47581949?v=4",
+                "name": "alannetwork",
+                "role": "user",
+                "updatedAt": 1771367890911.0
+            },
+            "pendingReview": false,
+            "skill": {
+                "_creationTime": 1771367913373.8086,
+                "_id": "kd7ccnncm9j6t9c54mvd4781w581aqrs",
+                "badges": {},
+                "canonicalSkillId": "kd7az97mjy63amt2k7mmbcvdqx81aa7m",
+                "createdAt": 1771367913373.0,
+                "displayName": "YieldVault Agent",
+                "forkOf": {
+                    "at": 1771367913373.0,
+                    "kind": "duplicate",
+                    "skillId": "kd7az97mjy63amt2k7mmbcvdqx81aa7m"
+                },
+                "latestVersionId": "k977erwp71n2knwf95hyzjkfm981as2k",
+                "ownerUserId": "kn73kaksf5bkk7x727vgvtq6a181ac43",
+                "slug": "yieldvault-agent",
+                "stats": {
+                    "comments": 0.0,
+                    "downloads": 329.0,
+                    "installsAllTime": 0.0,
+                    "installsCurrent": 0.0,
+                    "stars": 0.0,
+                    "versions": 1.0
+                },
+                "summary": "Autonomous yield farming agent for BNB Chain with deterministic execution, smart contract integration, and automated decision-making.",
+                "tags": {
+                    "latest": "k977erwp71n2knwf95hyzjkfm981as2k"
+                },
+                "updatedAt": 1773029992929.0
+            }
+        },
+        "readme": {
+            "path": "SKILL.md",
+            "text": "---\nname: yieldvault-agent\ndescription: Autonomous yield farming agent for BNB Chain with deterministic execution, smart contract integration, and automated decision-making.\n---\n\n# YieldVault Agent\n\nAutonomous yield farming agent for BNB Chain with deterministic execution, smart contract integration, and automated decision-making.\n\n## Features\n\n- **Deterministic Decision Engine** - Same input always produces same output (auditable)\n- **Smart Contract Integration** - Interact with YieldVault contracts on BNB testnet/mainnet\n- **Autonomous Scheduler** - Run farming decisions hourly without manual intervention\n- **Transaction Executor** - Automatic DEPOSIT, WITHDRAW, HARVEST, COMPOUND, REBALANCE actions\n- **Telegram Alerts** - Real-time notifications for executions, APR changes, and errors\n- **Risk Management** - Conservative risk filtering (only vaults with risk_score ≤ 0.5)\n- **Yield Optimization** - Net APR calculation (apr - fees - risk_penalty)\n\n## Installation\n\n```bash\nclawhub install yieldvault-agent\n```\n\n## Quick Start\n\n### 1. Configure\n\n```bash\ncp config.deployed.json .env.local\n# Edit with your contract addresses and RPC endpoint\n```\n\n### 2. Deploy Contracts (if needed)\n\n```bash\ncd contracts\nnpm install\nnpm run deploy:testnet\n```\n\n### 3. Run Tests\n\n```bash\nnpm test                    # Unit tests\nnode test.live.mock.js      # Integration tests (offline)\nnode test.live.js           # Live testnet tests\n```\n\n### 4. Start Scheduler\n\n```bash\nnode scheduler.js\n# Runs decision cycle every hour against testnet\n```\n\n### 5. Monitor Alerts\n\nTelegram notifications sent automatically for:\n- Execution started (vault_id, action, amount)\n- APR changes (>1% delta)\n- Errors (with severity level)\n- Cycle completion (stats summary)\n\n## Architecture\n\n```\nSmart Contracts (BNB Testnet/Mainnet)\n    ↓\nBlockchainReader (live vault data)\n    ↓\nYieldFarmingAgent (deterministic decisions)\n    ↓\nTransactionExecutor (sign & broadcast)\n    ↓\nScheduler (hourly automation)\n    ↓\nNotifications (Telegram alerts)\n```\n\n## Configuration\n\nEdit `config.scheduler.json`:\n\n```json\n{\n  \"chainId\": 97,\n  \"interval_minutes\": 60,\n  \"harvest_threshold_usd\": 25,\n  \"rebalance_apr_delta\": 0.02,\n  \"max_allocation_percent\": 0.35,\n  \"risk_score_threshold\": 0.5\n}\n```\n\n## Decision Logic\n\n1. **Read** current vault state (APR, TVL, user balance)\n2. **Calculate** Net APR = apr - fees - (risk_score × 0.10)\n3. **Filter** vaults with risk_score ≤ 0.5\n4. **Select** vault with highest Net APR\n5. **Decide** action:\n   - HARVEST if pending_rewards ≥ $25 USD\n   - COMPOUND if net_apr ≥ 2% delta\n   - REBALANCE if another vault beats current by ≥ 2%\n   - NOOP if already optimized\n\n6. **Execute** transaction (with retry logic)\n7. **Log** execution record (SHA256 auditable)\n\n## Supported Networks\n\n- **Testnet:** BNB Chain Testnet (chainId: 97)\n- **Mainnet:** BNB Chain Mainnet (chainId: 56)\n\n## Security\n\n- ✅ Deterministic execution (reproducible, auditable)\n- ✅ SHA256 audit trail for every decision\n- ✅ Risk filtering (conservative)\n- ✅ Constraint enforcement (max 35% per vault)\n- ✅ Retry logic with exponential backoff\n- ✅ No hardcoded private keys (use environment variables)\n\n## Production Readiness\n\nFor mainnet deployment, add:\n\n1. **Chainlink Oracle** - Live APR feeds\n2. **Hardware Wallet Support** - Ledger/Trezor signing\n3. **Smart Contract Audit** - Professional security review\n4. **Emergency Pause** - Multi-sig pause mechanism\n\nSee `FINAL_CHECKLIST.md` for complete production requirements.\n\n## Documentation\n\n- `README.md` - Full user guide\n- `SKILL.md` - This file\n- `FINAL_CHECKLIST.md` - Production requirements\n- `INTEGRATION_GUIDE.md` - Smart contract integration\n- `EXAMPLES.md` - Usage examples\n- `RESPUESTAS_PREGUNTAS.md` - FAQ & architecture\n\n## Support\n\nIssues & PRs welcome: https://github.com/open-web-academy/yieldvault-agent-bnb\n\n## License\n\nMIT\n"
+        }
+    }
+}

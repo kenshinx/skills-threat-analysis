@@ -1,0 +1,181 @@
+{
+    "task_params": {
+        "owner_handle": "liangdabiao",
+        "skill_slug": "tikhub-api-skill",
+        "detail_url": "https://clawhub.ai/liangdabiao/tikhub-api-skill",
+        "skill_name": "tikhub-api-skill",
+        "summary": "Search and query TikHub APIs for TikTok, Douyin, Xiaohongshu, Lemon8, Instagram, YouTube, Twitter, Reddit, and more. Use when user asks about needs to fetch...",
+        "version": "1.0.0",
+        "downloads": 38,
+        "stars": 0,
+        "comments": 0,
+        "requires": {},
+        "created_at_ts": 1772773232694.0,
+        "updated_at_ts": 1772773253745.0
+    },
+    "crawled_at": 1773048097.099661,
+    "detail_content": {
+        "skill_info": {
+            "canonical": null,
+            "forkOf": null,
+            "latestVersion": {
+                "_creationTime": 1772773232693.9597,
+                "_id": "k973bctganxkt7x26zpz0ezvx982d61n",
+                "changelog": "tikhub-api-skill v1.0.0\n\n- Initial release of the tikhub-api-helper skill.\n- Enables searching and querying TikHub API endpoints for multiple social media platforms.\n- Includes scripts for API discovery (`api_searcher.py`) and making HTTP requests (`api_client.py`).\n- Supports both English and Chinese queries.\n- Covers major platforms like TikTok, Douyin, Instagram, YouTube, Twitter, Reddit, and more.\n- Provides guidance on authentication, platform selection, rate limits, and common error handling.",
+                "changelogSource": "user",
+                "createdAt": 1772773232694.0,
+                "createdBy": "kn79y44j6y3z9889hsybwhpah982cr3w",
+                "files": [
+                    {
+                        "path": "api_client.py",
+                        "sha256": "419356f80f293c54718a0192e07ee2e62cb0020749e195fb2c04b8ffbb706e1e",
+                        "size": 6712.0,
+                        "storageId": "kg235s22yh2v2jt9mcgknvd2hn82c1qz"
+                    },
+                    {
+                        "path": "api_searcher.py",
+                        "sha256": "5e1e7fd4ce268477fc83615da8b1f0b0776ee9ce1db5f2acfe0b3504a92a9b4e",
+                        "size": 10039.0,
+                        "storageId": "kg2d3wf2vs61wjwmzyegq7nmh182crpj"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "openapi.json",
+                        "sha256": "7e4baf8703b8026d96a438aa2cd90770b0086c6bb3a08f64cff6d6edf18a51b5",
+                        "size": 2444057.0,
+                        "storageId": "kg2203yqa730d9t3esfs4v14ms82dg40"
+                    },
+                    {
+                        "path": "SKILL.md",
+                        "sha256": "706c0839be67edf1442da28665bf29b0ae4084dc3ab0da82a2cb8e9019018cef",
+                        "size": 5850.0,
+                        "storageId": "kg22tz589teq5e6f8spqppnkgd82c28s"
+                    }
+                ],
+                "fingerprint": "41d9732a6aded8c46d42ada2a0f53ca2f4b68890a169310159b4ec77daa3b300",
+                "llmAnalysis": {
+                    "checkedAt": 1772773258472.0,
+                    "confidence": "medium",
+                    "dimensions": [
+                        {
+                            "detail": "Name, description, and included code (api_searcher.py, api_client.py, openapi.json) match the stated purpose of helping search and call TikHub APIs. However, the skill metadata lists no required env vars while SKILL.md instructs users to set TIKHUB_TOKEN; the client code embeds a DEFAULT_TOKEN constant (hard-coded credential) and the CLI in main() does not read TIKHUB_TOKEN from the environment. This mismatch is unexplained and worth verifying.",
+                            "label": "Purpose & Capability",
+                            "name": "purpose_capability",
+                            "rating": "note"
+                        },
+                        {
+                            "detail": "SKILL.md stays within the API-helper scope for the most part (search, list, call APIs). But the provided SKILL.md contains prompt-injection signals (base64-block and unicode-control-chars) detected by the scanner, which is unexpected for a normal README and could be an attempt to obfuscate instructions or add hidden content. Also SKILL.md tells users to set TIKHUB_TOKEN, yet the CLI implementation does not read that environment variable — a behavioural mismatch that may cause confusing or unsafe use (e.g., the embedded DEFAULT_TOKEN will be used instead).",
+                            "label": "Instruction Scope",
+                            "name": "instruction_scope",
+                            "rating": "concern"
+                        },
+                        {
+                            "detail": "No install spec — instruction-only plus shipped code files. Nothing is downloaded or executed during installation by a package manager; the contained Python scripts will simply exist on disk. This is low-risk from an installer standpoint, but files will be present locally.",
+                            "label": "Install Mechanism",
+                            "name": "install_mechanism",
+                            "rating": "ok"
+                        },
+                        {
+                            "detail": "Metadata declares no required credentials, but SKILL.md asks users to set TIKHUB_TOKEN and api_client.py contains a DEFAULT_TOKEN string baked into the source. A hard-coded token in distributed code is a red flag: it may be a leaked/privileged credential (causing billing or access through someone else's account) or a backdoor. The skill otherwise does not request unrelated credentials, so the concern is specifically the unexplained embedded token and the mismatch around env var usage.",
+                            "label": "Credentials",
+                            "name": "environment_proportionality",
+                            "rating": "concern"
+                        },
+                        {
+                            "detail": "The skill does not request always:true and is user-invocable only; it does not attempt to modify system config or other skills. There is no elevated persistence or privileged system presence requested.",
+                            "label": "Persistence & Privilege",
+                            "name": "persistence_privilege",
+                            "rating": "ok"
+                        }
+                    ],
+                    "findings": "[base64-block] unexpected: A base64 block detection was found in SKILL.md. A plain API helper README normally wouldn't contain base64 payloads; this can indicate hidden/obfuscated instructions or content. Inspect SKILL.md for hidden characters or encoded payloads before trusting it.\n[unicode-control-chars] unexpected: Unicode control characters were detected in SKILL.md. These are commonly used to hide or manipulate rendered text (prompt-injection/obfuscation). This is unexpected in normal documentation and should be examined.",
+                    "guidance": "What to consider before installing: \n- Do not assume the embedded DEFAULT_TOKEN is safe: api_client.py contains a hard-coded token which will be used if you don't supply your own — this can mean actions run under someone else's account or incur charges. Replace or remove the DEFAULT_TOKEN and use your own TIKHUB_TOKEN. \n- SKILL.md recommends setting TIKHUB_TOKEN, but the CLI does not read that environment variable; confirm the implementation will use your token (or modify the code to read os.environ['TIKHUB_TOKEN']). Ask the author to fix this mismatch. \n- The README contains prompt-injection-like patterns (base64 and unicode control characters). Open SKILL.md in a plain text editor, search for non-printable characters or encoded blocks, and remove/verify anything suspicious. \n- Review openapi.json (it's large) to ensure it doesn't contain unexpected endpoints or sensitive-sounding functionality you don't want (e.g., services that bypass captchas or send emails). \n- If you plan to use the API, create and use your own TikHub API key from your account (do not rely on the shipped DEFAULT_TOKEN). \n- When in doubt, ask the publisher for provenance (who published this skill) and for a version that does not include hard-coded credentials or hidden characters. \n- If you cannot validate these points, avoid running the packaged scripts against the network or sanitize the code first (remove DEFAULT_TOKEN, add explicit env-var reading, and remove suspicious characters).",
+                    "model": "gpt-5-mini",
+                    "status": "suspicious",
+                    "summary": "The skill mostly does what it claims (search and call TikHub APIs), but there are inconsistencies and red flags — a hard-coded default API token in the code, SKILL.md recommends an environment variable that the CLI does not read, and the skill's README contains prompt-injection-like patterns — investigate before installing or using.",
+                    "verdict": "suspicious"
+                },
+                "parsed": {
+                    "frontmatter": {
+                        "description": "Search and query TikHub APIs for TikTok, Douyin, Xiaohongshu, Lemon8, Instagram, YouTube, Twitter, Reddit, and more. Use when user asks about  needs to fetch data from social media platforms. Supports both English and Chinese queries.",
+                        "name": "tikhub-api-helper"
+                    },
+                    "metadata": {
+                        "_clawhubQuality": {
+                            "decision": "pass",
+                            "evaluatedAt": 1772773232304.0,
+                            "reason": "Quality checks passed.",
+                            "score": 86.0,
+                            "signals": {
+                                "bodyChars": 4765.0,
+                                "bodyWords": 754.0,
+                                "bulletCount": 9.0,
+                                "cjkChars": 4.0,
+                                "genericSummary": false,
+                                "headingCount": 37.0,
+                                "templateMarkerHits": 0.0,
+                                "uniqueWordRatio": 0.3275862068965517
+                            },
+                            "similarRecentCount": 0.0,
+                            "trustTier": "low"
+                        }
+                    }
+                },
+                "sha256hash": "5092e0e3f57fd1fe61c956fa24663a699e7eafd32fd63ef613377eb8f23de2b0",
+                "skillId": "kd73pa38nsqx2yf8tfjb7bv6nx82d9wf",
+                "version": "1.0.0",
+                "vtAnalysis": {
+                    "analysis": "Type: OpenClaw Skill\nName: tikhub-api-skill\nVersion: 1.0.0\n\nThe TikHub API skill bundle is a legitimate tool designed to help users search and interact with social media data APIs. The code consists of a search utility (api_searcher.py) for exploring API endpoints and a client (api_client.py) for making HTTP requests to the TikHub service. It uses standard Python libraries, includes clear documentation for the AI agent, and lacks any indicators of malicious intent, data exfiltration, or unauthorized execution. The inclusion of a default development token and specific path-handling logic for Windows environments are functional features aligned with the stated purpose of the skill.",
+                    "checkedAt": 1773034694657.0,
+                    "source": "palm",
+                    "status": "clean",
+                    "verdict": "benign"
+                }
+            },
+            "moderationInfo": null,
+            "owner": {
+                "_creationTime": 1772767681408.3289,
+                "_id": "kn79y44j6y3z9889hsybwhpah982cr3w",
+                "createdAt": 1772767681408.3289,
+                "displayName": "liangdabiao",
+                "email": "497070928@qq.com",
+                "emailVerificationTime": 1772767681408.0,
+                "githubCreatedAt": 1322702056000.0,
+                "githubProfileSyncedAt": 1772767681564.0,
+                "handle": "liangdabiao",
+                "image": "https://avatars.githubusercontent.com/u/1232260?v=4",
+                "name": "liangdabiao",
+                "role": "user",
+                "updatedAt": 1772946852374.0
+            },
+            "pendingReview": false,
+            "skill": {
+                "_creationTime": 1772773232693.9595,
+                "_id": "kd73pa38nsqx2yf8tfjb7bv6nx82d9wf",
+                "badges": {},
+                "createdAt": 1772773232694.0,
+                "displayName": "tikhub-api-skill",
+                "latestVersionId": "k973bctganxkt7x26zpz0ezvx982d61n",
+                "ownerUserId": "kn79y44j6y3z9889hsybwhpah982cr3w",
+                "slug": "tikhub-api-skill",
+                "stats": {
+                    "comments": 0.0,
+                    "downloads": 41.0,
+                    "installsAllTime": 0.0,
+                    "installsCurrent": 0.0,
+                    "stars": 0.0,
+                    "versions": 1.0
+                },
+                "summary": "Search and query TikHub APIs for TikTok, Douyin, Xiaohongshu, Lemon8, Instagram, YouTube, Twitter, Reddit, and more. Use when user asks about needs to fetch...",
+                "tags": {
+                    "latest": "k973bctganxkt7x26zpz0ezvx982d61n"
+                },
+                "updatedAt": 1772773253745.0
+            }
+        },
+        "readme": {
+            "path": "SKILL.md",
+            "text": "---\nname: tikhub-api-helper\ndescription: Search and query TikHub APIs for TikTok, Douyin, Xiaohongshu, Lemon8, Instagram, YouTube, Twitter, Reddit, and more. Use when user asks about  needs to fetch data from social media platforms. Supports both English and Chinese queries.\n---\n\n# TikHub API Helper\n\nA skill to help users search, find, and call TikHub API endpoints for social media data.\n\n## Quick Start\n\nWhen a user asks about TikHub API or wants to fetch social media data:\n\n1. **Search for relevant APIs** using the searcher script\n2. **Show the user available options** with parameters\n3. **Call the API** with appropriate parameters\n4. **Return formatted results** to the user\n\n## Available Scripts\n\n### API Searcher - `api_searcher.py`\n\nSearch and find relevant TikHub API endpoints.\n\n```bash\n# Search by keyword\npython api_searcher.py \"user profile\"\npython api_searcher.py \"视频评论\"\npython api_searcher.py \"trending\"\n\n# List all APIs for a specific tag/category\npython api_searcher.py tag:TikTok-Web-API\npython api_searcher.py tag:Douyin-App-V3-API\n\n# List popular/common APIs\npython api_searcher.py popular\n\n# List all available tags/categories\npython api_searcher.py tags\n\n# Get detailed info for a specific API\npython api_searcher.py detail:tiktok_web_fetch_user_profile_get\n```\n\n### API Client - `api_client.py`\n\nMake HTTP requests to TikHub API endpoints.\n\n```bash\n# Health check (no authentication required)\npython api_client.py GET /api/v1/health/check\n\n# Get user profile\npython api_client.py GET /api/v1/tiktok/web/fetch_user_profile \"sec_user_id=MS4wLjABAAAA...\"\n\n# Search for videos\npython api_client.py GET /api/v1/tiktok/web/fetch_search_video \"keyword=gaming\"\n\n# POST request with JSON body\npython api_client.py POST /api/v1/tiktok/web/generate_xgnarly '{\"url\": \"https://...\"}'\n```\n\n## Supported Platforms\n\n| Platform | Tag Name | APIs Available |\n|----------|----------|----------------|\n| TikTok Web | `TikTok-Web-API` | 58 endpoints |\n| TikTok App | `TikTok-App-V3-API` | 76 endpoints |\n| Douyin Web | `Douyin-Web-API` | 76 endpoints |\n| Douyin App | `Douyin-App-V3-API` | 45 endpoints |\n| Douyin Search | `Douyin-Search-API` | 20 endpoints |\n| Douyin Billboard | `Douyin-Billboard-API` | 31 endpoints |\n| Xiaohongshu Web | `Xiaohongshu-Web-API` | 26 endpoints |\n| Instagram | `Instagram-V2-API` | 26 endpoints |\n| YouTube | `YouTube-Web-API` | 16 endpoints |\n| Twitter | `Twitter-Web-API` | 13 endpoints |\n| Reddit | `Reddit-APP-API` | 23 endpoints |\n| Bilibili | `Bilibili-Web-API` | 24 endpoints |\n| Weibo | `Weibo-Web-V2-API` | 33 endpoints |\n| Zhihu | `Zhihu-Web-API` | 32 endpoints |\n\nUse `python api_searcher.py tags` to see all categories.\n\n## Common Use Cases\n\n### Get User Profile\n\n```bash\n# TikTok user profile\npython api_searcher.py \"fetch user profile tiktok\"\npython api_client.py GET /api/v1/tiktok/web/fetch_user_profile \"sec_user_id=USER_ID\"\n```\n\n### Get Video Details\n\n```bash\n# TikTok video details\npython api_searcher.py \"fetch post detail\"\npython api_client.py GET /api/v1/tiktok/web/fetch_post_detail \"post_id=POST_ID\"\n```\n\n### Search Content\n\n```bash\n# Search for videos/users\npython api_searcher.py \"search video\"\npython api_client.py GET /api/v1/tiktok/web/fetch_search_video \"keyword=YOUR_KEYWORD\"\n```\n\n### Get Comments\n\n```bash\n# Get video comments\npython api_searcher.py \"fetch comment\"\npython api_client.py GET /api/v1/tiktok/web/fetch_post_comment \"post_id=POST_ID\"\n```\n\n## Authentication\n\nAPI requests use a default token for development. For production use, users should:\n\n1. Get their API token from [TikHub User](https://www.tikhub.io)\n2. Set the `TIKHUB_TOKEN` environment variable\n3. Or modify `DEFAULT_TOKEN` in `api_client.py`\n\nRequest format:\n```json\n{\n  \"Authorization\": \"Bearer YOUR_API_TOKEN\"\n}\n```\n\n## Base URLs\n\n- **China users**: `https://api.tikhub.dev` (bypasses GFW)\n- **International**: `https://api.tikhub.io`\n\nThe API client auto-detects the appropriate URL. To override, modify the `use_china_domain` parameter in the client.\n\n## Rate Limits\n\n- **QPS**: 10 requests per second per endpoint\n- **Timeout**: 30-60 seconds\n- **Retry**: Max 3 retries on error\n\n## Instructions for Claude\n\nWhen helping users with TikHub API:\n\n1. **Understand the user's goal** - What data do they want? From which platform?\n2. **Search for relevant APIs** - Use `api_searcher.py` with appropriate keywords\n3. **Present options** - Show matching APIs with brief descriptions\n4. **Guide parameters** - Check what parameters are required using `detail:OPERATION_ID`\n5. **Make the request** - Use `api_client.py` with the user's parameters\n6. **Format results** - Present the API response in a clear, readable format\n\n### Example Workflow\n\nUser: \"I want to get a TikTok user's profile\"\n\n```bash\n# Step 1: Search for the relevant API\npython api_searcher.py \"tiktok user profile\"\n\n# Step 2: Show results and confirm endpoint\n# Found: GET /api/v1/tiktok/web/fetch_user_profile\n\n# Step 3: Get detailed parameter info\npython api_searcher.py detail:tiktok_web_fetch_user_profile_get\n\n# Step 4: Make the API call with user's parameters\npython api_client.py GET /api/v1/tiktok/web/fetch_user_profile \"sec_user_id=MS4wLjABAAAA...\"\n\n# Step 5: Format and present results\n```\n\n## Error Handling\n\nCommon errors and solutions:\n\n| Error | Solution |\n|-------|----------|\n| `401 Unauthorized` | Check API token is valid |\n| `429 Too Many Requests` | Rate limit exceeded, wait before retry |\n| `Connection error` | Check network, try China domain if in mainland China |\n| `Missing parameter` | Check API details for required parameters |\n\n## Reference\n\n- **Full API Documentation**: [TikHub API Docs](https://api.tikhub.io)\n- **Apifox Docs**: [docs.tikhub.io](https://docs.tikhub.io)\n- **API Status**: [monitor.tikhub.io](https://monitor.tikhub.io)\n- **GitHub**: [github.com/TikHub](https://github.com/TikHub)\n"
+        }
+    }
+}

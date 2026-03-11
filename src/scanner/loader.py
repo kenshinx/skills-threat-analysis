@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import tempfile
+import zipfile
 from pathlib import Path
 from typing import Generator
 
@@ -16,6 +18,9 @@ SKILL_ENTRY_NAMES = {"skill.md", "skill.yaml", "skill.yml"}
 
 SUPPORTED_EXTENSIONS = {".md", ".yaml", ".yml", ".txt", ".json"}
 
+# Files to ignore when scanning directories
+IGNORED_FILES = {"detail.json"}
+
 # Source detection by directory name
 _SOURCE_KEYWORDS = {
     "clawhub": "clawhub",
@@ -26,10 +31,16 @@ _SOURCE_KEYWORDS = {
 
 
 def detect_source(file_path: Path) -> str:
+    """Detect source platform from path using substring matching.
+
+    Matches keywords against individual path components using substring check,
+    so 'clawhub_data' matches keyword 'clawhub'.
+    """
     parts = [p.lower() for p in file_path.parts]
     for keyword, source in _SOURCE_KEYWORDS.items():
-        if keyword in parts:
-            return source
+        for part in parts:
+            if keyword in part:
+                return source
     return "unknown"
 
 
@@ -52,6 +63,8 @@ def _collect_auxiliary_content(skill_dir: Path, entry_file: Path) -> str:
     for path in sorted(skill_dir.rglob("*")):
         if not path.is_file() or path == entry_file:
             continue
+        if path.name.lower() in IGNORED_FILES:
+            continue
         if path.suffix.lower() not in SUPPORTED_EXTENSIONS:
             continue
         try:
@@ -63,15 +76,67 @@ def _collect_auxiliary_content(skill_dir: Path, entry_file: Path) -> str:
     return "\n".join(parts)
 
 
+def _find_zip_files(directory: Path) -> list[Path]:
+    """Find all .zip files in a directory, ignoring non-skill files."""
+    return [
+        f for f in sorted(directory.iterdir())
+        if f.is_file() and f.suffix.lower() == ".zip"
+    ]
+
+
+def _load_skill_from_zip(
+    zip_path: Path,
+    original_dir: Path,
+) -> Generator[SkillFile, None, None]:
+    """Extract a zip file to a temp directory and load the skill from it."""
+    try:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp = Path(tmp_dir)
+            with zipfile.ZipFile(zip_path, "r") as zf:
+                zf.extractall(tmp)
+
+            # Look for entry file in extracted contents
+            entry = _find_entry_file(tmp)
+            if entry is None:
+                # Check one level deeper (zip may have a wrapper dir)
+                for sub in sorted(tmp.iterdir()):
+                    if sub.is_dir():
+                        entry = _find_entry_file(sub)
+                        if entry:
+                            tmp = sub
+                            break
+
+            if entry is None:
+                logger.debug("No skill entry file in zip: %s", zip_path)
+                return
+
+            # Build SkillFile but use original_dir for source/id/path
+            entry_content = entry.read_text(encoding="utf-8", errors="replace")
+            aux_content = _collect_auxiliary_content(tmp, entry)
+            full_content = entry_content + aux_content
+            source = detect_source(original_dir)
+
+            yield SkillFile(
+                id=generate_id(source, original_dir),
+                source=source,
+                file_path=str(original_dir / zip_path.name),
+                content=full_content,
+                size_bytes=len(full_content.encode("utf-8")),
+            )
+    except (zipfile.BadZipFile, OSError) as e:
+        logger.warning("Failed to process zip %s: %s", zip_path, e)
+
+
 def load_skills(
     root_dir: str | Path,
     extensions: set[str] | None = None,
 ) -> Generator[SkillFile, None, None]:
     """Yield SkillFile objects from the given directory tree.
 
-    Detects skill directories (containing SKILL.md) and loads each as a
-    single SkillFile with auxiliary content appended. Falls back to
-    scanning individual files if no skill entry file is found.
+    Supports three layouts:
+    1. Zip-based: <root>/<author>/<skill>/*.zip (clawhub_data style)
+    2. Directory-based: directories containing SKILL.md
+    3. Flat files: individual text files as fallback
     """
     root = Path(root_dir)
 
@@ -79,26 +144,45 @@ def load_skills(
         logger.error("Directory does not exist: %s", root)
         return
 
-    # First pass: find all skill directories (those with a SKILL.md entry)
     visited_dirs: set[Path] = set()
 
     for skill_dir in sorted(root.iterdir()):
         if not skill_dir.is_dir():
             continue
 
-        entry = _find_entry_file(skill_dir)
-        if entry is None:
-            # Not a skill directory — scan subdirectories recursively
-            for sub in sorted(skill_dir.rglob("*")):
-                if sub.is_dir():
-                    sub_entry = _find_entry_file(sub)
-                    if sub_entry:
-                        yield from _load_one_skill(sub, sub_entry)
-                        visited_dirs.add(sub)
+        # Check if this directory directly contains zip files (flat zip layout)
+        zips = _find_zip_files(skill_dir)
+        if zips:
+            for zp in zips:
+                yield from _load_skill_from_zip(zp, skill_dir)
+            visited_dirs.add(skill_dir)
             continue
 
-        yield from _load_one_skill(skill_dir, entry)
-        visited_dirs.add(skill_dir)
+        # Check if this is a skill directory with an entry file
+        entry = _find_entry_file(skill_dir)
+        if entry is not None:
+            yield from _load_one_skill(skill_dir, entry)
+            visited_dirs.add(skill_dir)
+            continue
+
+        # Not a direct skill dir — scan subdirectories (author/<skill>/ layout)
+        for sub in sorted(skill_dir.rglob("*")):
+            if not sub.is_dir():
+                continue
+
+            # Check for zips in subdirectory
+            sub_zips = _find_zip_files(sub)
+            if sub_zips:
+                for zp in sub_zips:
+                    yield from _load_skill_from_zip(zp, sub)
+                visited_dirs.add(sub)
+                continue
+
+            # Check for entry file in subdirectory
+            sub_entry = _find_entry_file(sub)
+            if sub_entry:
+                yield from _load_one_skill(sub, sub_entry)
+                visited_dirs.add(sub)
 
     # If root itself has an entry file (flat structure)
     root_entry = _find_entry_file(root)

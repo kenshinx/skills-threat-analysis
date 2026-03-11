@@ -78,7 +78,7 @@ class Stage2Result:
 @dataclass
 class ScanResult:
     skill: SkillFile
-    stage1: Stage1Result
+    stage1: Optional[Stage1Result] = None
     stage2: Optional[Stage2Result] = None
     final_verdict: Verdict = Verdict.CLEAN
 
@@ -94,4 +94,5 @@ class ScanSummary:
     needs_human_review: int = 0
     scan_error: int = 0
     threat_type_counts: dict[str, int] = field(default_factory=dict)
+    threat_type_skills: dict[str, list[str]] = field(default_factory=dict)
     source_breakdown: dict[str, dict] = field(default_factory=dict)

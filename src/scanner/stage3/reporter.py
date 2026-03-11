@@ -25,6 +25,7 @@ class Reporter:
 
     def _build_summary(self, scan_id: str, results: list[ScanResult]) -> ScanSummary:
         threat_counter: Counter[str] = Counter()
+        threat_skills: dict[str, list[str]] = {}
         source_stats: dict[str, dict] = {}
         clean = suspicious = malicious = needs_review = errors = 0
 
@@ -41,17 +42,30 @@ class Reporter:
             elif v == Verdict.ERROR:
                 errors += 1
 
-            # Count threat types
-            if r.stage2:
-                for t in r.stage2.threats:
-                    threat_counter[t.type.value] += 1
-            for m in r.stage1.matched_rules:
-                threat_counter[m.rule_name] += 1
+            # Count threat types — only for non-clean results
+            if v not in (Verdict.CLEAN, Verdict.BENIGN):
+                # Prefer Stage 2 (LLM) when available,
+                # fall back to Stage 1 (rule matches) otherwise.
+                if r.stage2 and r.stage2.threats:
+                    for t in r.stage2.threats:
+                        ttype = t.type.value
+                        threat_counter[ttype] += 1
+                        threat_skills.setdefault(ttype, []).append(
+                            r.skill.file_path)
+                elif r.stage1:
+                    seen_rules = set()
+                    for m in r.stage1.matched_rules:
+                        if m.rule_name not in seen_rules:
+                            threat_counter[m.rule_name] += 1
+                            threat_skills.setdefault(m.rule_name, []).append(
+                                r.skill.file_path)
+                            seen_rules.add(m.rule_name)
 
             # Source breakdown
             src = r.skill.source
             if src not in source_stats:
-                source_stats[src] = {"total": 0, "malicious": 0, "suspicious": 0}
+                source_stats[src] = {"total": 0,
+                                     "malicious": 0, "suspicious": 0}
             source_stats[src]["total"] += 1
             if v == Verdict.MALICIOUS:
                 source_stats[src]["malicious"] += 1
@@ -68,6 +82,7 @@ class Reporter:
             needs_human_review=needs_review,
             scan_error=errors,
             threat_type_counts=dict(threat_counter.most_common()),
+            threat_type_skills=threat_skills,
             source_breakdown=source_stats,
         )
 
@@ -81,9 +96,9 @@ class Reporter:
                     "verdict": r.final_verdict.value,
                     "scan_stages": {
                         "stage1": {
-                            "result": r.stage1.verdict.value,
-                            "matched_rules": [m.rule_id for m in r.stage1.matched_rules],
-                            "duration_ms": r.stage1.duration_ms,
+                            "result": r.stage1.verdict.value if r.stage1 else "not_run",
+                            "matched_rules": [m.rule_id for m in r.stage1.matched_rules] if r.stage1 else [],
+                            "duration_ms": r.stage1.duration_ms if r.stage1 else 0,
                         },
                     },
                 }
@@ -104,7 +119,8 @@ class Reporter:
                         "duration_ms": r.stage2.duration_ms,
                     }
                 path = self._threats_dir / f"{r.skill.id}.json"
-                path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+                path.write_text(json.dumps(
+                    report, ensure_ascii=False, indent=2), encoding="utf-8")
 
     def _write_summary_json(self, summary: ScanSummary) -> None:
         data = {
@@ -119,13 +135,18 @@ class Reporter:
                 "scan_error": summary.scan_error,
             },
             "top_threat_types": [
-                {"type": k, "count": v}
+                {
+                    "type": k,
+                    "count": v,
+                    "skills": summary.threat_type_skills.get(k, []),
+                }
                 for k, v in summary.threat_type_counts.items()
             ],
             "source_breakdown": summary.source_breakdown,
         }
         path = self._output_dir / "summary.json"
-        path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        path.write_text(json.dumps(data, ensure_ascii=False,
+                        indent=2), encoding="utf-8")
 
     def _write_summary_md(self, summary: ScanSummary, results: list[ScanResult]) -> None:
         lines = [
@@ -146,11 +167,17 @@ class Reporter:
             "",
             "## Top Threat Types",
             "",
-            "| Threat Type | Count |",
-            "|-------------|-------|",
         ]
         for t_type, count in summary.threat_type_counts.items():
-            lines.append(f"| {t_type} | {count} |")
+            skill_files = summary.threat_type_skills.get(t_type, [])
+            lines.append(f"### {t_type} ({count})")
+            lines.append("")
+            if skill_files:
+                for fp in skill_files:
+                    lines.append(f"- `{fp}`")
+            else:
+                lines.append("- (none)")
+            lines.append("")
 
         lines += [
             "",
@@ -166,7 +193,8 @@ class Reporter:
 
         # Top 20 high-risk skills
         high_risk = sorted(
-            [r for r in results if r.final_verdict in (Verdict.MALICIOUS, Verdict.SUSPICIOUS)],
+            [r for r in results if r.final_verdict in (
+                Verdict.MALICIOUS, Verdict.SUSPICIOUS)],
             key=lambda r: (
                 0 if r.final_verdict == Verdict.MALICIOUS else 1,
                 -(r.stage2.confidence if r.stage2 else 0),
