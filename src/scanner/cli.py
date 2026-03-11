@@ -97,6 +97,10 @@ def main(argv: list[str] | None = None) -> None:
         level=getattr(logging, log_level),
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     )
+    # Suppress noisy third-party debug logs
+    logging.getLogger("httpcore").setLevel(logging.WARNING)
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("openai").setLevel(logging.WARNING)
 
     orchestrator = Orchestrator(
         skills_dir=args.path,
