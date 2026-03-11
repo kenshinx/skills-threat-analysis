@@ -1,0 +1,259 @@
+{
+    "task_params": {
+        "owner_handle": "zkfan",
+        "skill_slug": "xiaoai-speaker",
+        "detail_url": "https://clawhub.ai/zkfan/xiaoai-speaker",
+        "skill_name": "小爱音箱语音播报",
+        "summary": "小爱音箱语音播报。一句话控制小爱音箱，无需编写代码，适合定时提醒、生活助手、家庭传话等场景。",
+        "version": "1.0.1",
+        "downloads": 0,
+        "stars": 0,
+        "comments": 0,
+        "requires": {},
+        "created_at_ts": 1773034810660.0,
+        "updated_at_ts": 1773036678287.0
+    },
+    "crawled_at": 1773048395.1529984,
+    "detail_content": {
+        "skill_info": {
+            "canonical": null,
+            "forkOf": null,
+            "latestVersion": {
+                "_creationTime": 1773036644660.4998,
+                "_id": "k975xjhp6w9t6k0tx0s5e8wvpd82kx73",
+                "changelog": "- 移除了 scripts/server.py 文件，清理了冗余脚本\n- 其余功能及文档未变化",
+                "changelogSource": "auto",
+                "createdAt": 1773036644660.0,
+                "createdBy": "kn77zm6w26jzcnmmndw19nq6b582jwed",
+                "files": [
+                    {
+                        "contentType": "text/plain",
+                        "path": "README.md",
+                        "sha256": "b606d9845629f637a98ee23fa83c9711b27994b8a8e45e195d027d7638ddedc1",
+                        "size": 4860.0,
+                        "storageId": "kg263c7synnkaxwtxe00253ts982k3aq"
+                    },
+                    {
+                        "contentType": "text/plain",
+                        "path": "SKILL.md",
+                        "sha256": "2f87467b748ac2c3847956ce546794c1a45176ee238544482e1ffa1b3c7997e3",
+                        "size": 4286.0,
+                        "storageId": "kg2cgvzh00nvq686dn96jv8n2x82k1t7"
+                    },
+                    {
+                        "contentType": "text/plain",
+                        "path": "examples/daily_notification.py",
+                        "sha256": "5ffef7990991513c5a54bf21fbc01ec22568b51d419f8034e46eb0e570ad2f35",
+                        "size": 1109.0,
+                        "storageId": "kg244r3ev3kmnvvsyfjqnkcj1x82jpm7"
+                    },
+                    {
+                        "contentType": "text/plain",
+                        "path": "examples/daily_reminder.py",
+                        "sha256": "cb99845c939477d5f4e637d560c98e24f21292c8255df197488d66bc464e9637",
+                        "size": 1544.0,
+                        "storageId": "kg202vf0x1mxd21n1ghmh1y3rx82kmym"
+                    },
+                    {
+                        "contentType": "text/plain",
+                        "path": "examples/home_automation.py",
+                        "sha256": "66b4215af9d1f7639009086201c753ecced72ff0e53f677bfb14c4ae8a58d7f7",
+                        "size": 963.0,
+                        "storageId": "kg273caeq0wrb3ce9ptqpkp0t982jxsc"
+                    },
+                    {
+                        "contentType": "text/plain",
+                        "path": "examples/trading_alert.py",
+                        "sha256": "9ad1643981b0c74be7e07e205cd08e4ae3e0697b8e17c1c7cb8ca3e4ff58faa2",
+                        "size": 939.0,
+                        "storageId": "kg24a0zz0zez2qe9k6v69rjhpd82kx0t"
+                    },
+                    {
+                        "contentType": "text/plain",
+                        "path": "main.py",
+                        "sha256": "6f0f51796c8cf91a1f9b6301a2fffc3378a19877a9b286dc72aa4f4b4825cd6e",
+                        "size": 538.0,
+                        "storageId": "kg29eneckeannxm37318g84wn982kf6m"
+                    },
+                    {
+                        "contentType": "text/plain",
+                        "path": "package.json",
+                        "sha256": "1ccf51069b6ae291415f799369ada5106451497c0a74402823edf01f76438397",
+                        "size": 1456.0,
+                        "storageId": "kg23p4g8cqa4p8fphvwbmxfk3182kjay"
+                    },
+                    {
+                        "contentType": "text/plain",
+                        "path": "requirements.txt",
+                        "sha256": "db8f7014f72832b9b45b196be9674e0b10ddcd3dd9a0cb8be3083c3cda3aedfb",
+                        "size": 28.0,
+                        "storageId": "kg2ckt4hamjnppschan2ckzz0982jrcj"
+                    },
+                    {
+                        "contentType": "text/plain",
+                        "path": "scripts/list.py",
+                        "sha256": "ce4647df522f56bfca8052cf5b7b61aa14be7d8d44c730d035de3f9773ed65d2",
+                        "size": 2529.0,
+                        "storageId": "kg24perqve258g3019kk8qvgtn82jmna"
+                    },
+                    {
+                        "contentType": "text/plain",
+                        "path": "scripts/speak.py",
+                        "sha256": "c1dc27ce08e4c558a9e97b6d6835721eb8f2401547a32f170f69f2c87846ea52",
+                        "size": 4394.0,
+                        "storageId": "kg2e9m73n17hp21zzpnf50k74d82kbmm"
+                    },
+                    {
+                        "contentType": "text/plain",
+                        "path": "xiaoai_cli.py",
+                        "sha256": "be63e6e754fdc94736cc56256e7416f84850a97a35347c7d2aa06aeccb4b3da4",
+                        "size": 5018.0,
+                        "storageId": "kg29zy8vzwbr2kk5mnswm9m6p182jn10"
+                    }
+                ],
+                "fingerprint": "63ab58c3efc45eeea3c0ac41653dee1b52d4210cf285e7de642e6ef032944f99",
+                "llmAnalysis": {
+                    "checkedAt": 1773036678283.0,
+                    "confidence": "medium",
+                    "dimensions": [
+                        {
+                            "detail": "The name/description claim a Xiaomi TTS skill and the code implements login + text_to_speech via a Xiaomi 'miservice' client — that aligns. However registry metadata declares no required environment variables or credentials while the code clearly requires MI_USER and MI_PASS (or an OpenClaw config). Also SKILL.md suggests editing ~/.openclaw/config.toml whereas the implementation reads/writes ~/.openclaw/xiaoai_config.json — these metadata/config inconsistencies are problematic.",
+                            "label": "Purpose & Capability",
+                            "name": "purpose_capability",
+                            "rating": "note"
+                        },
+                        {
+                            "detail": "Runtime instructions and scripts are mostly limited to configuring account and calling Xiaomi cloud APIs, which is expected. But the scripts modify sys.path to import 'miservice' from /tmp/MiService (sys.path.insert(0, '/tmp/MiService')), which expects executable code in a world-writable directory; that is an unsafe pattern because it can cause execution of arbitrary code placed in /tmp. The setup flow saves plain credentials to a JSON file in the user's home directory and then sets them into environment variables for subprocess calls. There is no evidence of exfiltration beyond calling Xiaomi cloud APIs, but the /tmp dependency and plaintext credential handling are scope/behavior concerns.",
+                            "label": "Instruction Scope",
+                            "name": "instruction_scope",
+                            "rating": "concern"
+                        },
+                        {
+                            "detail": "There is no install spec. Dependencies are inconsistently declared: requirements.txt and package.json list aiohttp/flask but do not provide or declare the 'miservice' package. Instead the code expects a 'miservice' module at /tmp/MiService. Requiring a component to be placed under /tmp (not installed via pip or a trusted release host) is high risk because it can cause execution of arbitrary code and is not a standard install practice.",
+                            "label": "Install Mechanism",
+                            "name": "install_mechanism",
+                            "rating": "concern"
+                        },
+                        {
+                            "detail": "The skill legitimately needs Xiaomi account credentials (MI_USER, MI_PASS) and optional MI_DEVICE_NAME/ID. However the registry metadata did not list these required env vars/primary credential. The CLI saves credentials in plaintext to ~/.openclaw/xiaoai_config.json (no encryption and no explicit permission tightening), which increases risk if other local users or processes can read that file. The mismatch between documented config path (~/.openclaw/config.toml in SKILL.md) and actual file (~/.openclaw/xiaoai_config.json) is another inconsistency.",
+                            "label": "Credentials",
+                            "name": "environment_proportionality",
+                            "rating": "concern"
+                        },
+                        {
+                            "detail": "The skill does persist user configuration to ~/.openclaw/xiaoai_config.json and sets environment variables when invoking scripts; it does not request always:true nor modify unrelated skills. Persisting credentials locally is expected for this use case, but the implementation stores them in plaintext and does not document file permissions — the user should treat that as a privacy/privilege concern.",
+                            "label": "Persistence & Privilege",
+                            "name": "persistence_privilege",
+                            "rating": "note"
+                        }
+                    ],
+                    "findings": "[unicode-control-chars] unexpected: The SKILL.md contained unicode control characters flagged by the pre-scan. This can be used in prompt-injection attempts or to hide characters; it should be reviewed manually in the SKILL.md to ensure no obfuscated instructions are present.",
+                    "guidance": "Before installing or using this skill, consider the following: \n\n- Source verification: the registry lists 'unknown' source/homepage. Inspect the GitHub repository (https://github.com/zkfan/xiaoai-speaker) yourself and confirm the maintainer and commit history before trusting the package. \n\n- Dependencies: the code expects a 'miservice' module loaded from /tmp/MiService instead of a normal pip install. Do NOT place untrusted code in /tmp. Ask the maintainer to provide a proper install (pip package or documented trusted vendor release) rather than relying on /tmp. \n\n- Credentials: the skill requires your Xiaomi account (MI_USER/MI_PASS). It saves the password in plaintext to ~/.openclaw/xiaoai_config.json. If you proceed, create a dedicated Xiaomi account if possible, and restrict the file’s permissions (chmod 600 ~/.openclaw/xiaoai_config.json). Prefer using an app-specific password or a credential store if available. \n\n- Run in isolation: test the skill in a disposable VM or container first so any surprise behavior is contained. \n\n- Request fixes from maintainers: have them (1) declare required env vars/credentials in the registry metadata, (2) stop relying on /tmp for importing libraries and instead use pip-installable dependencies, (3) make the config path/documentation consistent, and (4) avoid storing plaintext passwords (or at least recommend/ensure secure file permissions). \n\n- If you see anything suspicious during inspection (unexpected network endpoints, obfuscated code, or additional executable downloads), do not install and report it to platform maintainers.\n\nGiven the combination of undeclared credentials, plaintext storage, and the unsafe /tmp dependency pattern, treat this skill as suspicious until the above issues are addressed.",
+                    "model": "gpt-5-mini",
+                    "status": "suspicious",
+                    "summary": "The skill's purpose (remote TTS for Xiaomi '小爱') matches the code, but there are multiple inconsistencies and risky implementation choices (undeclared required credentials, plaintext local storage, and an unsafe dependency path /tmp/MiService) that warrant caution before installing.",
+                    "verdict": "suspicious"
+                },
+                "parsed": {
+                    "clawdis": {
+                        "author": "zkfan"
+                    },
+                    "frontmatter": {
+                        "author": "zkfan",
+                        "description": "小爱音箱语音播报。一句话控制小爱音箱，无需编写代码，适合定时提醒、生活助手、家庭传话等场景。",
+                        "name": "xiaoai-speaker",
+                        "version": "1.0.0"
+                    },
+                    "license": "MIT-0",
+                    "metadata": {
+                        "source": {
+                            "commit": "067851dff6c80d0914be23204c25d8d574ea9e00",
+                            "importedAt": 1773036642997.0,
+                            "kind": "github",
+                            "path": "",
+                            "ref": "HEAD",
+                            "repo": "zkfan/xiaoai-speaker",
+                            "url": "https://github.com/zkfan/xiaoai-speaker"
+                        }
+                    }
+                },
+                "sha256hash": "4dece5834b7f94706ad5be1309b237bb3ff853fff5ac93f74ff80ba59cabc8fd",
+                "skillId": "kd70byttyk18ra4wh3whjys33d82j5a3",
+                "staticScan": {
+                    "checkedAt": 1773036643557.0,
+                    "engineVersion": "v2.0.0",
+                    "findings": [],
+                    "reasonCodes": [],
+                    "status": "clean",
+                    "summary": "No suspicious patterns detected."
+                },
+                "version": "1.0.1",
+                "vtAnalysis": {
+                    "analysis": "Type: OpenClaw Skill\nName: xiaoai-speaker\nVersion: 1.0.1\n\nThe skill exhibits several high-risk patterns, most notably hardcoded library imports from a world-writable directory (`/tmp/MiService`) in 'scripts/list.py' and 'scripts/speak.py', which could allow local attackers to hijack the execution flow. It also stores Xiaomi credentials in plaintext in '~/.openclaw/xiaoai_config.json' and includes 'flask' in 'requirements.txt' despite no web-server logic being present in the provided code. While these may be unintentional architectural flaws, the combination of sensitive credential handling and insecure import paths warrants a suspicious classification.",
+                    "checkedAt": 1773040619937.0,
+                    "source": "palm",
+                    "status": "suspicious",
+                    "verdict": "suspicious"
+                }
+            },
+            "moderationInfo": {
+                "engineVersion": "v2.0.0",
+                "isHiddenByMod": false,
+                "isMalwareBlocked": false,
+                "isPendingScan": false,
+                "isRemoved": false,
+                "isSuspicious": true,
+                "reasonCodes": [
+                    "suspicious.llm_suspicious",
+                    "suspicious.vt_suspicious"
+                ],
+                "summary": "Detected: suspicious.llm_suspicious, suspicious.vt_suspicious",
+                "updatedAt": 1773040620149.0,
+                "verdict": "suspicious"
+            },
+            "owner": {
+                "_creationTime": 1773030312091.7444,
+                "_id": "kn77zm6w26jzcnmmndw19nq6b582jwed",
+                "createdAt": 1773030312091.7444,
+                "displayName": "zkfan",
+                "email": "zkfan@aliyun.com",
+                "emailVerificationTime": 1773030312091.0,
+                "githubCreatedAt": 1376756391000.0,
+                "githubProfileSyncedAt": 1773030312199.0,
+                "handle": "zkfan",
+                "image": "https://avatars.githubusercontent.com/u/5251383?v=4",
+                "name": "zkfan",
+                "role": "user",
+                "updatedAt": 1773035203085.0
+            },
+            "pendingReview": false,
+            "skill": {
+                "_creationTime": 1773034810660.0317,
+                "_id": "kd70byttyk18ra4wh3whjys33d82j5a3",
+                "badges": {},
+                "createdAt": 1773034810660.0,
+                "displayName": "小爱音箱语音播报",
+                "latestVersionId": "k975xjhp6w9t6k0tx0s5e8wvpd82kx73",
+                "ownerUserId": "kn77zm6w26jzcnmmndw19nq6b582jwed",
+                "slug": "xiaoai-speaker",
+                "stats": {
+                    "comments": 0.0,
+                    "downloads": 23.0,
+                    "installsAllTime": 0.0,
+                    "installsCurrent": 0.0,
+                    "stars": 0.0,
+                    "versions": 2.0
+                },
+                "summary": "小爱音箱语音播报。一句话控制小爱音箱，无需编写代码，适合定时提醒、生活助手、家庭传话等场景。",
+                "tags": {
+                    "latest": "k975xjhp6w9t6k0tx0s5e8wvpd82kx73"
+                },
+                "updatedAt": 1773040620149.0
+            }
+        },
+        "readme": {
+            "path": "SKILL.md",
+            "text": "---\nname: xiaoai-speaker\ndescription: 小爱音箱语音播报。一句话控制小爱音箱，无需编写代码，适合定时提醒、生活助手、家庭传话等场景。\nversion: 1.0.0\nauthor: zkfan\n---\n\n# 🔊 xiaoai-speaker\n\n通过 OpenClaw 一句话控制小爱音箱语音播报。\n\n## ✨ 特点\n\n- 🎯 **零代码** - 无需编写 Python，一句话即可使用\n- ⚙️ **配置一次** - 账号信息保存在 OpenClaw 配置中\n- ⏰ **定时任务** - 与 OpenClaw cron 无缝集成\n- 🏠 **多设备** - 支持选择不同房间的小爱音箱\n\n## 🚀 安装\n\n```bash\n# 方式1：从 GitHub 安装\nopenclaw skill install https://github.com/zkfan/xiaoai-speaker\n\n# 方式2：本地安装（开发时）\nopenclaw skill install ~/.openclaw/workspace/skills/xiaoai-speaker\n```\n\n## ⚙️ 配置\n\n### 首次使用配置\n\n```bash\nopenclaw xiaoai setup\n```\n\n按提示输入：\n- 小米账号\n- 小米密码  \n- 默认设备名（可选，如\"客厅\"）\n\n### 或手动编辑配置\n\n编辑 `~/.openclaw/config.toml`：\n\n```toml\n[xiaoai]\nuser = \"你的小米账号\"\npass = \"你的小米密码\"\ndevice = \"客厅\"  # 可选，默认设备\n```\n\n## 💬 使用\n\n### 基础播报\n\n```bash\n# 简单播报\nopenclaw xiaoai say \"该喝水啦\"\n\n# 指定设备播报\nopenclaw xiaoai say --device \"卧室\" \"该睡觉了\"\n```\n\n### 查看设备\n\n```bash\nopenclaw xiaoai list\n```\n\n### 测试连接\n\n```bash\nopenclaw xiaoai test\n```\n\n## ⏰ 定时任务\n\n### 生活提醒\n\n```bash\n# 每小时提醒喝水\nopenclaw cron add \\\n  --name \"喝水提醒\" \\\n  --schedule \"0 * * * *\" \\\n  --command \"xiaoai say '工作这么久，起来喝杯水吧'\"\n\n# 每天8点早安\nopenclaw cron add \\\n  --name \"早安\" \\\n  --schedule \"0 8 * * *\" \\\n  --command \"xiaoai say '早上好！今天也要加油'\"\n\n# 晚上10点睡觉提醒\nopenclaw cron add \\\n  --name \"睡觉提醒\" \\\n  --schedule \"0 22 * * *\" \\\n  --command \"xiaoai say '已经10点了，早点休息'\"\n```\n\n### 工作辅助\n\n```bash\n# 会议提醒（提前5分钟）\nopenclaw cron add \\\n  --name \"会议提醒\" \\\n  --schedule \"55 9 * * 1-5\" \\\n  --command \"xiaoai say '10分钟后有会议，请准备'\"\n\n# 下班提醒（周五）\nopenclaw cron add \\\n  --name \"周五下班\" \\\n  --schedule \"0 18 * * 5\" \\\n  --command \"xiaoai say '周五下班啦，周末愉快'\"\n```\n\n### 家庭场景\n\n```bash\n# 孩子作业时间\nopenclaw cron add \\\n  --name \"作业时间\" \\\n  --schedule \"0 19 * * 1-5\" \\\n  --command \"xiaoai say --device '儿童房' '该写作业了'\"\n\n# 全家吃饭提醒\nopenclaw cron add \\\n  --name \"吃饭提醒\" \\\n  --schedule \"0 12,18 * * *\" \\\n  --command \"xiaoai say '饭做好了，快来吃'\"\n```\n\n## 📝 使用技巧\n\n### 消息简洁\n小爱播报速度有限，建议消息控制在 **20字以内**。\n\n✅ 好的例子：\n- \"该喝水了\"\n- \"饭做好了\"\n- \"10分钟后开会\"\n\n❌ 避免：\n- 长段落\n- 复杂句子\n- 英文混合（发音不准）\n\n### 设备选择\n\n如果家里有多个小爱音箱：\n\n```bash\n# 先查看设备列表\nopenclaw xiaoai list\n\n# 输出示例：\n# 🎵 找到 2 个设备：\n# 🔊 bc7e8679-xxxx  客厅的小爱音箱mini\n#    a1b2c3d4-xxxx  卧室的小爱音箱\n\n# 然后指定设备名（模糊匹配）\nopenclaw xiaoai say --device \"客厅\" \"消息\"\nopenclaw xiaoai say --device \"卧室\" \"消息\"\n```\n\n### 音量控制\n\n当前版本不支持直接调音量，可以通过消息内容暗示：\n```bash\nopenclaw xiaoai say \"大声提醒：该起床了！\"\n```\n\n## ❓ 常见问题\n\n**Q: 提示\"请先配置账号\"？**\nA: 运行 `openclaw xiaoai setup` 完成配置。\n\n**Q: 登录失败？**\nA: 检查小米账号密码是否正确，账号需要绑定小爱音箱。\n\n**Q: 找不到设备？**\nA: 运行 `openclaw xiaoai list` 查看账号下的设备，确认小爱音箱已绑定。\n\n**Q: 定时任务没执行？**\nA: 检查 OpenClaw gateway 是否运行：`openclaw gateway status`\n\n**Q: 可以播放音乐吗？**\nA: 当前版本只支持文字转语音（TTS），不支持播放音乐。\n\n## 🔧 技术说明\n\n- 底层使用小米云服务 API\n- 无需与小爱音箱在同一局域网\n- 支持远程控制（任何地方都能发送语音）\n- 账号信息本地存储，不上传到第三方\n\n## 📄 开源\n\nGitHub: https://github.com/zkfan/xiaoai-speaker\n\n欢迎 Star 和 PR！\n"
+        }
+    }
+}

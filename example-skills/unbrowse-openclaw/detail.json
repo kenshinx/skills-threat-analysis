@@ -1,0 +1,1428 @@
+{
+    "task_params": {
+        "owner_handle": "cnm-byd",
+        "skill_slug": "unbrowse-openclaw",
+        "detail_url": "https://clawhub.ai/cnm-byd/unbrowse-openclaw",
+        "skill_name": "Unbrowse Openclaw",
+        "summary": "Analyze any website's network traffic and turn it into reusable API skills backed by a shared marketplace. Skills discovered by any agent are published, scor...",
+        "version": "1.0.0",
+        "downloads": 148,
+        "stars": 0,
+        "comments": 0,
+        "requires": {
+            "bins": [
+                "bun"
+            ]
+        },
+        "created_at_ts": 1772432302495.0,
+        "updated_at_ts": 1773033048283.0
+    },
+    "crawled_at": 1773050007.3384888,
+    "detail_content": {
+        "skill_info": {
+            "canonical": null,
+            "forkOf": null,
+            "latestVersion": {
+                "_creationTime": 1772432302494.9797,
+                "_id": "k9714h7j2bceyzt676f79f96n982467g",
+                "changelog": "Initial public release of Unbrowse.\n\n- Analyze any website's network traffic to discover, score, and reuse API endpoints via a shared marketplace.\n- Provides CLI commands for intent resolution, API execution with extraction flags (`--path`, `--extract`, `--limit`), feedback submission, session debugging, and more.\n- Automatic cookie-based authentication from Chrome/Firefox.\n- Reinforces strong rules: always use the CLI (never external piping), always submit feedback, and run mutations in dry-run mode first.\n- Supports reusable extraction recipes and feedback-driven endpoint improvement.\n- Full REST API reference documented for advanced integrations.",
+                "changelogSource": "auto",
+                "createdAt": 1772432302495.0,
+                "createdBy": "kn7ds8cq0rav79rg9kdw8v7341824m3s",
+                "files": [
+                    {
+                        "contentType": "application/json",
+                        "path": "package.json",
+                        "sha256": "72bf0f9a61ccc5720d854dc8f987823203fa0caa5674c24c6ba0c6c8558f01c2",
+                        "size": 540.0,
+                        "storageId": "kg2bza821cx5bqjha0m70sptgn825wmh"
+                    },
+                    {
+                        "contentType": "text/markdown",
+                        "path": "README.md",
+                        "sha256": "7688ac76fc223fa0affd0e226c7d0613651a39639752316b874d9124ae1a8630",
+                        "size": 2047.0,
+                        "storageId": "kg2769qshx2pz8a2p08the0w9d824mnp"
+                    },
+                    {
+                        "contentType": "text/markdown",
+                        "path": "SKILL.md",
+                        "sha256": "4b23617b0943ac099af8749eb7351c37f2c0ba87f07bbf553d54033d6c08c9e0",
+                        "size": 8317.0,
+                        "storageId": "kg244h90a8ca8ern99xkc9erm5825c1q"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/api/routes.ts",
+                        "sha256": "a550b2daad7ff4cf0a130aedfe98d0e7d2bfb92f41d17b00ce6ef436a366ae1a",
+                        "size": 13166.0,
+                        "storageId": "kg21pgwfxgmntjc3242t4vbk4n825ymw"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/auth/browser-cookies.ts",
+                        "sha256": "06899f5b3bc229a4b51af7caea5fe5a6f519f4f91a737987e450b22d498bd05a",
+                        "size": 12737.0,
+                        "storageId": "kg26br73qwjhe8wayfkz2ft479824tg4"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/auth/index.ts",
+                        "sha256": "42d03074cac24d68ed391d6138ec0407069bccb8f06716ee5db048cd1ef886c1",
+                        "size": 9443.0,
+                        "storageId": "kg269pe2q42ct13fzgt41rrg358252pa"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/capture/index.ts",
+                        "sha256": "50b225bfae62a0dff8f46436f5b50f64bf02ffe09e9f3bd20ae14341e46e882a",
+                        "size": 22630.0,
+                        "storageId": "kg2er6c4svn25nhxn8ryny5t098240dv"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/cli.ts",
+                        "sha256": "d0f5b398089a2c47b94dd5366b7852e74c4f9342361c3aeddf3780dbab783df1",
+                        "size": 17265.0,
+                        "storageId": "kg25vh12c0t3rmn6g4j19gv55h824akq"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/client/index.ts",
+                        "sha256": "e4787dd783cffc9d117941920f098ab0cc080050a81f3d4190692c8557e76e03",
+                        "size": 15130.0,
+                        "storageId": "kg23ahqw994fwp72an21x75tss824bhm"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/domain.ts",
+                        "sha256": "143c9e809f4d59599fbeca136ee8dd743d58739fee6147a172bedd3bd59aa848",
+                        "size": 1351.0,
+                        "storageId": "kg20kxkbfyzqqpdfbkf3vdqbtn825ahw"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/execution/index.ts",
+                        "sha256": "564df213c3d21967159c4dd711693d2ee06546b615cea7926f0cf609b7bc2d93",
+                        "size": 53577.0,
+                        "storageId": "kg27dq941m64q5g8nzfmxjbn7h825rds"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/execution/retry.ts",
+                        "sha256": "1875f3e5a668959e9f057b028c4aa83f49e0e29db9cb3a32c07ee33b52227546",
+                        "size": 1287.0,
+                        "storageId": "kg226dmj4mw9nn89djw3mn90an825yg2"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/extraction/index.ts",
+                        "sha256": "779de92e1addc9c5a16a4191b8536f60eee4b6cc57f0e98939333e39fffe3424",
+                        "size": 23134.0,
+                        "storageId": "kg21e0ybh26hxzdvwphj3fccp98251jj"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/index.ts",
+                        "sha256": "b2825ae225bd9000870326574b862c001d6b4fb864c26d81adf3cac47ee25b75",
+                        "size": 2071.0,
+                        "storageId": "kg28yfn9fveqg57260esb731tn8241aa"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/logger.ts",
+                        "sha256": "776c2a510b7b7108bf6f2a755a2f0091e3f7dd4f87697bee53538f273585557f",
+                        "size": 882.0,
+                        "storageId": "kg2d47qqad70ket8a4gqkbgvyx824mbp"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/marketplace/index.ts",
+                        "sha256": "3e14fb6857ad5c0d9ecc1e50ea07c0a28fa2a33893eb9d166af4c2be7b225264",
+                        "size": 2307.0,
+                        "storageId": "kg2byyqrrk66kc8r6xb4fzw7x1824hzr"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/orchestrator/index.ts",
+                        "sha256": "c34b60d5a9fab6efdc398b3265d7e58ec3bed1b0f7ea4acee2ce018cf6413411",
+                        "size": 20345.0,
+                        "storageId": "kg24ahj60mcb68xdkh3bsarjk5824xtx"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/ratelimit/index.ts",
+                        "sha256": "cef2108cdee6e10338ccaf3e04cb9be9966cb75985fa9777a4615a1f6b116cb1",
+                        "size": 890.0,
+                        "storageId": "kg2fft2vs7hpp0w4xt4bsnwyb1825tbq"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/reverse-engineer/index.ts",
+                        "sha256": "51dc42eb2121c7fd22ed18af78def851513efeaf9b886ebc8a68404d299539e7",
+                        "size": 28581.0,
+                        "storageId": "kg2b21wm7wxx9tfmrcbffd6rws825jv2"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/transform/drift.ts",
+                        "sha256": "769f0c26123ff2d9099c7ab05a723b63ff655f00ffd40d544fea9358f4d8c256",
+                        "size": 1964.0,
+                        "storageId": "kg20s3ktq2xstz9f70q86wsgm58243rp"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/transform/index.ts",
+                        "sha256": "13fceb215ae8f23ea7dd1dd4fab79fa5086438591dedf2be65717489d4bad788",
+                        "size": 7491.0,
+                        "storageId": "kg2e17n8tx6yny1vnde28rfmfd824x52"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/transform/recipe.ts",
+                        "sha256": "c65d36314184d0b4ef596a5b27a50a611beef294709082e0af63506b98a9b6c1",
+                        "size": 4707.0,
+                        "storageId": "kg2fr3wyybtfv1pqn7h10r7epn82569m"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/types/index.ts",
+                        "sha256": "a67d201465a7b65fdcd72d4b10f555841688284e44739fd176eeda1523018542",
+                        "size": 29.0,
+                        "storageId": "kg29ats26f55jcgfp7ezvbg3cd824tq8"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/types/skill.ts",
+                        "sha256": "5dab8b6210f3fcb4e0813fb7620f37ce7b09e34e61842c35bdc7414b36d93d7d",
+                        "size": 7879.0,
+                        "storageId": "kg2a45gwgsa2n6gqdatsx14505824rqh"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/vault/index.ts",
+                        "sha256": "b48c65a924051f8bdab6744cba2cee5c4e389c14af346a31894bce138c9aea1c",
+                        "size": 4189.0,
+                        "storageId": "kg234c2n3awn5tfcgxf4mh15pd8243g5"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/verification/index.ts",
+                        "sha256": "e4a3f099c9fd074e38ed89caad7dbd1ab52ad42edcac3d36f923cfd41a147194",
+                        "size": 3743.0,
+                        "storageId": "kg22k9ggn1mj4m5e9mxp7k5zw5824ya2"
+                    },
+                    {
+                        "contentType": "video/mp2t",
+                        "path": "src/version.ts",
+                        "sha256": "089ce519cc1f9f242bf6d6175848c38f20b84d3fc7c5680553211c4002661acd",
+                        "size": 1699.0,
+                        "storageId": "kg27aynmyyq1amfz41q4w1jh75824aza"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/-slsJbPvYDduDw1BKCL7k.json",
+                        "sha256": "132ef43a1016932da9016cd1c23b0c7778db49a24575d532c3c825e84a9d2780",
+                        "size": 38838.0,
+                        "storageId": "kg27b6q1y73c81rsnp9qj75vsn825ypw"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/-u6tyne-nwFmmPHiX7_P7.json",
+                        "sha256": "5db8e9d9cbd91fbaca9e77a34ee797bffa7a837de83a648d0278058a46561962",
+                        "size": 65877.0,
+                        "storageId": "kg2c4rv1bkmnxvfpdqpbs6340h824cwv"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/-Up3fI4c9K2HaLhX1-7H2.json",
+                        "sha256": "4f7e683e1ab5e162d3b091ccf19338472b1d6ab956c19c89cf0acbdabe84f9cd",
+                        "size": 38838.0,
+                        "storageId": "kg2ekwqxhvwymcq4nyr9ytb835824pbm"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/0SiahkhbMjRVtI8YnDyrn.json",
+                        "sha256": "92dcd1bc01aa26bed5076c1c379c4fb91034ac89f99b32c505f67d4b73c38df7",
+                        "size": 278.0,
+                        "storageId": "kg2a04yzhj1v1s2zs7snjfq2rd8257k6"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/17_IxVu6EnQsSIdWFbt_T.json",
+                        "sha256": "388811c592f6d02768cbf42552b45cf41d05f16d36e2a9626ca998a37630764d",
+                        "size": 35246.0,
+                        "storageId": "kg23y09zrj7md9yh8ezr3e6sd9824849"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/1sZfJ8xWgKUlAg6G2a5ZU.json",
+                        "sha256": "63d5073d58e4f9369b7e0f960da1f0a00ce9f2de8bbbb0214cdaa7f508757ab5",
+                        "size": 11868.0,
+                        "storageId": "kg24nxh0jwk26fcwzhn137t5vh824rm9"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/1_j3rLvNgbjv9X6nOhOHY.json",
+                        "sha256": "17d59aed7fd82bf30d8f48eff2e7e6f9571a148c77eb1f15c8c4db4883934096",
+                        "size": 38838.0,
+                        "storageId": "kg25jatv971yw73tx6adme2cvh824e6e"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/27JdwifL4EW2E7XSSqabE.json",
+                        "sha256": "651c8cfc0f93f9d22618f25d3c69a72011eb4c9f535aca2b395b8d5845c4eb07",
+                        "size": 38838.0,
+                        "storageId": "kg276mntk1tgek77dxw00vdd9182489d"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/2AYzNp2pNfkzBt3UmKGc4.json",
+                        "sha256": "373f76270905b299144a74a35e161498c4f9684acb8eaa6c5a040cd6c329391b",
+                        "size": 3376.0,
+                        "storageId": "kg2afpq0gesg0x7j3g0r5phzbd8248pb"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/2GonGwjcOCl_qGGo85i1c.json",
+                        "sha256": "fa240da87cc4a13d8b69115bd17f0019ca601ea3e85cdd3d3fb348dee0ed888a",
+                        "size": 4386.0,
+                        "storageId": "kg2drpj9dsgzg17ypp2gpmsy8x824xyv"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/2Mey1qFGJIV_XvM-LcGo6.json",
+                        "sha256": "0092279cc92822269c181fdce2117f0e120b7741016e1feb656d0a3d52885f84",
+                        "size": 146038.0,
+                        "storageId": "kg235xgvsay8cbm5ap4h4sf93x824w8w"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/3BXfmYcH3lNh4SOXq2P6o.json",
+                        "sha256": "52986a860fd395dbe571d76b0e3803594d4b0b30c802111fb6226fa5eecef8ce",
+                        "size": 38838.0,
+                        "storageId": "kg2cyrs3e3g25f0pyvk8j94nws825btk"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/3pWDrWXgopWTBWCs-0U_x.json",
+                        "sha256": "8918f467a042d63c0afc9e434de231ddb8a39b88751c4663520d6c9697be33cd",
+                        "size": 27344.0,
+                        "storageId": "kg2029w83dhdxysd7ss0rzcvhs8259w8"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/3QVwOhL_oTA9VnZp8JVFB.json",
+                        "sha256": "809165184d6a78aa672ee83f57ac14af396187197a1955ad63768a3ed667a70d",
+                        "size": 38838.0,
+                        "storageId": "kg2ct8m9q3tmyje0d34cw836xh825zx5"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/48Sry38xfsADjm09loZi_.json",
+                        "sha256": "011a6762f701c2c985eba0c0049776d7db8ae89e8e45515d1b379e0ef05753a8",
+                        "size": 38838.0,
+                        "storageId": "kg2e58gmdx76egctfmz0n9why58255wg"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/5-IRcq4xNK37lWq41fnuY.json",
+                        "sha256": "4d450bc25a0dc5bf7523660a3c5d6a5127ba1347fddadd40ec4eafe6da539482",
+                        "size": 38838.0,
+                        "storageId": "kg2cs7zc4g1g3baqyr7byr8q1n825qdz"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/5H6LXkBWZ2Tb717Ni8x08.json",
+                        "sha256": "004663ae5be9a1f444d0819929a67af6c4cccd5c18f7d80d56ca7724ed9c34af",
+                        "size": 763.0,
+                        "storageId": "kg2fgeds41nynazcs6nc1mgfz182452b"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/5V15ZL1WXDrkVXqn1j4i8.json",
+                        "sha256": "3c9751b14c1b471fae893f22f0a4f9e2eb274ac0e745d45b59ee7a7cdf9e2775",
+                        "size": 38838.0,
+                        "storageId": "kg2c2cc74n8d6kk1jw6nk2n7xn8257dm"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/5w4WxV28SFTYYhwZrttPu.json",
+                        "sha256": "de314f63b99cb62054a85c74335c1d0e1d03d3d57a598acf375ba32fb31512ea",
+                        "size": 10780.0,
+                        "storageId": "kg291mv40002kt24xe9z0rw11582528n"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/686C6KJmy6f9cSDGgnzFV.json",
+                        "sha256": "e51e5b716d477cade1e5a46d5c9e2722ce90bd99437f07e6f701092131502ec1",
+                        "size": 4833.0,
+                        "storageId": "kg29hq6zbaea69a60fm9g5e8a18246er"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/69wwVqybnePYsTRAGl5UQ.json",
+                        "sha256": "4ab25bb0c975c2696997ea75184d8ce24ab9ecac371ed8805bfe0e55868cb733",
+                        "size": 38838.0,
+                        "storageId": "kg21687htfg159bdg9sdwdbbdd825tpr"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/6sBPkWBMdPaKMSsSf7HCK.json",
+                        "sha256": "5b2435c55705ecf107ed2e786b1eda46088fb7963c1e56287fb3572c38c609bf",
+                        "size": 204187.0,
+                        "storageId": "kg26kcgr60h1thqfhk8j5etpbx825p5n"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/72scGDAMwHPbwwB0Cexgy.json",
+                        "sha256": "3d7d043b5263a4788d1104b2304c88b556c0c3acd28074638bdeefaae93b7eeb",
+                        "size": 38838.0,
+                        "storageId": "kg28ky9zkr6ceyhya0ayg0kkas824507"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/734L2N46EwRCwZqlW1yWu.json",
+                        "sha256": "474bd2ef13cb915b106d355c6fa8c8cf5e619d00e9e5b0630f4b29add378a2da",
+                        "size": 38838.0,
+                        "storageId": "kg20zgj0h6dq3rr2vvatjytmjn824qfz"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/8esbpEpJQNH5nWss2pUt7.json",
+                        "sha256": "7e3a7017af2b61a6f09cc2b618f8d005814b98844cbcee58d7321d0c847e9379",
+                        "size": 38838.0,
+                        "storageId": "kg26zafqpzrxce5x7k4z8r9wy18246nh"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/8LDnk7QyUWv7PVWY9cfKP.json",
+                        "sha256": "922b85306024da88956e0b8c1337e564ce15c726b5c63f50833cef2d9d45634a",
+                        "size": 212414.0,
+                        "storageId": "kg2byvzes3yntpb9n6fak87pm9824egf"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/9esTlLhrDW6HZ7Nw88kOK.json",
+                        "sha256": "a6021c91318c86ac0f6f86821ed1876c450ed4ccdd7a326b6e48f88f5e0d774f",
+                        "size": 38838.0,
+                        "storageId": "kg2d8s0jv7qkcwrqbj677gmhd5825ywx"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/9LdI93-6i1nePEletJA-X.json",
+                        "sha256": "1c7a459ea1eac1b0e1a2caf5532f8fb9bc81fe51068a25c387ad6c9843c394cb",
+                        "size": 1361.0,
+                        "storageId": "kg20vzjwpr9ffpw1gvyvxhfkbx825v6k"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/AdXoYe33tEA_YAL4GLJHd.json",
+                        "sha256": "200b3ca5e0d98a50305f76686b868668aa71f71f39171a62e89c2f9b2d42106f",
+                        "size": 38838.0,
+                        "storageId": "kg212a5jq7j1xqek5k5664txy58248kc"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/aFmEeZYOIAXrANJwFzCjK.json",
+                        "sha256": "bece424b6a0c8563e7a9c0dd0e58a3360e55d590e318f2a28dfb724c203a7c3d",
+                        "size": 286.0,
+                        "storageId": "kg2cmhbbzh4f0ngax60h0e7hgh824htc"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/AlNyzqyrTiroVMgW5kMGU.json",
+                        "sha256": "14899e86e73f4aca8ba75b4337fc48c727b6137e0f6540aab727c8895ebe3d63",
+                        "size": 52405.0,
+                        "storageId": "kg23w0mv9qp0q3h3arxd9gdjf5824cq5"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/a_9mRl09W-41o3lH_KVAP.json",
+                        "sha256": "952b21cf4dd09bb38fab6135643754a78daf881927065834e40f0de602602cda",
+                        "size": 763.0,
+                        "storageId": "kg2fe96kb2fbbvmp6k45dpbwgx824q9b"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/b-tF7GS4HT6Rzc3bbuY3n.json",
+                        "sha256": "ef98f2495b56205625421a62b6d685d7c04c935fb7b61d2a985c17d015364de7",
+                        "size": 38838.0,
+                        "storageId": "kg2ce49tvr2cnke8t8d0bd4y6s825qp9"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/BDzoVNUEilQ_V_nFob41z.json",
+                        "sha256": "df091863294153711851303785a65b4659961eb66ceb995148d99dfc99e440ea",
+                        "size": 38838.0,
+                        "storageId": "kg25m6jczfarycm9vtm18b2f418248b9"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/bFSRDjPpDpkXSKFUfD12E.json",
+                        "sha256": "052ba6451c4af06538a1d95ff66fb733da72f3002b5651cd2109b79131f7ed90",
+                        "size": 286.0,
+                        "storageId": "kg26qhzk02zyvmbss0t34s1exh825pbq"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/Bmpzf2Xln7ilQ6th9xXEm.json",
+                        "sha256": "66a7e8a8e70a3acfdef6689bd548cbc6e68d7b29429fba1a1f198d89caf9eab4",
+                        "size": 38838.0,
+                        "storageId": "kg2bp1e26akement2sjrjd8561825e0s"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/bxKKXuAPCfaAkLNNAHLS9.json",
+                        "sha256": "d36647c74ef33897988f67926af4076a0e79d84845d9aefbb03a2919d49170ce",
+                        "size": 825.0,
+                        "storageId": "kg2fxk5s6btxs5vd2z3g5c6jdh824tjp"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/cKnV2qlLr6EvR50VA0omD.json",
+                        "sha256": "17c30e2188e2df74862c09ae963592379cc7870d01f9f63a255fbd028b5c21ea",
+                        "size": 365.0,
+                        "storageId": "kg2fce3dnqycz3e1ezy53pb5hs8240v2"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/DLvx6OXOFu5CZfr_ZeBUY.json",
+                        "sha256": "333453698c7900d2370a104043c23af3139c92d4d2ae75e94c47cc4da13db1b6",
+                        "size": 38838.0,
+                        "storageId": "kg2bc7cn9y3dhcp6bwhagd2yz9824n7m"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/ecTOzcKf83idPNI2T_fWA.json",
+                        "sha256": "401146acb4c026bd15a845f3ae7588df7c99fabfbc6ff34bb625ad4d798f39aa",
+                        "size": 38838.0,
+                        "storageId": "kg23v4mp3jkq4pawbyd6nnrqyx825aca"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/eF_oOt7OkDa7RYox_4IGr.json",
+                        "sha256": "a893e44e334a96aa459f2bbf8d8ddbc8737a3f816dd2d365ecbbecc9664e3391",
+                        "size": 8006.0,
+                        "storageId": "kg251arkdxc6a6gqmv507tpzpx824w7n"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/EK268sX8NV9NSgtOQECJY.json",
+                        "sha256": "02eabc7c074cdbf2d698af7ecbfd388173568384a628f01a5735ba20c3470dd2",
+                        "size": 3422.0,
+                        "storageId": "kg2056r0cvx81596accd7swbyh825vky"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/eSCMTA0syPVTJvn2qeUly.json",
+                        "sha256": "4a5661e732ee2d16a40aa10d3dd532b3c83f2334f20289b22abb122fb783ea38",
+                        "size": 38838.0,
+                        "storageId": "kg2ftxm2njk0qhv0sr826qjr2n824nry"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/Ewcmf191DdBQ5J6IPfS5Q.json",
+                        "sha256": "a404385b8a6a610ff9368ee6bfe47b424d189065a6afc8d779c8f6c0e7a17d38",
+                        "size": 824.0,
+                        "storageId": "kg21v5rw9e51w30tf63ktg3gtn825fc8"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/eyeOuEhamPLhUPbr3D0xh.json",
+                        "sha256": "122513f54ef034614a37de91f337c78b7d56e9779b5a9edaadf9c025093248d3",
+                        "size": 204187.0,
+                        "storageId": "kg21vynvp87ba32p1xzq8wmsed824et5"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/fCfiNeyJO_mB0cTgbpmcS.json",
+                        "sha256": "b676d3ff963a4ecf9c74d681aaf14a834cf4d9744bcf94c7824ae89449887f59",
+                        "size": 1250.0,
+                        "storageId": "kg2ben0nsqay8mze881skrq0xx82525z"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/Fgx6RK4RamvkIrhxIh2ub.json",
+                        "sha256": "2375628580bf7c9d6b401551d95d6d6fa8319f44dbad719bc383930cf45721ab",
+                        "size": 38838.0,
+                        "storageId": "kg22vw3ahkspz61ts19qxx0tvd825prz"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/FmXnSpDk_MjJjRby2FHyb.json",
+                        "sha256": "907d1eb92f449b0612c767a88b5335a57a10b9225832bdbfe3dd5d760a79b9bb",
+                        "size": 38838.0,
+                        "storageId": "kg2ag6hfewarses74qdf1q97yx825syy"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/g7oLGVJJT-dCjgkkfnMlW.json",
+                        "sha256": "91d190cc740a414f6d72ac82894eb40bbe57c2aa1d40a16831b999e84ad4f3ed",
+                        "size": 313.0,
+                        "storageId": "kg2bsm7170s529bsj8b7zbyp058251c4"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/G8_35mdlLI20v_zR-R5dy.json",
+                        "sha256": "659bbf8a56f1156f7db526c7d3acaf90ad2d3a38291069e823615778acfcd217",
+                        "size": 38838.0,
+                        "storageId": "kg29edkzweqhmd7cpqs5mrt0fn824jvz"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/gbrAJgVqN1DSBr47JsWMM.json",
+                        "sha256": "061840a1f786031e619b003cabd2ffb2cb52a4c0af2aa42e9242c82f294ad2ae",
+                        "size": 763.0,
+                        "storageId": "kg2f9msf9v599a0pm3h60vnvm18247dd"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/gDpxJZIt_y-bDL-Mxr93d.json",
+                        "sha256": "f5d0443b23aa8e440054e9d80a2c1ded6cca0123e28f8a18111966ebcf183dcc",
+                        "size": 286.0,
+                        "storageId": "kg28mtsh58t0g07wqyhmqc7dwd825htk"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/gFutshvMBARm9pCY4nUfT.json",
+                        "sha256": "19a841fd851aed6e8e8f480322b55dba7f22341ca78ae16dd77dfaac86b39f68",
+                        "size": 313.0,
+                        "storageId": "kg2fzybnaf6x5x5w88krh40y9d8242v2"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/GJ4sbPsxJJzo4oUptmUiG.json",
+                        "sha256": "23880db323c3cf7d4fc7935ed03198194c86d789c3f8bb41d45f088d779fe813",
+                        "size": 38838.0,
+                        "storageId": "kg217xer1xhcykk3pv27yhq8t9825q4t"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/GnNaWhGtnlXSzN14rer00.json",
+                        "sha256": "7f0d6447781977b2799af7682d49fe67e05205fe2fb7c0b6838b053c20f0fcc9",
+                        "size": 38838.0,
+                        "storageId": "kg26t21pn41p6dtk5g8ahs2s6h825avs"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/GR5WLHvoluwDW1thRGhgB.json",
+                        "sha256": "7439d24b975b30fbaec3863c0218f36834b47e1f88636913b775b8afd8889fce",
+                        "size": 38838.0,
+                        "storageId": "kg2aaj8ecf9tnw67je9j7yc1qs8249kv"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/GRq_50-G6stiZs2ATHTWB.json",
+                        "sha256": "b3d596c420fd145536f2497ad3b6ccea55406425a839fe93e186aff72986a999",
+                        "size": 286.0,
+                        "storageId": "kg272m62d6sva9banr13d56ed98259s2"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/hc7ILzPMIxV6A-9PaUWxc.json",
+                        "sha256": "24235ed1cb0abd7d09258edb451fd656305abd2c975f6213ac0d7c9936f8f847",
+                        "size": 38838.0,
+                        "storageId": "kg22gsntf2faswbq222bbvczzn824nmf"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/IHQwJ5r_Q87GkFdCDc0xZ.json",
+                        "sha256": "9064552c3ac16e56272e13ea15f4aa7189ca0cd1379b372a799e2658a1417390",
+                        "size": 38838.0,
+                        "storageId": "kg258mmw939j7455a86j5r71t9825prz"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/ijq2UGuNEOXvk66Pxjur1.json",
+                        "sha256": "7127e287eb96375611871e0f7ae61bb670e5acc8a81228346a1420ef1c720f6c",
+                        "size": 38838.0,
+                        "storageId": "kg25gzgjetzkzste1nxfyvvgpn825f89"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/ineQrVEE_7gXP6Kf8gt3k.json",
+                        "sha256": "0f8c99ff85b4496f344a8a75f80513d255144fb5abae4d0b1439805892be28a0",
+                        "size": 38838.0,
+                        "storageId": "kg22tb27c60mykdqjc9vxctbsn8245np"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/Ipf1F3wBJuxykWIg1x3nw.json",
+                        "sha256": "fe466a8943358407425cfb803f8729f71d905c99dc5a5c08a866a521d8d229d3",
+                        "size": 38838.0,
+                        "storageId": "kg2469krbwt9r5701a3ktawrq9824rbb"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/J4r2QxFKdB_P_D3B7QbAI.json",
+                        "sha256": "ac6fe5d4b2e08b5cf9b8422355f8a5be7b0503aec0e29a0330cbd38d334ba20b",
+                        "size": 38838.0,
+                        "storageId": "kg2ffmd6za3fj21z9akdwgrmjd825y2v"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/JGgWOaEDuVovU3fXB9MQy.json",
+                        "sha256": "f1122ff951eb43d46da700b8a9a0afbaed922a68bcb4182a6eeb3d6e9303aa09",
+                        "size": 3329.0,
+                        "storageId": "kg23pc620sg2aex8nr0waqs8fs8249nz"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/k-oVp-du90fViAe-NdX2D.json",
+                        "sha256": "47fa416bbccb85f87578cfcf78b4d9e5652cf43e22a2532a71e0f41b4ef61882",
+                        "size": 286.0,
+                        "storageId": "kg21vjcahh9wxgz0shyq0bsyts825kj9"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/kFjtjO4K-yszImkPPu9j1.json",
+                        "sha256": "81ffe3eab85118fd1310e3333da60892cb38bf9211025811b4f77c30045f7824",
+                        "size": 38838.0,
+                        "storageId": "kg23d3txqgwtn5q1cj56khe55n824p7g"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/kQJFOipoGOMIIyiRj9w6j.json",
+                        "sha256": "ecc7dae28670e90574782162ad047d8109267faab5dffb9df5fe1dfd283c20f0",
+                        "size": 313.0,
+                        "storageId": "kg2af0yc93pbhk5sazvsewzj998243a4"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/l0mTOdFZJXLCIQWhry4zP.json",
+                        "sha256": "c760f499e4057dc73ca788c3cb28c95faa5e31b9901f5348a99368cddd0b11f0",
+                        "size": 38838.0,
+                        "storageId": "kg2d99sg4me9mdyy47z49ep58d825mkv"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/l4wRPL4KpZCwFdJPX1DH2.json",
+                        "sha256": "4f315983bd1a1b3768c60091a44a679ef614a14dc9be44abded35f7aaa24170b",
+                        "size": 38838.0,
+                        "storageId": "kg284smn7atz7tese0401km4w1825qa6"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/li_GbsChXy5mmtWdL9epo.json",
+                        "sha256": "73c4319619736b4c86d2a5957c51c048b61893ac279f527bea77e8605652bf92",
+                        "size": 41919.0,
+                        "storageId": "kg272xr6gdv8y8g15btc9795k5825t0g"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/lmZpXKUMmF6wMOQ9x69AB.json",
+                        "sha256": "e1ae3473f33613db0e85b7c01b6f304b056c0cf09c087ad0226130ef5363edec",
+                        "size": 4386.0,
+                        "storageId": "kg2aphcs0gw7sg5zqqh77jrzzx825kde"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/LQySolibbvIZqi_f8tly4.json",
+                        "sha256": "ff9163f1d23a35150e3711b6f2d42ade447f14b312a911f48910a052cc4ccb72",
+                        "size": 38838.0,
+                        "storageId": "kg2ag7z3gmm78ae6hw3thrgkg1824zxn"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/LX46qakvZiTcB5aMZrb81.json",
+                        "sha256": "5164a65efeee0cb5a5ff25ad3554e94b9db143d0417c2f9d3bc42bd45863c86f",
+                        "size": 38838.0,
+                        "storageId": "kg2b8zsw74h962k6tsd2hdf8h1824q4p"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/LzcH-MvIUA8XEa1TRS8ve.json",
+                        "sha256": "df340c955eed34b7e3df0df9ae959702a109a15f666d8fe8fad8926cc5d4823e",
+                        "size": 38838.0,
+                        "storageId": "kg2cjymz2k3vp1etzjf91bmnbx824d8c"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/MPm6d89dsPlP3v8g-_zfU.json",
+                        "sha256": "9a117b104e2ee4f26f72a452428252dc5c55e0ddbc81e27b2e31e06f46dfcf97",
+                        "size": 1250.0,
+                        "storageId": "kg22eb6gd1nwr8yrqby3wrgn61824tjy"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/Mvnq7k0n_NqZpAPYYyT1t.json",
+                        "sha256": "161293acf3224fdc5833946181e286f53ca285a2b6d710c48ce7ff200fa4d1e5",
+                        "size": 38838.0,
+                        "storageId": "kg2dcsjdghyq8e12a1x0w2e6k5825anp"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/N14GPjuCr0sjuRJh_Pg9_.json",
+                        "sha256": "687b9d738d21c15a59093cf5c5dff26162d51b7c6083ee65d6bf9cc037359efd",
+                        "size": 38838.0,
+                        "storageId": "kg2c2vmcq3a71053ejh3cpaefx824qnz"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/N3GU8bkO2uItYXcwwwAQb.json",
+                        "sha256": "098daf7992e473108fdac454184d06adf1188ea74023fe3844ff9c0ab72e00b1",
+                        "size": 1796.0,
+                        "storageId": "kg24kjer5h9p2ame18c65zdnj9824q6h"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/nEEhRwSxu90OmIOeFDP3B.json",
+                        "sha256": "b7bb666631e162d9ab9106ef5d42a40fae06d19907f140aa100e1c72a01a11e9",
+                        "size": 38838.0,
+                        "storageId": "kg25ec2206w67wnrjcagrsp6w1824rex"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/NiLr8KShsP9AFs_mgYwDa.json",
+                        "sha256": "fc616e7d7b20be6481e42c05068f17a742a6f662f0a2b0f166a99c00cf98c1cf",
+                        "size": 38838.0,
+                        "storageId": "kg2e21tm4522v6r6wkp6safw5d8253fs"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/nMpLhkiz3VemUOV9Ir0Ca.json",
+                        "sha256": "2fa3e99dc5159948cad6385634e09d1a75406232b92e43028c98a7b7f8ce2874",
+                        "size": 38838.0,
+                        "storageId": "kg26369sqgw84fd24hvf2pdvk5825mkd"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/nug2APobKOP5ry8fHiCnJ.json",
+                        "sha256": "cf08a7b3e3a1505874d94430d4437db6ef5d1c9f46b2d78b149e4789fcfc4931",
+                        "size": 262.0,
+                        "storageId": "kg21bf9j3y0q7367ycvgvpth1x825vj3"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/nUZbWmy1yLeMBsQ95iwtf.json",
+                        "sha256": "21a82c9af4dbead35150ac826bdc12cc38e26bd4e97c7f255391cc9833cc0f74",
+                        "size": 763605.0,
+                        "storageId": "kg245x94mbfr0fa2pat9yrr2mx825zkn"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/NVHhC95Flvbrnd8s-BMWC.json",
+                        "sha256": "f979ddb110e45233ca8d762eee59a7a9eaf2d965cf914963eebe731071ec739a",
+                        "size": 38838.0,
+                        "storageId": "kg2etgakk3df3a7czykt4fch5h825k4w"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/NyMPoN2o3fxPWBQ8YUYoa.json",
+                        "sha256": "715e92eb1c13859c105ea5cb0191ae5095607c71f2a26f17fbde6d56597c850e",
+                        "size": 38838.0,
+                        "storageId": "kg255w708w5hkjm7gmd9ve59qn824jj2"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/O2D2wf9pJZb6TcMlRKsj-.json",
+                        "sha256": "76a0bb87fa8e4611b41d75906099932b02b66e53d36c61f20516a88c9ca2ed16",
+                        "size": 3073.0,
+                        "storageId": "kg27e0tc8xv1yhxefknghe56td824ja5"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/o4EC2ArAIvzrTx-zcLAaP.json",
+                        "sha256": "28c5135c52d2603d8311a0992c2b4922169a647f362bec4284ffbc6f1e124a03",
+                        "size": 1906737.0,
+                        "storageId": "kg29686dshmz8yqvxhws9pa5nh825wrv"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/odLoSSVRloKJTfKNXi02u.json",
+                        "sha256": "ed7eb895096a79d11c387098f54764d27928f76e987fc2b7cefd0a0dcc546fcd",
+                        "size": 38838.0,
+                        "storageId": "kg2ayva2cm03ddyvxja4xqk7bx8243w8"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/ojLna8tFCkuaFxu-KTF_p.json",
+                        "sha256": "d43f62acd008ac974b23cdddf9efc87f46eaa416dead870f19f3096d04e177ec",
+                        "size": 38838.0,
+                        "storageId": "kg21h88wbxyqwzpsb585c3ytyx824xxf"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/P1E8tOMHoJ4ZGo6hf5h26.json",
+                        "sha256": "d308451f12f3a8986c0927793e901ed1080d4ca6108cd0f91c8c9ff85187474b",
+                        "size": 38838.0,
+                        "storageId": "kg2b22zm0s1ndvk34crn2mq9x9824z27"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/p9fQ4HYAUhiPeiTQGEYS2.json",
+                        "sha256": "4412d40d5236c1e7b9461829662762192eb68d5941d8c2051bcd5beb8edb0236",
+                        "size": 2361.0,
+                        "storageId": "kg2bgwp8nw4yckjv9s5cdzzk9h825sth"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/pZ9FBcBBiwVoWXj_wel3u.json",
+                        "sha256": "80655075bc4ac51991c36a3cb46b132b4da35fc81bdd0241843318b7f829822e",
+                        "size": 38838.0,
+                        "storageId": "kg25eyv07r57karmtfhypbdmg9825j4w"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/q-h_tjSFoabgZ_SOPO0OV.json",
+                        "sha256": "f98279321b22281312fb18d0cb8b6f83b3c7a4141ba8acc485ba3c60b4f7af0f",
+                        "size": 286.0,
+                        "storageId": "kg21me238fqk3pzf2257mzf9k1825sht"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/q0Y1TkqlCDM7E9s6z2lXG.json",
+                        "sha256": "44244d067b92a5caa776eb922fd6c686bf267387068c915d607250e00c73ccc0",
+                        "size": 38838.0,
+                        "storageId": "kg25rdyf9yp10xvgxqp84fk3k5825yrq"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/QB6q4C4f7PSK-585eNdKw.json",
+                        "sha256": "16c409e5ae50fff4066edb2b466683a70a433fdd58b0a086d1a2e6042f3521cf",
+                        "size": 286.0,
+                        "storageId": "kg289n9mczbfgp37k15kzry8hh825v05"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/QEy8XeFnsxb4zMbymGv0H.json",
+                        "sha256": "5c17622901992c26557e60cbf21d6eadb8f7e76b325d92317d4eeade628ab9f5",
+                        "size": 286.0,
+                        "storageId": "kg22fmdx26qhc8gy6v2f9p159d8244ys"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/qODBMY3Ok--Vr-lqS6vp2.json",
+                        "sha256": "298f9ca387cd6b0f3c384602fe8dc5a1d6bca16a8b79ba870e2977b840203ef6",
+                        "size": 1250.0,
+                        "storageId": "kg2e73xt74t8jt8tr3p0k6nhg9824efd"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/qvxv1Obohbc1UGD4hG9fJ.json",
+                        "sha256": "ec7ffde0b2d195c3c4c279b6e41de2be1a215fe612d9c3c6b84b0f2bfbe89f3e",
+                        "size": 38838.0,
+                        "storageId": "kg2610mvbvefnxc3g3yhgyfk45824q8y"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/rSkGFoIEH8l1wxuOmwhA5.json",
+                        "sha256": "8e7aeecf4c95877e44a53a08ad7488b46b505b69d3b482994bb41fe816466500",
+                        "size": 38838.0,
+                        "storageId": "kg2d7h7ac1qgv7nrbjghm2cvts824nnv"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/So8a1jkNoJ2AwsLMMc_p_.json",
+                        "sha256": "ba6cfd1c0c1fbff09edfba4dd0299cf37803d66a5900cd7f6916383d3768fd47",
+                        "size": 204187.0,
+                        "storageId": "kg283z39az1ytkzkqhh3bc1bbs825kfh"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/SowHxbmR3UJIBQRtWPzfD.json",
+                        "sha256": "68a140bce8b67697abc0fac9929ea9999120ec3843bf03313714484e2dccc1c9",
+                        "size": 38838.0,
+                        "storageId": "kg2d6r533f5sfets1ay7vq27zh825pt5"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/sSCI87D7-vjX-fdaAmMug.json",
+                        "sha256": "b6daf004610b77bc62f4ed223b180cbefc53781c55d4176d4c70b87699ac4459",
+                        "size": 4386.0,
+                        "storageId": "kg25f0faxarzr6vcx3tmr3j27n825a35"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/sWds9pL1So03Yc9cCIYnf.json",
+                        "sha256": "145552410d681b8e2631a619e9c60a3817112ed61bea4fca5014d75a540635da",
+                        "size": 38838.0,
+                        "storageId": "kg21e1fhjkqd6e32zb9c405cms825vg2"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/sWTLxyM61eMqv5vRV-V_-.json",
+                        "sha256": "b5bcdf8ba104125648c59ff19e84f6fdc367448da6f2c708b4fee24a1b596a5f",
+                        "size": 286.0,
+                        "storageId": "kg2eh9rkrmvxgypks4cwpfgjq9825362"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/T-JJwt-tkOvHWv1FkOBuJ.json",
+                        "sha256": "3f808a26bc5418cb1c1acf8bc720a166a13a9f9484162cd245ae5e405babdd13",
+                        "size": 38838.0,
+                        "storageId": "kg2fkw88t4zzhfhw0nq0n62rhx8240j9"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/T9yU0wrfMSQXcN4zD5Sog.json",
+                        "sha256": "d1b7dc517950f10503233f38e81234055c855d7330ef02bac6fde131aa1727e4",
+                        "size": 38838.0,
+                        "storageId": "kg2faz2phwzq7xk9fbwc42fdk1824ew8"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/tElVjP2XFzRdDVzRjdqmQ.json",
+                        "sha256": "0c280d23ac7b15b489b15b1cd32d8cf1cfc9cf1734cf21583741d2ae8619d016",
+                        "size": 38838.0,
+                        "storageId": "kg23fvgsebkspqg9h4hvk689mn824nx5"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/tfvLECETx6z__2KH3zaX1.json",
+                        "sha256": "d0d05adf9240fc74897e33aa137a8436999f5941ea0a94d8570f7ebe459358d4",
+                        "size": 38838.0,
+                        "storageId": "kg230fhyes0e9p0zvrpzphhw41825xrg"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/TILSbLTK8mCK1e24bk5gY.json",
+                        "sha256": "0375f8b0a74368bb9c323d10ebbbffa41cc57ec9e7d626bf0d7cb51db040e1fe",
+                        "size": 38838.0,
+                        "storageId": "kg215k4dpaw7yw5rknbjzccz9s824kzx"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/tlUcoSMe8kgInUotVfiTt.json",
+                        "sha256": "18143222dd957849b930696001c1f61e066db74ef47e217ae385e5a1f72145b4",
+                        "size": 38838.0,
+                        "storageId": "kg2benkw556pjm6jh4t59f1zz182581j"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/tmUNQhSAOFQvCc2rq6AkC.json",
+                        "sha256": "c0ac8a9542685a866bc4c343d86922e019e00266dd329244db11b61df7f842c1",
+                        "size": 339.0,
+                        "storageId": "kg2bzr000rqa1kdeen6bkwng9h824t7m"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/TTujLSSVWTSqsPGya2a6y.json",
+                        "sha256": "f293dcf20de0f0b779e985e6c7e576f7a2f8b889f3e27167432a2cb0cf562466",
+                        "size": 65877.0,
+                        "storageId": "kg2d2fw8wa1h6qbs4crsmfnf1d825qmz"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/ueFZR2YphEm-ALrkdwLW_.json",
+                        "sha256": "1e95eea1702a6b50c0189ce75b73d17c41ca9c125c5a8a665cdc96870bae7676",
+                        "size": 38838.0,
+                        "storageId": "kg2989d5dm7d77fj3mpfbpecns825qn6"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/uLDGmknLS-qXDE3r3xoMH.json",
+                        "sha256": "374dc82f6a88ff4cb85682b04694b33190e2648c9dfa21ea955976984eee4841",
+                        "size": 204187.0,
+                        "storageId": "kg25fbjc7cns0nz386tewcmfah8252rp"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/Uw8VX7lqOrQw_i9MdEP2k.json",
+                        "sha256": "ad9a6af69f8c6ecfee65e527403f0d2ece6c85f0e37baed36fef96868034b558",
+                        "size": 38838.0,
+                        "storageId": "kg26039tr62698ycw2cf3g9dvn8241cy"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/UzHGqD6c1XH4BEosc-zG-.json",
+                        "sha256": "efe477f6415ce656c5c105be00389b7325aa28029a5026da8973384fdc19827d",
+                        "size": 42258.0,
+                        "storageId": "kg29j8xptnh1ntwtqdba8dkh0x825fcz"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/vDDD40sFFfcce2ZInO6lb.json",
+                        "sha256": "8f003ede7c07a15a2246b56743d36d93ad797a090538d12032919f28f5d79f0b",
+                        "size": 286.0,
+                        "storageId": "kg2bdxx3dbxndaz0j96qwth9x182501m"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/vo2wrVxj9J7IJgRePexVb.json",
+                        "sha256": "b2cb75226ad79e48bb5e21c442c194442c97b45b8eb78d0fd6eec3ba94ba6180",
+                        "size": 38838.0,
+                        "storageId": "kg27zj8yx0j1rf0ktmjtj67ed582408m"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/vRpOBNbUzcS7SMekgR1R_.json",
+                        "sha256": "dc6d1864705146f51dd75a6464d0f93613bc3ae378e2ec8d533f4d12290c5a0e",
+                        "size": 38838.0,
+                        "storageId": "kg25qn72k219p4zzfysgxpe3zd825g8f"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/vuQ5_A_P-MVaeq-WfHvIV.json",
+                        "sha256": "aa66ecb07d6448566bca7ddc5fd88e149adb6a58016cbd00cf43eb36c40e6fb2",
+                        "size": 38838.0,
+                        "storageId": "kg2285gg96bavvvebjyf4dgvdn82439s"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/Vv4vn00C0cMeBrz8ngglP.json",
+                        "sha256": "01df03de398a97b0dbf6af52273476e16c2ef14e4e43d194e17dee2f29d43d83",
+                        "size": 627.0,
+                        "storageId": "kg22m3znpq81qm1kqajp1af3dd8256cq"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/vVbXC2FMmddRxfoeVvR5g.json",
+                        "sha256": "0391e0f08ff6e560b2ec0cfe3e45d14aa02d10ec61ff0c66e5f108ba954972ec",
+                        "size": 313.0,
+                        "storageId": "kg21m9z090g8d1tfa9kh8fsn15824g91"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/w5WcKQruqtOgLReduKKuz.json",
+                        "sha256": "6db0f504aa4091f71f195562f2398200a1e0a03469c3436b02fb5cd06c8536bf",
+                        "size": 38838.0,
+                        "storageId": "kg25p6ra1xmc2vrazbff9mcrns8249m6"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/wFtzeRz3xBgjAWBb6xByn.json",
+                        "sha256": "81477e2cde64a6b3798d2bd2ff0ed3aaab19f787e5842a57f9f7c124174adb75",
+                        "size": 763.0,
+                        "storageId": "kg2d8p10q6sjbpma1gtvy1q7v182463k"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/WkKLPG_YaNSaAB9Pf5BYn.json",
+                        "sha256": "8e0b3950e789524cfbbe1193dfe01f689b54a7b3867634e7dffc6047dd249713",
+                        "size": 38838.0,
+                        "storageId": "kg23tja93npqk4z3f3b8t6cy5d8245zj"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/wsHwpAA4wkiwu94ADMGAs.json",
+                        "sha256": "707b4b280d10f93543835d9e428c865fafd7a4775bec3eea756a65e069e52cc8",
+                        "size": 38838.0,
+                        "storageId": "kg27gzkx6yffttc1br7sw3tcwd8252mw"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/wsvLJdEj5bKD1oKY74hV7.json",
+                        "sha256": "fd6fc99ff8e63077fdbd0245c85be90f47df2ac1e43b040812d5be65f0803f21",
+                        "size": 38838.0,
+                        "storageId": "kg245t59q1z0831bfmgb5fb9s9825582"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/WXvLTzlhp3Sqfk47MyqxA.json",
+                        "sha256": "903609f4fc0914516f36142b232d2ff7f46eec1047265549053e990c6b0d5e13",
+                        "size": 38838.0,
+                        "storageId": "kg2denpf6ev7m34hjwywxbnjnx825fsa"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/XbyAM5xlE9jfhtzhvL9Qr.json",
+                        "sha256": "65d7cf1860e4cbfb0be1960fc8e242308cca34e23391bd5d0e3ff4a5c65d9920",
+                        "size": 204187.0,
+                        "storageId": "kg22z7z7vqkpey79q9159a10g5825v0x"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/xCCzJFevSDNsEt2MafV2t.json",
+                        "sha256": "99c85686156b56ae4a8f956ff318505d7f05dd7154085762b36ecf8eacd6dd53",
+                        "size": 1796.0,
+                        "storageId": "kg2ee82bzqazn5qdjq6c5znbfs825z8g"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/xIcyftjEFO9i8nT-waOoA.json",
+                        "sha256": "96fbf73147ec8f4555c413ddeb33db2d31fb42b5066a10285196d9a3d8014329",
+                        "size": 286.0,
+                        "storageId": "kg27fwtf3nyct47nv76ax7ksc98240q2"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/XpTp-Lu0kQJivgC2yxWjZ.json",
+                        "sha256": "da851920ab8510860dabb177aa1e11bd3ea3f77e58c3fd75bf0336d13e73aeaf",
+                        "size": 38838.0,
+                        "storageId": "kg27tttsh4pd4zkz4swdnat89h8253je"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/Y7zR4N5HfpGR8WZ_rv-Rk.json",
+                        "sha256": "00f0355b9b2c7a08393ba90cb47afd07a7bcbdc0ad8a82b76e026cd2c8fe9140",
+                        "size": 4386.0,
+                        "storageId": "kg25wxx6kzhprg025r5gqbh61h825rfs"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/YG3TMNGJ9iFZEfpbIUbzl.json",
+                        "sha256": "5b4db66a39ac185dc3d28b52aced4a56471dd46d259872a69d2895e7bc07bd2a",
+                        "size": 38838.0,
+                        "storageId": "kg22tfg4fh0tstx3x6f7805fc9825141"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/yLg4rD1D8cowsNcuyjyMB.json",
+                        "sha256": "9bdaca8b0d59d9b09347ec25c465c50f0f81e5f3c5347ef6049f246f40519ae6",
+                        "size": 38838.0,
+                        "storageId": "kg2a7nq6n54n9ex4kndj9da3jn825fwc"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/ymcmNLsTMbB6hpnqyyRWm.json",
+                        "sha256": "d38226b71a675c47770597a4d7ce880935c8059fc566ad7283a85d9ba36eb1f8",
+                        "size": 17890.0,
+                        "storageId": "kg289m7dvg64reyt9hw062rgg1825zgd"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/ysD1599eG3L7j13EyPPl-.json",
+                        "sha256": "ab7ed17d4cd4b0a098b68dce8539ffe9936b0421f91e698792d176a05ef1f56b",
+                        "size": 38838.0,
+                        "storageId": "kg25506hj60yg6f5yzrcj648w5825qnd"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/ysUrhK6TfDizm3TvlsXbw.json",
+                        "sha256": "ce7026e57e70e899775b1a4f8c22355d84e6c6a12a6a56076330e677aaff644d",
+                        "size": 218381.0,
+                        "storageId": "kg2abmby6ah095yd404k2txd9h82407e"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/yy37QCBqjJGXOiTlpiwqv.json",
+                        "sha256": "2547455fa2b54ae1a8308ab3f5e9d92ea1fb1525499e4bf9af55a580613935e3",
+                        "size": 38838.0,
+                        "storageId": "kg2988q4sqd8z3zmsjc932mv75825e2v"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/z-9w6qS1ojGwWl2VD1LF3.json",
+                        "sha256": "c06f5f557ae0b8e51c17c27de7fa30324d64377eb3753e0fa55d165478c4b24b",
+                        "size": 38838.0,
+                        "storageId": "kg2fxgk6qpy9y3rhxy4q65d459824fmx"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/ZAYQm2wQm_oq49F-1iNVd.json",
+                        "sha256": "340b53087f89df1792e279af31fb8ab3f691edad38b195516e1fe74259e723fe",
+                        "size": 1038.0,
+                        "storageId": "kg245ew9h18r0y4mm1w07f4wqd824atg"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/ZfOTa9MKnTEslSv3EAJYe.json",
+                        "sha256": "5fee87a0d12cd5360e671ec82e13592c521362781140453b5199bc629ef78288",
+                        "size": 38838.0,
+                        "storageId": "kg279vk28rtgg5db2afn4x2m3s8240m6"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/ZHSPvBPiksBMU7ABrl8WW.json",
+                        "sha256": "41da11d9166061c0b8656194138244402647ac6946638be3905634a4d43600ce",
+                        "size": 1047.0,
+                        "storageId": "kg25cxtvsb9g3gj96z4z6q6yvh825v38"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/zm74Em1Hd6Hgzbtm1pl6S.json",
+                        "sha256": "22288d059832fb8f355953e8df3cacf6380a5581940652962ea156f6e5800b6e",
+                        "size": 78528.0,
+                        "storageId": "kg2bttb52ygry7tcw4qp1ensbd8253b1"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/zrYJjFkUNegrX9_98J-Qx.json",
+                        "sha256": "026dd0d3124bf548a63586f73d89dcef6894d5382e1bf5e33fb11171ae687a44",
+                        "size": 38838.0,
+                        "storageId": "kg2bgkg1ee5rvwcdq1ahs93qm58241wn"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/zXwfdzuZspGTap-zdg30d.json",
+                        "sha256": "aa3b5cad548941e72fcc4e72acd6b4a01ff6810c109c17ff7d06e3e04038c3bc",
+                        "size": 3209.0,
+                        "storageId": "kg2a16ctdray1m218w4dqg05h1825m7t"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "traces/_HSQuQUXpvjxWusAONJKC.json",
+                        "sha256": "7305db40916d8540fab1d7b3b48c0f620be6d7a4e788e8a7866f412567a0049f",
+                        "size": 204187.0,
+                        "storageId": "kg2b5e2dqy4734ahr0a0nm56k5824m68"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "tsconfig.json",
+                        "sha256": "c7663863c04d8038fdce1a3d5f683e4280ab3971f375a018bea833747404e81f",
+                        "size": 42.0,
+                        "storageId": "kg2eb2b9trgpak8ra0z31rj6ts824sg4"
+                    }
+                ],
+                "fingerprint": "8e2491f9ae2e180604bb765af39d61a211458245f24a0618f5f78540a95f78b5",
+                "llmAnalysis": {
+                    "checkedAt": 1772432362412.0,
+                    "confidence": "high",
+                    "dimensions": [
+                        {
+                            "detail": "The skill's stated purpose (reverse‑engineer sites, capture traffic, build reusable API skills) matches the code: it launches headless browsers, records requests, extracts endpoints, and publishes skills. However the declared runtime requirements are incomplete: the registry metadata only lists 'bun' as a required binary, yet the code calls out to external binaries (sqlite3), uses the macOS 'security' command to access the keychain, spawns child processes, and expects 'agent-browser' tooling to be installed. It also auto‑registers with a remote marketplace (beta-api.unbrowse.ai) and auto‑stores credentials locally — these are powerful capabilities that should be explicitly declared and justified for this skill.",
+                            "label": "Purpose & Capability",
+                            "name": "purpose_capability",
+                            "rating": "concern"
+                        },
+                        {
+                            "detail": "The SKILL.md and code instruct the agent to: auto‑start a local server, run a bundled CLI, install agent-browser via npx, perform interactive logins, and (critically) extract cookies directly from Chrome/Firefox SQLite DBs or perform headful browser login and then store cookies in a local vault. The instructions and routes allow automatic fallback to extracting cookies from the user's browsers and also include endpoints that publish skills and forward diagnostics to a remote backend. These actions go beyond simple 'website scraping' — they access local browser data and can share discovered API schemas/traces with a remote service. The SKILL.md also contains detected prompt‑injection patterns (base64 block, unicode control characters), which could be an attempt to influence processing of the skill text.",
+                            "label": "Instruction Scope",
+                            "name": "instruction_scope",
+                            "rating": "concern"
+                        },
+                        {
+                            "detail": "There is no formal install spec in the registry (instruction‑only), but the bundle contains full source, package.json, and README with a setup script recommendation (git clone + scripts/setup.sh). The README suggests running a setup script that 'auto‑registers, accepts ToS, and starts the server' — that script could run arbitrary commands. The SKILL.md also runs 'npx agent-browser install' which will download external tooling. Because the skill depends on external CLIs (sqlite3, system 'security' on macOS) and may instruct running setup scripts and npx installs, this is higher risk than a pure instruction‑only skill; the install/run flow should be inspected before execution.",
+                            "label": "Install Mechanism",
+                            "name": "install_mechanism",
+                            "rating": "concern"
+                        },
+                        {
+                            "detail": "The skill declares no required environment variables, yet the code reads many system locations (home directory, ~/.agents/skills/unbrowse, ~/.unbrowse, Chrome/Firefox cookie DB paths) and uses system binaries ('sqlite3', 'security') and keychain access for Chrome decryption. It implicitly expects access to the user's browser profiles and keychain, and it writes/stores credentials to a local vault (e.g., ~/.unbrowse/config). It also auto‑registers and interacts with a remote backend (beta-api.unbrowse.ai). The set of local resources accessed and the fact that cookie extraction can be automatic is a disproportionate amount of sensitive access for an agent skill and should be explicitly disclosed and consented to.",
+                            "label": "Credentials",
+                            "name": "environment_proportionality",
+                            "rating": "concern"
+                        },
+                        {
+                            "detail": "The skill does not set always:true, but it will auto‑start a background server process (bun src/index.ts), store credentials in a local vault under ~/.unbrowse, maintain persistent browser profiles for interactive login, and publish discovered skills to a shared marketplace. Those behaviors create ongoing local presence and ongoing capability to access browser cookies and to upload discovered data; this is powerful but not declared as a global always privilege. The user should be aware the skill runs a local service and persists data and credentials.",
+                            "label": "Persistence & Privilege",
+                            "name": "persistence_privilege",
+                            "rating": "note"
+                        }
+                    ],
+                    "findings": "[pre-scan:base64-block] unexpected: The SKILL.md contained a detected base64 block pattern. This is not necessary for the stated capture/publish workflow and could be an attempt to embed or obfuscate instructions. Treat SKILL.md content with caution and inspect for hidden payloads.\n[pre-scan:unicode-control-chars] unexpected: Unicode control characters were detected in SKILL.md. These can be used to obfuscate or manipulate how instructions are parsed and are not expected for a normal CLI documentation file.",
+                    "guidance": "What to consider before installing or running this skill:\n\n- High‑sensitivity actions: this skill reads browser cookie databases and (on macOS) queries the system keychain to decrypt Chrome cookies. That lets it act as your logged‑in browser for many sites. Only proceed if you trust the code and the operator of any remote marketplace it publishes to.\n- Implicit downloads and scripts: the README and SKILL.md recommend running a setup script and 'npx agent-browser install' — these will fetch and run external code. Inspect any setup scripts (scripts/setup.sh) and npx packages before running.\n- Data sharing / auto‑publishing: discovered API schemas, traces, and diagnostics are sent to a remote backend (beta-api.unbrowse.ai) and a shared marketplace. Sensitive endpoints, request/response bodies, or even redacted traces could be uploaded. If you need privacy, do not enable publishing or run the server in network‑isolated mode.\n- Missing declared requirements: the registry only lists 'bun' but the code expects 'sqlite3', the macOS 'security' utility, and the 'agent-browser' tool; ensure those exist and understand the implications. The skill will also write persistent data under ~/.unbrowse and ~/.agents/skills/unbrowse.\n- Prompt/injection artifacts: SKILL.md contains patterns flagged by a pre‑scan (base64 and unicode control chars). Manually inspect SKILL.md and the included source for obfuscated/hidden instructions before trusting it.\n\nPractical steps:\n- Inspect scripts/setup.sh and SKILL.md fully before running anything automated.\n- If you need to experiment, run this skill inside an isolated VM/container that does not contain real browser profiles or real credentials.\n- If you must run on a host with real data, deny automatic cookie extraction and interactive auto‑register/publishing; read the code to find configuration toggles (e.g., UNBROWSE_NON_INTERACTIVE, UNBROWSE_TOS_ACCEPTED) and consider disabling network access to the backend.\n- Consider auditing/limiting what gets published: verify any 'publishSkill' calls and where trace data is sent (client/index.js) and whether you can opt out of remote uploads.\n\nIf you want, I can list the exact code locations where cookies are read/decrypted, where data is uploaded, and the files to inspect first (e.g., src/auth/browser-cookies.ts, src/api/routes.ts, src/client/index.ts).",
+                    "model": "gpt-5-mini",
+                    "status": "suspicious",
+                    "summary": "The skill largely does what it claims (capture network traffic, extract cookies, publish discovered APIs) but it requests and performs high‑privilege local actions (reading browser cookie DBs, decrypting Chrome cookies via keychain, auto-extracting cookies) and will publish discovered skills/traces to a remote marketplace — and the declared requirements (only 'bun') are incomplete. These mismatches and auto‑sharing behavior are risky and should be reviewed before installing.",
+                    "verdict": "suspicious"
+                },
+                "parsed": {
+                    "clawdis": {
+                        "emoji": "🔍",
+                        "homepage": "https://github.com/unbrowse-ai/unbrowse",
+                        "requires": {
+                            "bins": [
+                                "bun"
+                            ]
+                        }
+                    },
+                    "frontmatter": {
+                        "description": "Analyze any website's network traffic and turn it into reusable API skills backed by a shared marketplace. Skills discovered by any agent are published, scored, and reusable by all agents. Capture network traffic, discover API endpoints, learn patterns, execute learned skills, and manage auth for gated sites. Use when someone wants to extract structured data from a website, discover API endpoints, automate web interactions, or work without official API documentation.",
+                        "metadata": {
+                            "openclaw": {
+                                "emoji": "🔍",
+                                "homepage": "https://github.com/unbrowse-ai/unbrowse",
+                                "requires": {
+                                    "bins": [
+                                        "bun"
+                                    ]
+                                }
+                            }
+                        },
+                        "name": "unbrowse",
+                        "user-invocable": true
+                    },
+                    "metadata": {
+                        "_clawhubQuality": {
+                            "decision": "pass",
+                            "evaluatedAt": 1772432298012.0,
+                            "reason": "Quality checks passed.",
+                            "score": 78.0,
+                            "signals": {
+                                "bodyChars": 6219.0,
+                                "bodyWords": 996.0,
+                                "bulletCount": 0.0,
+                                "cjkChars": 0.0,
+                                "genericSummary": false,
+                                "headingCount": 17.0,
+                                "templateMarkerHits": 0.0,
+                                "uniqueWordRatio": 0.37751004016064255
+                            },
+                            "similarRecentCount": 0.0,
+                            "trustTier": "low"
+                        },
+                        "openclaw": {
+                            "emoji": "🔍",
+                            "homepage": "https://github.com/unbrowse-ai/unbrowse",
+                            "requires": {
+                                "bins": [
+                                    "bun"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "sha256hash": "143fa4b4a728673abe940de8ddd793d415092a1e2186addb1e7f39024f4121a3",
+                "skillId": "kd73pjxx27d9b04bpzrr6f3p2d82469y",
+                "version": "1.0.0",
+                "vtAnalysis": {
+                    "analysis": "Type: OpenClaw Skill\nName: unbrowse-openclaw\nVersion: 1.0.0\n\nThe OpenClaw AgentSkills skill bundle is classified as suspicious due to its automatic and implicit extraction of sensitive browser cookies from Chrome/Firefox SQLite databases, including accessing the macOS keychain for Chrome decryption (src/auth/browser-cookies.ts, src/auth/index.ts). This high-risk capability is triggered automatically as a fallback if no credentials are found in its local vault, or to refresh stale authentication (src/execution/index.ts). Additionally, the skill establishes persistence by auto-starting its server in a detached process with ignored I/O (src/cli.ts, src/index.ts) and performs extensive data exfiltration of agent registration, skill manifests, execution traces, and diagnostics to an external endpoint (beta-api.unbrowse.ai, src/client/index.ts). While some security best practices are present (e.g., avoiding shell piping, dry-run for mutations), the combination of silent, broad access to sensitive user data and its transmission to an external entity without explicit, granular consent for each access raises significant security concerns.",
+                    "checkedAt": 1773033048085.0,
+                    "source": "palm",
+                    "status": "suspicious",
+                    "verdict": "suspicious"
+                }
+            },
+            "moderationInfo": {
+                "engineVersion": "v2.0.0",
+                "isHiddenByMod": false,
+                "isMalwareBlocked": false,
+                "isPendingScan": false,
+                "isRemoved": false,
+                "isSuspicious": true,
+                "reasonCodes": [
+                    "suspicious.llm_suspicious",
+                    "suspicious.vt_suspicious"
+                ],
+                "summary": "Detected: suspicious.llm_suspicious, suspicious.vt_suspicious",
+                "updatedAt": 1773033048283.0,
+                "verdict": "suspicious"
+            },
+            "owner": {
+                "_creationTime": 1772432143548.9578,
+                "_id": "kn7ds8cq0rav79rg9kdw8v7341824m3s",
+                "createdAt": 1772432143548.9578,
+                "displayName": "cnm-byd",
+                "email": "wxy113366@126.com",
+                "emailVerificationTime": 1772432143549.0,
+                "githubCreatedAt": 1740467983000.0,
+                "handle": "cnm-byd",
+                "image": "https://avatars.githubusercontent.com/u/200731435?v=4",
+                "name": "cnm-byd",
+                "role": "user",
+                "updatedAt": 1772432297538.0
+            },
+            "pendingReview": false,
+            "skill": {
+                "_creationTime": 1772432302494.9795,
+                "_id": "kd73pjxx27d9b04bpzrr6f3p2d82469y",
+                "badges": {},
+                "createdAt": 1772432302495.0,
+                "displayName": "Unbrowse Openclaw",
+                "latestVersionId": "k9714h7j2bceyzt676f79f96n982467g",
+                "ownerUserId": "kn7ds8cq0rav79rg9kdw8v7341824m3s",
+                "slug": "unbrowse-openclaw",
+                "stats": {
+                    "comments": 0.0,
+                    "downloads": 150.0,
+                    "installsAllTime": 1.0,
+                    "installsCurrent": 1.0,
+                    "stars": 0.0,
+                    "versions": 1.0
+                },
+                "summary": "Analyze any website's network traffic and turn it into reusable API skills backed by a shared marketplace. Skills discovered by any agent are published, scor...",
+                "tags": {
+                    "latest": "k9714h7j2bceyzt676f79f96n982467g"
+                },
+                "updatedAt": 1773033048283.0
+            }
+        },
+        "readme": {
+            "path": "SKILL.md",
+            "text": "---\r\nname: unbrowse\r\ndescription: Analyze any website's network traffic and turn it into reusable API skills backed by a shared marketplace. Skills discovered by any agent are published, scored, and reusable by all agents. Capture network traffic, discover API endpoints, learn patterns, execute learned skills, and manage auth for gated sites. Use when someone wants to extract structured data from a website, discover API endpoints, automate web interactions, or work without official API documentation.\r\nuser-invocable: true\r\nmetadata: {\"openclaw\": {\"requires\": {\"bins\": [\"bun\"]}, \"emoji\": \"🔍\", \"homepage\": \"https://github.com/unbrowse-ai/unbrowse\"}}\r\n---\r\n\r\n# Unbrowse — Drop-in Browser Replacement for Agents\r\n\r\nBrowse once, cache the APIs, reuse them instantly. First call discovers and learns the site's APIs (~20-80s). Every subsequent call uses cached skills (<200ms for server-fetch, ~2s for sites requiring browser execution).\r\n\r\n**IMPORTANT: Always use the CLI (`bun src/cli.ts`). NEVER pipe output to `node -e`, `python -c`, or `jq` — this causes shell escaping failures. Use `--path`, `--extract`, and `--limit` flags instead.**\r\n\r\n## Server Startup\r\n\r\n```bash\r\ncd ~/.agents/skills/unbrowse && bun src/cli.ts health\r\n```\r\n\r\nIf not running, the CLI auto-starts the server. First time requires ToS acceptance — ask the user:\r\n\r\n> Unbrowse needs you to accept its Terms of Service:\r\n> - Discovered API structures may be shared in the collective registry\r\n> - You will not use Unbrowse to attack, overload, or abuse any target site\r\n> Full terms: https://unbrowse.ai/terms\r\n\r\nAfter consent, the CLI handles startup automatically. First run also needs the browser engine:\r\n\r\n```bash\r\ncd ~/.agents/skills/unbrowse && npx agent-browser install\r\n```\r\n\r\n## Core Workflow\r\n\r\n### Step 1: Resolve an intent\r\n\r\n```bash\r\ncd ~/.agents/skills/unbrowse && bun src/cli.ts resolve \\\r\n  --intent \"get feed posts\" \\\r\n  --url \"https://www.linkedin.com/feed/\" \\\r\n  --pretty\r\n```\r\n\r\nThis returns `available_endpoints` — a ranked list of discovered API endpoints. Pick the right one by URL pattern (e.g., `MainFeed` for feed, `HomeTimeline` for tweets).\r\n\r\n### Step 2: Execute with extraction\r\n\r\n```bash\r\ncd ~/.agents/skills/unbrowse && bun src/cli.ts execute \\\r\n  --skill {skill_id} \\\r\n  --endpoint {endpoint_id} \\\r\n  --path \"data.included[]\" \\\r\n  --extract \"author:actor.name.text,text:commentary.text.text,posted:actor.subDescription.text\" \\\r\n  --limit 20 \\\r\n  --pretty\r\n```\r\n\r\n**This is the key pattern — `--path` + `--extract` + `--limit` replace ALL piping to jq/node/python.**\r\n\r\n### Step 3: Submit feedback (MANDATORY)\r\n\r\n```bash\r\ncd ~/.agents/skills/unbrowse && bun src/cli.ts feedback \\\r\n  --skill {skill_id} \\\r\n  --endpoint {endpoint_id} \\\r\n  --rating 5 \\\r\n  --outcome success\r\n```\r\n\r\n**Rating:** 5=right+fast, 4=right+slow(>5s), 3=incomplete, 2=wrong endpoint, 1=useless.\r\n\r\n## Data Extraction Flags\r\n\r\nThese flags eliminate the need to pipe output to any external parser:\r\n\r\n| Flag | Example | What it does |\r\n|------|---------|--------------|\r\n| `--path` | `\"data.home.timeline.instructions[].entries[]\"` | Drill into nested response using dot-paths with `[]` array expansion |\r\n| `--extract` | `\"user:core.user.name,text:legacy.full_text\"` | Pick specific fields with `alias:path` mapping |\r\n| `--limit` | `10` | Cap array output to N items |\r\n| `--pretty` | (boolean) | Indented JSON output |\r\n| `--raw` | (boolean) | Skip extraction recipes, return unprocessed data |\r\n\r\nWhen these flags are used, trace metadata is slimmed automatically (1MB raw -> 1.5KB output typical).\r\n\r\n### Examples\r\n\r\n```bash\r\n# X timeline — extract tweets with user, text, likes\r\nbun src/cli.ts execute --skill {id} --endpoint {id} \\\r\n  --path \"data.home.home_timeline_urt.instructions[].entries[].content.itemContent.tweet_results.result\" \\\r\n  --extract \"user:core.user_results.result.legacy.screen_name,text:legacy.full_text,likes:legacy.favorite_count\" \\\r\n  --limit 20 --pretty\r\n\r\n# LinkedIn feed — extract posts from included[]\r\nbun src/cli.ts execute --skill {id} --endpoint {id} \\\r\n  --path \"data.included[]\" \\\r\n  --extract \"author:actor.name.text,text:commentary.text.text,likes:socialDetail.totalSocialActivityCounts.numLikes\" \\\r\n  --limit 20 --pretty\r\n\r\n# Simple case — just limit results\r\nbun src/cli.ts execute --skill {id} --endpoint {id} --limit 10 --pretty\r\n```\r\n\r\n## Extraction Recipes\r\n\r\nFor responses you parse repeatedly, submit a recipe so future calls return clean data automatically (for ALL agents):\r\n\r\n```bash\r\ncd ~/.agents/skills/unbrowse && bun src/cli.ts recipe \\\r\n  --skill {skill_id} \\\r\n  --endpoint {endpoint_id} \\\r\n  --source \"included\" \\\r\n  --fields \"author:actor.name.text,text:commentary.text.text,posted:actor.subDescription.text\" \\\r\n  --require \"commentary\" \\\r\n  --compact \\\r\n  --description \"Extract posts from LinkedIn feed\"\r\n```\r\n\r\nWhen a recipe exists, future executions auto-return clean data. Use `--raw` to bypass recipes.\r\n\r\n| Recipe flag | Description |\r\n|-------------|-------------|\r\n| `--source \"path\"` | Dot-path to the source array |\r\n| `--fields \"alias:path,...\"` | Field mappings |\r\n| `--filter '{\"field\":\"type\",\"equals\":\"post\"}'` | Filter array items (JSON) |\r\n| `--require \"field1,field2\"` | Required non-null fields |\r\n| `--compact` | Strip nulls and empty values |\r\n\r\n## Authentication\r\n\r\n**Automatic.** Unbrowse extracts cookies from your Chrome/Firefox SQLite database — if you're logged into a site in Chrome, it just works.\r\n\r\nIf `auth_required` is returned:\r\n\r\n```bash\r\ncd ~/.agents/skills/unbrowse && bun src/cli.ts login --url \"https://example.com/login\"\r\n```\r\n\r\nUser completes login in the browser window. Cookies are stored and reused automatically.\r\n\r\n## Other Commands\r\n\r\n```bash\r\nbun src/cli.ts skills                                    # List all skills\r\nbun src/cli.ts skill {id}                                # Get skill details\r\nbun src/cli.ts search --intent \"...\" --domain \"...\"      # Search marketplace\r\nbun src/cli.ts sessions --domain \"linkedin.com\"          # Debug session logs\r\nbun src/cli.ts health                                    # Server health check\r\n```\r\n\r\n## Mutations\r\n\r\nAlways `--dry-run` first, ask user before `--confirm-unsafe`:\r\n\r\n```bash\r\nbun src/cli.ts execute --skill {id} --endpoint {id} --dry-run\r\nbun src/cli.ts execute --skill {id} --endpoint {id} --confirm-unsafe\r\n```\r\n\r\n## REST API Reference\r\n\r\nFor cases where the CLI doesn't cover your needs, the raw REST API is at `http://localhost:6969`:\r\n\r\n| Method | Endpoint | Description |\r\n|--------|----------|-------------|\r\n| POST | `/v1/intent/resolve` | Resolve intent -> search/capture/execute |\r\n| POST | `/v1/skills/:id/execute` | Execute a specific skill |\r\n| POST | `/v1/auth/login` | Interactive browser login |\r\n| POST | `/v1/feedback` | Submit feedback with diagnostics |\r\n| POST | `/v1/search` | Search marketplace globally |\r\n| POST | `/v1/search/domain` | Search marketplace by domain |\r\n| POST | `/v1/skills/:id/endpoints/:eid/recipe` | Submit extraction recipe |\r\n| GET | `/v1/skills/:id` | Get skill details |\r\n| GET | `/v1/sessions/:domain` | Debug session logs |\r\n| GET | `/health` | Health check |\r\n\r\n## Rules\r\n\r\n1. **Always use the CLI** — never pipe to `node -e`, `python -c`, or `jq`. Use `--path`/`--extract`/`--limit` instead.\r\n2. Always try `resolve` first — it handles the full marketplace search -> capture pipeline\r\n3. Check the result — if wrong, pick from `available_endpoints` and re-execute with `--endpoint`\r\n4. If `auth_required`, use `login` then retry\r\n5. Always `--dry-run` before mutations\r\n6. **Always submit feedback after every resolve call — this is mandatory**\r\n7. If the response is deeply nested, submit a recipe so future agents get clean data\r\n8. **Report bugs and issues on GitHub** — when something breaks, is slow, or behaves unexpectedly, file an issue:\r\n   ```bash\r\n   gh issue create --repo unbrowse-ai/unbrowse \\\r\n     --title \"bug: {short description}\" \\\r\n     --body \"## What happened\\n{description}\\n\\n## Expected\\n{what should have happened}\\n\\n## Context\\n- Skill: {skill_id}\\n- Endpoint: {endpoint_id}\\n- Domain: {domain}\\n- Error: {error message or status code}\"\r\n   ```\r\n   Categories: `bug:` (broken/wrong data), `perf:` (slow), `auth:` (login/cookie issues), `feat:` (missing capability)\r\n"
+        }
+    }
+}

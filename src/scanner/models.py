@@ -78,7 +78,7 @@ class Stage2Result:
 @dataclass
 class ScanResult:
     skill: SkillFile
-    stage1: Stage1Result
+    stage1: Optional[Stage1Result] = None
     stage2: Optional[Stage2Result] = None
     final_verdict: Verdict = Verdict.CLEAN
 

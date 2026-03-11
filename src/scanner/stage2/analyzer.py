@@ -101,16 +101,33 @@ class SemanticAnalyzer:
                         "Skill %s: parse error on attempt %d/%d: %s",
                         skill_id, attempt, self._max_retries, e,
                     )
-                except openai.APIError as e:
+                except openai.APIStatusError as e:
                     logger.warning(
-                        "Skill %s: API error on attempt %d/%d: %s",
+                        "Skill %s: API status error on attempt %d/%d: %s (status=%s)",
+                        skill_id, attempt, self._max_retries, e.message,
+                        e.status_code,
+                    )
+                    if attempt < self._max_retries:
+                        await asyncio.sleep(2 ** attempt)
+                except openai.APIConnectionError as e:
+                    logger.warning(
+                        "Skill %s: API connection error on attempt %d/%d: %s",
                         skill_id, attempt, self._max_retries, e,
                     )
                     if attempt < self._max_retries:
                         await asyncio.sleep(2 ** attempt)
-                except (TypeError, openai.AuthenticationError) as e:
-                    logger.error("Skill %s: auth/config error: %s", skill_id, e)
+                except openai.AuthenticationError as e:
+                    logger.error(
+                        "Skill %s: authentication failed: %s", skill_id, e)
                     break
+                except Exception as e:
+                    logger.error(
+                        "Skill %s: unexpected error on attempt %d/%d: %s: %s",
+                        skill_id, attempt, self._max_retries,
+                        type(e).__name__, e,
+                    )
+                    if attempt < self._max_retries:
+                        await asyncio.sleep(2 ** attempt)
 
         elapsed_ms = int((time.monotonic() - start) * 1000)
         return Stage2Result(

@@ -1,0 +1,357 @@
+{
+    "task_params": {
+        "owner_handle": "autogame-17",
+        "skill_slug": "feishu-doc",
+        "detail_url": "https://clawhub.ai/autogame-17/feishu-doc",
+        "skill_name": "Feishu Doc",
+        "summary": "Fetch content from Feishu (Lark) Wiki, Docs, Sheets, and Bitable. Automatically resolves Wiki URLs to real entities and converts content to Markdown.",
+        "version": "1.2.7",
+        "downloads": 3568,
+        "stars": 3,
+        "comments": 0,
+        "requires": {},
+        "created_at_ts": 1771040129182.0,
+        "updated_at_ts": 1773029023088.0
+    },
+    "crawled_at": 1773048450.4657228,
+    "detail_content": {
+        "skill_info": {
+            "canonical": null,
+            "forkOf": null,
+            "latestVersion": {
+                "_creationTime": 1771169217845.6692,
+                "_id": "k97809f4cnce4xw7xsbx28ptp5816d4g",
+                "changelog": "Version 1.2.7 of feishu-doc\n\n- No code or documentation changes detected in this release.\n- All functionality and usage remain the same as the previous version.",
+                "changelogSource": "auto",
+                "createdAt": 1771169217845.0,
+                "createdBy": "kn7apafdj4thknczrgxdzfd2v1808svf",
+                "files": [
+                    {
+                        "contentType": "text/markdown",
+                        "path": "README.md",
+                        "sha256": "5653134c8d55451b00e5ab95b5dbc9a7a4c14ae03f0f4a48482bd60ae3d0b1fc",
+                        "size": 451.0,
+                        "storageId": "kg2bwrz3rkt8x4g7q9pr7rc3dd816qr6"
+                    },
+                    {
+                        "contentType": "text/markdown",
+                        "path": "SKILL.md",
+                        "sha256": "3880aac99a4ed644f89fd5bc42df6d54a26636578da1fad6d10efce715865072",
+                        "size": 1838.0,
+                        "storageId": "kg2bgd433nvxrdgxmfbbkt85x1816ff8"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "_meta.json",
+                        "sha256": "0f14b7bf3f38c9bbe4633be4eae70ca84f895b8bbdb3946982eae546305b7f32",
+                        "size": 129.0,
+                        "storageId": "kg26hawz2kn2pd648nrm2e5r4x817s0s"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "append_simple.js",
+                        "sha256": "047620e44620b4f6177362379c69df089be73f6e468e27ca568f6bd53f6c5d72",
+                        "size": 3270.0,
+                        "storageId": "kg2dyn0k18baadr5ef03fnamn58171jz"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "cache/TkdKYWQ1czRMbzVta0N4WFpleWNpNTBJbkNl.json",
+                        "sha256": "03f76919fd7dbe6785978cd924c7411f0d3feb392ac7b3d99af1833fc8d4f2f5",
+                        "size": 3993.0,
+                        "storageId": "kg2f6yh48fvcv5j7cspmbf8hes817mvp"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "cache/aHR0cHM6Ly9hdXRvZ2FtZS5mZWlzaHUuY24vZG9jeC9OR0phZDVzNExvNW1rQ3hYWmV5Y2k1MEluQ2U.json",
+                        "sha256": "053993d896452e564288d6f5829ca971f891b8069570b68d5d88d556ba87a00b",
+                        "size": 1230552.0,
+                        "storageId": "kg22pdddwr1btdf65db5qv1wy9817hkk"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "cache/aHR0cHM6Ly9hdXRvZ2FtZS5mZWlzaHUuY24vZG9jeC9VZG1qZDFFOE1va0dNUnhMRnVqYzkxQkluc2Q.json",
+                        "sha256": "ce901dcc3d1e2d3d9392a194210c474db6f75b96006ad30506870e2c4bf04600",
+                        "size": 11461.0,
+                        "storageId": "kg2aac5jfq19g446bwhn7j02a5817syw"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "cache/aHR0cHM6Ly9hdXRvZ2FtZS5mZWlzaHUuY24vd2lraS9DdHRUd29yYlNpekVjaWtKdURzY1Y3WURuSGM.json",
+                        "sha256": "e120936123b9dd748fe2f230225530a9616bda7eb0280b7eceb21c8e0bde319f",
+                        "size": 14043.0,
+                        "storageId": "kg264s2zw9dc8mpx0xarx39hk18175v0"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "cache/aHR0cHM6Ly9hdXRvZ2FtZS5mZWlzaHUuY24vd2lraS9KV3Iyd1Y5TlVpdWJVa2tKVXVoYzhPM01uVGQ.json",
+                        "sha256": "30fb695a9a57d392b8b2f27049ac79780264df2eefb4af12b120d132d5155525",
+                        "size": 1828.0,
+                        "storageId": "kg20ttfa81z58460g87phszns5817rvh"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "cache/aHR0cHM6Ly9hdXRvZ2FtZS5mZWlzaHUuY24vd2lraS9KV3Iyd1Y5TlVpdWJVa2tKVXVoYzhPM01uVGQ_ZnJvbT1mcm9tX2NvcHlsaW5r.json",
+                        "sha256": "30fb695a9a57d392b8b2f27049ac79780264df2eefb4af12b120d132d5155525",
+                        "size": 1828.0,
+                        "storageId": "kg26rgaa0xvcrx4kmjhg5z62s98166yq"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "cache/aHR0cHM6Ly9hdXRvZ2FtZS5mZWlzaHUuY24vd2lraS9XS2Fwd2lOMUdpalhLY2twT21XYzZGcHBuNVc_dGFibGU9dGJsSmdaSE9tUHliZ1g2MCZ2aWV3PXZld3FFOTVENlE.json",
+                        "sha256": "3ca0455f44b243d5e18fc36047e3e2cbb76d2e18696042801c46b23660b85c88",
+                        "size": 83373.0,
+                        "storageId": "kg2f90fnbbgrtr8dzysm8e7jb98167fk"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "cache/aHR0cHM6Ly9hdXRvZ2FtZS5mZWlzaHUuY24vd2lraS9YWjBIdzZiUVppZ1NWN2tvZ2tyY0VQeUluZWQ_c2hlZXQ9ZWVkOWVl.json",
+                        "sha256": "2079622fce3c2cc4917abf72f81cc2496190ea5a5a339a3558dcf5e3ee00d059",
+                        "size": 37840.0,
+                        "storageId": "kg23jv5vfqjtx08374d63ncs9s816szw"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "config.json",
+                        "sha256": "ee131e7498454a036a526c2f3a8c6daa4601abf32207eb3a9a5b710c48a1cdcf",
+                        "size": 39.0,
+                        "storageId": "kg21y8av5g6h4b52df4nph2dxd817ggj"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "create.js",
+                        "sha256": "74566ad5a1fe530a2776d993f06596f41337a245efa80e785bd69d191d7e875e",
+                        "size": 2713.0,
+                        "storageId": "kg20yzz491tv1rq1jd85nw0xjs817183"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "download_file.js",
+                        "sha256": "15b49f9dce039bb48ad98f286ac5d0637c46936d54eb20f280e040b452f0d111",
+                        "size": 1430.0,
+                        "storageId": "kg2e92grwgv68gy474150wb2v1816h3t"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "fetch_mock.js",
+                        "sha256": "12205657a391190979e5f250fdfc73d04912feed4d92fbf886439a347ca50d3a",
+                        "size": 780.0,
+                        "storageId": "kg26kj645df33v1wvmarjz8kts817ez5"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "index.js",
+                        "sha256": "1612f7941a06ceac0d30f5197a658fae87a5b50efe0b2cdc5b7abe880ce4964e",
+                        "size": 17081.0,
+                        "storageId": "kg2cgjbfg391mvxh1vgbassvzh816m3y"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "input_guard.js",
+                        "sha256": "029f1b7940f58e41dfe6b9b67c44fd38fb1d5525f9db7c2a173cef33e694ba28",
+                        "size": 2221.0,
+                        "storageId": "kg2ams6gk0wvk0jfshaqtdtpm98162ff"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "inspect_meta.js",
+                        "sha256": "cb7539b3c2e8d3213695af29028f6443c7b979f3064737d3ff3bf15813b30f45",
+                        "size": 2034.0,
+                        "storageId": "kg20xjdgwvc7r3q86wcf9wrt5s816e6n"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "lib/auth.js",
+                        "sha256": "3f3ed9f0d51cc899a44ea534d5afa6fe4da6a93600ab5162128ad91478140d1e",
+                        "size": 4072.0,
+                        "storageId": "kg226s6dvwkeyd5nva92f1xxan816r24"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "lib/bitable.js",
+                        "sha256": "82a9247790ea0ac4f506d68f744153bed4163d1dce14758e801121b671e029de",
+                        "size": 2465.0,
+                        "storageId": "kg25tyz4sx7x5myc5y49tdkjbs817a71"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "lib/docx.js",
+                        "sha256": "a116597e2f7c4245bf55fcc395f340c299ce4fa557712b43fb3b9a94ef6f1bca",
+                        "size": 6269.0,
+                        "storageId": "kg27jgy8379zqs9gh90kz3btg98165ng"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "lib/sheet.js",
+                        "sha256": "74efc42a3d94dd6db5e97541b81f3a2fe2b4e7136af09a3fd1127f3eb508a429",
+                        "size": 4044.0,
+                        "storageId": "kg255k3pv187abqp1k43sdxyf9816nz1"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "lib/wiki.js",
+                        "sha256": "483b2b06be3642faab45ff254992881b9c151a1484c8593ef36b2549301cc130",
+                        "size": 972.0,
+                        "storageId": "kg29eb01vm9g3y6gqatja69emx8160qm"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "package-lock.json",
+                        "sha256": "4f28aba0faef2559e1f43bee372ed7e41e112092a20ca2833e6658a645cd55c7",
+                        "size": 21231.0,
+                        "storageId": "kg216bdtnkmjg0520qrzby8hxn816fk5"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "package.json",
+                        "sha256": "ccf2eca4058bb260e1bf792a1b48b0e16135f8ba2a9e1c5336533fa899d4bd05",
+                        "size": 277.0,
+                        "storageId": "kg2c653rjz51n6y7ba3f6km4g9816nkh"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "setup_iter11.js",
+                        "sha256": "5886697d07a62a2134af04cfd7f844349e75c2536b56eb76c4561f5942ea95f1",
+                        "size": 4256.0,
+                        "storageId": "kg29h6a5saqmj90qyyb15hztmh816yqh"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "validate_patch.js",
+                        "sha256": "c50c47350da031b89048c282ba5618282b3e15effc6f6bd70e71e6f4f725068e",
+                        "size": 447.0,
+                        "storageId": "kg207txd4qjcmy245da9mr1cq981735b"
+                    }
+                ],
+                "fingerprint": "2151c63f22c7e46e2a4ff034e00527dabc79d7b0ec141ad2f0dd34e4fd89da56",
+                "llmAnalysis": {
+                    "checkedAt": 1771169243351.0,
+                    "confidence": "medium",
+                    "dimensions": [
+                        {
+                            "detail": "The name/description claim a Feishu (Lark) reader/writer which legitimately needs Feishu app credentials and a Node runtime. However the registry metadata claims no required environment variables or binaries, which contradicts the SKILL.md and source (which reference FEISHU_APP_ID / FEISHU_APP_SECRET and the @larksuiteoapi node SDK). Also the package ships large cache files containing Feishu document content (including internal/wiki links and tmp download URLs); bundling cached workspace data with the skill is unexpected for a simple 'fetch/convert' utility and raises data-leak concerns.",
+                            "label": "Purpose & Capability",
+                            "name": "purpose_capability",
+                            "rating": "concern"
+                        },
+                        {
+                            "detail": "SKILL.md instructs the agent to use a ../feishu-common dependency and to set FEISHU_APP_ID/FEISHU_APP_SECRET or config.json — but the registry metadata omitted these env requirements. Instructions are otherwise scoped to reading/creating/updating Feishu docs. The codebase includes many cached documents (full content) and mentions loading ../common/env; referencing a parent-sibling shared module that is not included is fragile and could cause the runtime to load unexpected local modules if the execution environment differs. The presence of large caches of external documents means the package itself contains potentially sensitive document content that will be read/served by the skill.",
+                            "label": "Instruction Scope",
+                            "name": "instruction_scope",
+                            "rating": "concern"
+                        },
+                        {
+                            "detail": "No install spec is provided (instruction-only in metadata), yet a full Node project is included (package.json, package-lock.json, many .js files). This mismatch means the skill will rely on the runtime having Node and dependencies installed. The code imports @larksuiteoapi/node-sdk and '../common/env'; no external binary install is declared. That lack of clarity is a packaging/integrity concern but not direct evidence of malicious install behavior.",
+                            "label": "Install Mechanism",
+                            "name": "install_mechanism",
+                            "rating": "note"
+                        },
+                        {
+                            "detail": "SKILL.md and README explicitly require FEISHU_APP_ID and FEISHU_APP_SECRET (and code references process.env.FEISHU_APP_ID/SECRET), but the registry metadata lists no required env. That is an inconsistency the user should treat as suspicious. Also the bundle already contains cached document contents and temporary download URLs — the packaged cache suggests the skill already carries external data, which is unrelated to requesting only Feishu credentials but increases the sensitivity of what the skill can access or expose.",
+                            "label": "Credentials",
+                            "name": "environment_proportionality",
+                            "rating": "concern"
+                        },
+                        {
+                            "detail": "always:false (normal). The package writes/contains a cache/ directory and expects a config.json; it will persist caches and possibly tokens locally. That persistence is reasonable for a fetch/cache tool, but shipped caches with real document content increase the blast radius if the skill is granted credentials or is run in a sensitive environment. The skill does not claim to modify other skills or system-wide configs.",
+                            "label": "Persistence & Privilege",
+                            "name": "persistence_privilege",
+                            "rating": "note"
+                        }
+                    ],
+                    "findings": "[base64-block] unexpected: The scanner flagged base64-encoded blocks/patterns (the repository uses base64-encoded filenames for cached URLs). While base64 is sometimes used legitimately for caching/encoding, the scan flagged it in SKILL.md context as a possible prompt-injection or obfuscation indicator — combined with large cached content this warrants extra scrutiny.",
+                    "guidance": "Do not give this skill your FEISHU_APP_ID or FEISHU_APP_SECRET until you verify its origin and code. Actionable steps:\n- Confirm publisher identity and a homepage or repo; the 'Source: unknown' and no homepage are red flags.\n- Review index.js and lib/auth.js before running; verify there are no undocumented outbound endpoints (other than open.feishu.cn) or telemetry. Pay attention to any code that posts data to non-Feishu URLs.\n- Remove or examine the cache/ files: the package includes many cached Feishu docs (some large). Those caches may contain sensitive organizational data — decide whether you want those files bundled in the skill at all.\n- Ensure you only install 'feishu-common' from a trusted source; the skill depends on ../feishu-common and ../common/env which may change runtime imports.\n- If you proceed, run the skill in an isolated environment (sandbox/container) and monitor network traffic the first time it runs.\n- If you cannot audit the code (index.js and all lib/*.js), prefer an officially published Feishu integration or a skill with clear dependency and credential declarations.\n\nConfidence note: medium. The package appears to implement the claimed Feishu features, but the mismatches between metadata and the code/README, plus the presence of bundled cached documents and base64-encoded filenames, make the package suspicious and worth manual review before trust or credential entry.",
+                    "model": "gpt-5-mini",
+                    "status": "suspicious",
+                    "summary": "The skill broadly matches a Feishu document reader/writer, but its metadata, runtime instructions, and shipped files are inconsistent and include cached Feishu content that may be sensitive — review before installing or providing credentials.",
+                    "verdict": "suspicious"
+                },
+                "parsed": {
+                    "frontmatter": {
+                        "description": "Fetch content from Feishu (Lark) Wiki, Docs, Sheets, and Bitable. Automatically resolves Wiki URLs to real entities and converts content to Markdown.",
+                        "name": "feishu-doc",
+                        "tags": [
+                            "feishu",
+                            "lark",
+                            "wiki",
+                            "doc",
+                            "sheet",
+                            "document",
+                            "reader",
+                            "writer"
+                        ]
+                    }
+                },
+                "sha256hash": "bdef16bd77e399c68fd29f8b4f15837f22fe07c8d7e8459a083e0eff77b7a9a6",
+                "skillId": "kd72etqmv9mtmaes09qe5kcv3s8155vg",
+                "version": "1.2.7",
+                "vtAnalysis": {
+                    "analysis": "Type: OpenClaw Skill\nName: feishu-doc\nVersion: 1.2.7\n\nThe skill is suspicious due to critical vulnerabilities in its authentication and file handling mechanisms. The `lib/auth.js` file loads environment variables from parent directories (e.g., `../../../.env`) and stores Feishu access tokens unencrypted in a shared cache file (`../../../memory/feishu_token.json`), posing a significant risk of credential exposure and token theft. Additionally, scripts like `append_simple.js` and `download_file.js` allow reading from and writing to arbitrary local file paths, which could be exploited by a compromised agent to access or modify sensitive system files. While the skill's core purpose of interacting with Feishu documents is benign, these vulnerabilities could enable malicious actions if exploited.",
+                    "checkedAt": 1773029022758.0,
+                    "source": "palm",
+                    "status": "suspicious",
+                    "verdict": "suspicious"
+                }
+            },
+            "moderationInfo": {
+                "engineVersion": "v2.0.0",
+                "isHiddenByMod": false,
+                "isMalwareBlocked": false,
+                "isPendingScan": false,
+                "isRemoved": false,
+                "isSuspicious": true,
+                "reasonCodes": [
+                    "suspicious.llm_suspicious",
+                    "suspicious.vt_suspicious"
+                ],
+                "summary": "Detected: suspicious.llm_suspicious, suspicious.vt_suspicious",
+                "updatedAt": 1773029023088.0,
+                "verdict": "suspicious"
+            },
+            "owner": {
+                "_creationTime": 1769851031529.179,
+                "_id": "kn7apafdj4thknczrgxdzfd2v1808svf",
+                "createdAt": 1769851031529.179,
+                "displayName": "autogame-17",
+                "email": "17@autogame.ai",
+                "emailVerificationTime": 1771209964066.0,
+                "githubCreatedAt": 1712642763000.0,
+                "githubFetchedAt": 1771093099547.0,
+                "githubProfileSyncedAt": 1771209965030.0,
+                "handle": "autogame-17",
+                "image": "https://avatars.githubusercontent.com/u/166480271?v=4",
+                "name": "autogame-17",
+                "role": "user",
+                "updatedAt": 1772860647298.0
+            },
+            "pendingReview": false,
+            "skill": {
+                "_creationTime": 1771040129182.1333,
+                "_id": "kd72etqmv9mtmaes09qe5kcv3s8155vg",
+                "badges": {},
+                "createdAt": 1771040129182.0,
+                "displayName": "Feishu Doc",
+                "latestVersionId": "k97809f4cnce4xw7xsbx28ptp5816d4g",
+                "ownerUserId": "kn7apafdj4thknczrgxdzfd2v1808svf",
+                "slug": "feishu-doc",
+                "stats": {
+                    "comments": 0.0,
+                    "downloads": 3579.0,
+                    "installsAllTime": 67.0,
+                    "installsCurrent": 65.0,
+                    "stars": 3.0,
+                    "versions": 2.0
+                },
+                "summary": "Fetch content from Feishu (Lark) Wiki, Docs, Sheets, and Bitable. Automatically resolves Wiki URLs to real entities and converts content to Markdown.",
+                "tags": {
+                    "latest": "k97809f4cnce4xw7xsbx28ptp5816d4g"
+                },
+                "updatedAt": 1773029023088.0
+            }
+        },
+        "readme": {
+            "path": "SKILL.md",
+            "text": "---\nname: feishu-doc\ndescription: Fetch content from Feishu (Lark) Wiki, Docs, Sheets, and Bitable. Automatically resolves Wiki URLs to real entities and converts content to Markdown.\ntags: [feishu, lark, wiki, doc, sheet, document, reader, writer]\n---\n\n# Feishu Doc Skill\n\nFetch content from Feishu (Lark) Wiki, Docs, Sheets, and Bitable. Write and update documents.\n\n## Prerequisites\n\n- Install `feishu-common` first.\n- This skill depends on `../feishu-common/index.js` for token and API auth.\n\n## Capabilities\n\n- **Read**: Fetch content from Docs, Sheets, Bitable, and Wiki.\n- **Create**: Create new blank documents.\n- **Write**: Overwrite document content with Markdown.\n- **Append**: Append Markdown content to the end of a document.\n- **Blocks**: List, get, update, and delete specific blocks.\n\n## Long Document Handling (Unlimited Length)\n\nTo generate long documents (exceeding LLM output limits of ~2000-4000 tokens):\n1. **Create** the document first to get a `doc_token`.\n2. **Chunk** the content into logical sections (e.g., Introduction, Chapter 1, Chapter 2).\n3. **Append** each chunk sequentially using `feishu_doc_append`.\n4. Do NOT try to write the entire document in one `feishu_doc_write` call if it is very long; use the append loop pattern.\n\n## Usage\n\n```bash\n# Read\nnode index.js --action read --token <doc_token>\n\n# Create\nnode index.js --action create --title \"My Doc\"\n\n# Write (Overwrite)\nnode index.js --action write --token <doc_token> --content \"# Title\\nHello world\"\n\n# Append\nnode index.js --action append --token <doc_token> --content \"## Section 2\\nMore text\"\n```\n\n## Configuration\n\nCreate a `config.json` file in the root of the skill or set environment variables:\n\n```json\n{\n  \"app_id\": \"YOUR_APP_ID\",\n  \"app_secret\": \"YOUR_APP_SECRET\"\n}\n```\n\nEnvironment variables:\n- `FEISHU_APP_ID`\n- `FEISHU_APP_SECRET`\n"
+        }
+    }
+}

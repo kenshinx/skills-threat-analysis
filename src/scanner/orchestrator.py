@@ -175,7 +175,13 @@ class Orchestrator:
             for r, s2 in zip(batch, stage2_results):
                 r.stage2 = s2
                 # Determine final verdict
-                if s2.verdict == Verdict.MALICIOUS:
+                if s2.verdict == Verdict.ERROR:
+                    # LLM analysis failed — fall back to stage 1 verdict
+                    r.final_verdict = (
+                        r.stage1.verdict if r.stage1
+                        else Verdict.NEEDS_REVIEW
+                    )
+                elif s2.verdict == Verdict.MALICIOUS:
                     r.final_verdict = Verdict.MALICIOUS
                 elif s2.verdict == Verdict.SUSPICIOUS:
                     r.final_verdict = Verdict.SUSPICIOUS

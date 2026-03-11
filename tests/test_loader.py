@@ -13,6 +13,10 @@ class TestLoader:
     def test_detect_source_clawhub(self):
         assert detect_source(Path("/data/clawhub/skill-1.md")) == "clawhub"
 
+    def test_detect_source_clawhub_data(self):
+        """clawhub_data directory should match as clawhub source."""
+        assert detect_source(Path("/Downloads/clawhub_data/author/skill")) == "clawhub"
+
     def test_detect_source_smithery(self):
         assert detect_source(Path("/data/smithery/tools/skill.yaml")) == "smithery"
 

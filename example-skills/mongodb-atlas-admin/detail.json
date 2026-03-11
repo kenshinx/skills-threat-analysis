@@ -1,0 +1,226 @@
+{
+    "task_params": {
+        "owner_handle": "finishy1995",
+        "skill_slug": "mongodb-atlas-admin",
+        "detail_url": "https://clawhub.ai/finishy1995/mongodb-atlas-admin",
+        "skill_name": "MongoDB Atlas",
+        "summary": "browse MongoDB Atlas Admin API specifications and execute operations (if credentials provided).",
+        "version": "1.0.0",
+        "downloads": 1503,
+        "stars": 0,
+        "comments": 0,
+        "requires": {
+            "bins": [
+                "node"
+            ],
+            "env": [
+                "ATLAS_CLIENT_ID",
+                "ATLAS_CLIENT_SECRET"
+            ]
+        },
+        "created_at_ts": 1770782501976.0,
+        "updated_at_ts": 1773028311819.0
+    },
+    "crawled_at": 1773048723.4827397,
+    "detail_content": {
+        "skill_info": {
+            "canonical": null,
+            "forkOf": null,
+            "latestVersion": {
+                "_creationTime": 1770782501976.914,
+                "_id": "k97f3gqwzgyhx3p4hgdvywbsmn80z578",
+                "changelog": "Initial release: API browser + live calls with safety guards",
+                "changelogSource": "user",
+                "createdAt": 1770782501976.0,
+                "createdBy": "kn7bvaknjtr7y2z6cfh5m4546180yqxw",
+                "files": [
+                    {
+                        "contentType": "text/markdown",
+                        "path": "SKILL.md",
+                        "sha256": "fcc27600c2144e1654c7cd9d9657b3ab1e9bd90a888e5ed8f534c6a9fe331fbe",
+                        "size": 2861.0,
+                        "storageId": "kg282v8gbs5f61kpt0ck4jer3x80yvym"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "resources/atlas-admin-api-v2-openapi-source.json",
+                        "sha256": "c212dc2c006d0337ba32041e4ab8864746a6b9506f6618515674cd1d9ffc4301",
+                        "size": 3075055.0,
+                        "storageId": "kg28kmq6pmd06885q44tbq35h580ytdy"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "scripts/atlas-api.mjs",
+                        "sha256": "76a8cc7aa0040a34ca409578f5fe9e9ce2de0d50a26832cb641e62d20fee06ab",
+                        "size": 8910.0,
+                        "storageId": "kg2673h39j1jf4y8e9qtaw3v5d80y06y"
+                    },
+                    {
+                        "contentType": "text/javascript",
+                        "path": "scripts/atlas-call.mjs",
+                        "sha256": "893769a1bccceee0b13a019a979ca685468a1df7deeaa48bc6bc6c2e1df4acfd",
+                        "size": 9906.0,
+                        "storageId": "kg25v3v9t44fsas2xgjt559n9x80zgk4"
+                    }
+                ],
+                "fingerprint": "59a7c20a5c83b5b4dedbb77cce5065f4c1579e75b8e41913764bcbd551909163",
+                "llmAnalysis": {
+                    "checkedAt": 1770803210267.0,
+                    "confidence": "high",
+                    "dimensions": [
+                        {
+                            "detail": "Name/description match the contents: the package includes a full Atlas OpenAPI spec and two Node scripts — one for browsing the spec and one for making API calls. Requiring `node` and Atlas service account credentials (ATLAS_CLIENT_ID, ATLAS_CLIENT_SECRET) is appropriate for this functionality.",
+                            "label": "Purpose & Capability",
+                            "name": "purpose_capability",
+                            "rating": "ok"
+                        },
+                        {
+                            "detail": "SKILL.md instructs the agent to run local Node scripts that only read the bundled OpenAPI spec and, when credentials are present, perform live HTTP calls to MongoDB Atlas. The runtime scripts are explicit about when they will modify resources and require interactive approval for POST/PUT/PATCH/DELETE. Note: atlas-call.mjs also reads/writes a local token cache and can use optional env vars (ATLAS_GROUP_ID, ATLAS_API_BASE_URL) not listed as required; these are reasonable but should be noted.",
+                            "label": "Instruction Scope",
+                            "name": "instruction_scope",
+                            "rating": "note"
+                        },
+                        {
+                            "detail": "No install step or external downloads are used — this is instruction-plus-local-code only. All included files are present in the bundle (large OpenAPI JSON and two scripts). No remote installers, URL downloads, or archives are present.",
+                            "label": "Install Mechanism",
+                            "name": "install_mechanism",
+                            "rating": "ok"
+                        },
+                        {
+                            "detail": "The two required env vars (ATLAS_CLIENT_ID, ATLAS_CLIENT_SECRET) are appropriate for obtaining OAuth tokens via client-credentials flow. The scripts additionally accept optional ATLAS_GROUP_ID and ATLAS_API_BASE_URL (documented in the script) but these were not declared as required — this is low-risk but worth documenting. The skill does not request unrelated credentials.",
+                            "label": "Credentials",
+                            "name": "environment_proportionality",
+                            "rating": "note"
+                        },
+                        {
+                            "detail": "The client caches the OAuth access token to disk under ~/.openclaw/.cache/mongodb-atlas/token.json to avoid repeated token requests; it does not persist client secrets. Writing a token cache to the user's home directory is reasonable for an API client but means authentication state persists on disk and should be considered by the user.",
+                            "label": "Persistence & Privilege",
+                            "name": "persistence_privilege",
+                            "rating": "note"
+                        }
+                    ],
+                    "guidance": "This skill is coherent with its description: it bundles the Atlas OpenAPI spec and provides Node scripts to browse the spec and (if you provide ATLAS_CLIENT_ID and ATLAS_CLIENT_SECRET) make live API calls. Before installing or using it, consider: \n\n- The tool will perform network calls to your Atlas endpoint and will exchange your service-account credentials for an access token (expected for this purpose). The client secret is used only for the token request and is not stored by the skill.\n- A token cache (access_token and expiry) is written to ~/.openclaw/.cache/mongodb-atlas/token.json; if you share the machine, remove that file when finished or run clearCachedToken if needed.\n- State-changing HTTP methods (POST/PUT/PATCH/DELETE) require explicit approval in the script and SKILL.md recommends always using --dry-run first. Do not run with --yes in automation unless you intentionally want destructive actions.\n\nIf you trust the source and will only use it as a read-only spec browser, you can omit setting the Atlas credentials. If you plan to run live calls, provide service-account credentials with least privilege (a service account scoped only to the projects/operations you intend to use).",
+                    "model": "gpt-5-mini",
+                    "status": "clean",
+                    "summary": "The skill is internally consistent with its stated purpose (browsing an included Atlas OpenAPI spec and optionally calling the Atlas Admin API using service-account credentials); required binaries and env vars make sense, there is no remote install or obfuscated code, and the runtime scripts contain clear safety prompts for state-changing calls.",
+                    "verdict": "benign"
+                },
+                "parsed": {
+                    "clawdis": {
+                        "emoji": "🍃",
+                        "requires": {
+                            "bins": [
+                                "node"
+                            ],
+                            "env": [
+                                "ATLAS_CLIENT_ID",
+                                "ATLAS_CLIENT_SECRET"
+                            ]
+                        }
+                    },
+                    "frontmatter": {
+                        "description": "browse MongoDB Atlas Admin API specifications and execute operations (if credentials provided).",
+                        "homepage": "https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/",
+                        "metadata": {
+                            "clawdbot": {
+                                "emoji": "🍃",
+                                "requires": {
+                                    "bins": [
+                                        "node"
+                                    ],
+                                    "env": [
+                                        "ATLAS_CLIENT_ID",
+                                        "ATLAS_CLIENT_SECRET"
+                                    ]
+                                }
+                            }
+                        },
+                        "name": "mongodb-atlas"
+                    },
+                    "metadata": {
+                        "clawdbot": {
+                            "emoji": "🍃",
+                            "requires": {
+                                "bins": [
+                                    "node"
+                                ],
+                                "env": [
+                                    "ATLAS_CLIENT_ID",
+                                    "ATLAS_CLIENT_SECRET"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "sha256hash": "669b168520e1c48b580d9db26aee5587a180afc79fbe9a57d1a0006218f4ffee",
+                "skillId": "kd794ee1xrh3fyr1rkr7nqh7c180zaj8",
+                "version": "1.0.0",
+                "vtAnalysis": {
+                    "analysis": "Type: OpenClaw Skill\nName: mongodb-atlas-admin\nVersion: 1.0.0\n\nThe skill bundle is classified as suspicious primarily due to the `scripts/atlas-call.mjs` script's `--file <path>` option. This option allows reading the content of any local file and attempting to parse it as JSON for use as a request body. While this is a plausible feature for an API client, it introduces a vulnerability where a prompt-injected AI agent could be instructed to read sensitive local files (e.g., `~/.ssh/id_rsa` if it's valid JSON, or its content could be exposed if the agent is instructed to print errors/content). However, the `SKILL.md` and `atlas-call.mjs` also implement strong safety protocols, explicitly instructing the AI agent to use `--dry-run` and seek user confirmation for any state-changing API operations, which is a positive security measure against prompt injection and accidental malicious actions.",
+                    "checkedAt": 1773028311644.0,
+                    "source": "palm",
+                    "status": "suspicious",
+                    "verdict": "suspicious"
+                }
+            },
+            "moderationInfo": {
+                "engineVersion": "v2.0.0",
+                "isHiddenByMod": false,
+                "isMalwareBlocked": false,
+                "isPendingScan": false,
+                "isRemoved": false,
+                "isSuspicious": true,
+                "reasonCodes": [
+                    "suspicious.vt_suspicious"
+                ],
+                "summary": "Detected: suspicious.vt_suspicious",
+                "updatedAt": 1773028311819.0,
+                "verdict": "suspicious"
+            },
+            "owner": {
+                "_creationTime": 1770782318371.7314,
+                "_id": "kn7bvaknjtr7y2z6cfh5m4546180yqxw",
+                "createdAt": 1770782318371.7314,
+                "displayName": "David Wang",
+                "email": "finishy@qq.com",
+                "emailVerificationTime": 1771674593318.0,
+                "githubCreatedAt": 1474983794000.0,
+                "githubFetchedAt": 1770782500939.0,
+                "githubProfileSyncedAt": 1771674593536.0,
+                "handle": "finishy1995",
+                "image": "https://avatars.githubusercontent.com/u/22475291?v=4",
+                "name": "finishy1995",
+                "role": "user",
+                "updatedAt": 1771674593607.0
+            },
+            "pendingReview": false,
+            "skill": {
+                "_creationTime": 1770782501976.9138,
+                "_id": "kd794ee1xrh3fyr1rkr7nqh7c180zaj8",
+                "badges": {},
+                "createdAt": 1770782501976.0,
+                "displayName": "MongoDB Atlas",
+                "latestVersionId": "k97f3gqwzgyhx3p4hgdvywbsmn80z578",
+                "ownerUserId": "kn7bvaknjtr7y2z6cfh5m4546180yqxw",
+                "slug": "mongodb-atlas-admin",
+                "stats": {
+                    "comments": 0.0,
+                    "downloads": 1503.0,
+                    "installsAllTime": 1.0,
+                    "installsCurrent": 1.0,
+                    "stars": 0.0,
+                    "versions": 1.0
+                },
+                "summary": "browse MongoDB Atlas Admin API specifications and execute operations (if credentials provided).",
+                "tags": {
+                    "latest": "k97f3gqwzgyhx3p4hgdvywbsmn80z578"
+                },
+                "updatedAt": 1773028311819.0
+            }
+        },
+        "readme": {
+            "path": "SKILL.md",
+            "text": "---\nname: mongodb-atlas\ndescription: browse MongoDB Atlas Admin API specifications and execute operations (if credentials provided).\nhomepage: https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/\nmetadata: {\"clawdbot\":{\"emoji\":\"🍃\",\"requires\":{\"bins\":[\"node\"],\"env\":[\"ATLAS_CLIENT_ID\",\"ATLAS_CLIENT_SECRET\"]},\"primaryEnv\":\"\"}}\n---\n\n# MongoDB Atlas Admin API\n\nTool to browse OpenAPI specifications for MongoDB Atlas.\n**Note:** If `ATLAS_CLIENT_ID` and `ATLAS_CLIENT_SECRET` are configured in the environment, this tool can also execute live API calls. Without credentials, it functions as a read-only documentation browser.\n\n## Commands\n\n### 1. List API Catalog\nList all available API categories or filter by keyword.\n\n```bash\nnode {baseDir}/scripts/atlas-api.mjs catalog # list all categories\nnode {baseDir}/scripts/atlas-api.mjs catalog Clusters\n```\n\n### 2. Get API Details\n\nGet full endpoint definition (method, path, params) for a specific Operation ID.\n\n```bash\nnode {baseDir}/scripts/atlas-api.mjs detail listClusterDetails\n```\n\n### 3. Get Schema Definition\n\nGet the data model schema for complex types.\n\n```bash\nnode {baseDir}/scripts/atlas-api.mjs schema \"#/components/schemas/ApiError\"\n```\n\n### 4. Execute Live API Calls\nExecute real HTTP requests against the Atlas API.\n\n**Script:** `node {baseDir}/scripts/atlas-call.mjs <METHOD> <ENDPOINT> [flags]`\n\n#### ⚠️ Mandatory Safety Protocol\n**For any state-changing operation (POST, PUT, PATCH, DELETE):**\n1.  **STOP & REVIEW**: You MUST NOT execute the command immediately.\n2.  **PREVIEW**: Use `--dry-run` first to verify the payload and endpoint.\n3.  **CONFIRM**: Display the full command and JSON body to the user.\n4.  **EXECUTE**: Only run with `--yes` after receiving explicit user approval.\n\n#### Usage Examples\n\n**1. Read-Only (Safe)**\n\n```bash\nnode {baseDir}/scripts/atlas-call.mjs GET groups/{groupId}/clusters\n```\n\n**2. Create/Modify (RISKY - Require Approval)**\n\n```bash\nnode {baseDir}/scripts/atlas-call.mjs POST groups/{groupId}/clusters \\\n  --data '{\"name\":\"DemoCluster\", \"providerSettings\":{...}}' \\\n  --dry-run\n```\n\n#### Options\n\n* `-d, --data <json>`: Request body string (ensure proper JSON escaping).\n* `-p, --params <json>`: Query parameters.\n* `--dry-run`: Print the request details without executing (Recommended for verification).\n* `--yes`: Skip interactive confirmation (Use CAREFULLY).\n\n#### Environment\n\nRequires `ATLAS_CLIENT_ID` and `ATLAS_CLIENT_SECRET` to be set.\n\n## Core Categories\n\n(Use `catalog` command to see the full list of 50+ categories)\n\n* **Clusters** / **Cloud Backups**\n* **Projects** / **Organizations**\n* **Database Users** / **Custom Database Roles**\n* **Alerts** / **Alert Configurations**\n* **Monitoring and Logs** / **Events**\n* **Network Peering** / **Private Endpoint Services**\n* **Serverless Instances**\n* **Access Tracking** / **Auditing**\n"
+        }
+    }
+}

@@ -31,10 +31,16 @@ _SOURCE_KEYWORDS = {
 
 
 def detect_source(file_path: Path) -> str:
+    """Detect source platform from path using substring matching.
+
+    Matches keywords against individual path components using substring check,
+    so 'clawhub_data' matches keyword 'clawhub'.
+    """
     parts = [p.lower() for p in file_path.parts]
     for keyword, source in _SOURCE_KEYWORDS.items():
-        if keyword in parts:
-            return source
+        for part in parts:
+            if keyword in part:
+                return source
     return "unknown"
 
 

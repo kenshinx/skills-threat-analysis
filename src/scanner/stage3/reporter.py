@@ -41,13 +41,18 @@ class Reporter:
             elif v == Verdict.ERROR:
                 errors += 1
 
-            # Count threat types
-            if r.stage2:
+            # Count threat types — prefer Stage 2 (LLM) when available,
+            # fall back to Stage 1 (rule matches) otherwise.
+            if r.stage2 and r.stage2.threats:
                 for t in r.stage2.threats:
                     threat_counter[t.type.value] += 1
-            if r.stage1:
+            elif r.stage1:
+                # Deduplicate by rule_name — count each rule type once per skill
+                seen_rules = set()
                 for m in r.stage1.matched_rules:
-                    threat_counter[m.rule_name] += 1
+                    if m.rule_name not in seen_rules:
+                        threat_counter[m.rule_name] += 1
+                        seen_rules.add(m.rule_name)
 
             # Source breakdown
             src = r.skill.source
