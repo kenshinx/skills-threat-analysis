@@ -193,15 +193,16 @@ class Orchestrator:
                 else:
                     r.final_verdict = s2.verdict
 
-            # Save checkpoint
+            # Save checkpoint and update report incrementally
             self._save_checkpoint(
                 stage1_completed=len(stage1_results),
                 stage2_completed=batch_start + len(batch),
                 stage2_total=len(to_analyze),
             )
+            self._reporter.generate(self._scan_id, stage1_results)
 
             completed = batch_start + len(batch)
-            logger.info("Stage 2 progress: %d/%d", completed, len(to_analyze))
+            logger.info("Stage 2 progress: %d/%d, report updated", completed, len(to_analyze))
 
         # Skills that were CLEAN in Stage 1 keep their verdict
         return stage1_results

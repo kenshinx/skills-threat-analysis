@@ -1,0 +1,219 @@
+{
+    "task_params": {
+        "owner_handle": "antonelli182",
+        "skill_slug": "football-data",
+        "detail_url": "https://clawhub.ai/antonelli182/football-data",
+        "skill_name": "Football Data",
+        "summary": "Football (soccer) data across 13 leagues — standings, schedules, match stats, xG, transfers, player profiles. Zero config, no API keys. Covers Premier League...",
+        "version": "0.1.0",
+        "downloads": 139,
+        "stars": 0,
+        "comments": 0,
+        "requires": {},
+        "created_at_ts": 1772236668806.0,
+        "updated_at_ts": 1773032328548.0
+    },
+    "crawled_at": 1773050055.717948,
+    "detail_content": {
+        "skill_info": {
+            "canonical": null,
+            "forkOf": null,
+            "latestVersion": {
+                "_creationTime": 1772236668806.2976,
+                "_id": "k972zqt85ygyrgzk8e4kqs7mdx81zvdr",
+                "changelog": "Initial release of football-data skill — Football data across 13 major leagues.\n\n- Provides access to standings, schedules, team and player profiles, match stats, xG, transfers, and more.\n- No API keys or configuration required; works for Premier League, La Liga, Bundesliga, Serie A, Ligue 1, MLS, Champions League, World Cup, Championship, Eredivisie, Primeira Liga, Serie A Brazil, European Championship.\n- Season and league detection logic included — recommends deriving season IDs via get_current_season.\n- Clarifies which commands and data types are available for each league.\n- Both CLI and Python SDK usage supported.",
+                "changelogSource": "auto",
+                "createdAt": 1772236668806.0,
+                "createdBy": "kn71rx1m8k9nq4kk340kd8pvs980a4j8",
+                "files": [
+                    {
+                        "contentType": "text/plain",
+                        "path": "SKILL.md",
+                        "sha256": "2f2029465953989e202914ef7057264e8b1ea3ef35e37c453e5aa84a33d37751",
+                        "size": 21912.0,
+                        "storageId": "kg2bw8z132tkhvcmzwfwggdvp181ztca"
+                    },
+                    {
+                        "contentType": "text/plain",
+                        "path": "references/commands.md",
+                        "sha256": "5dfbe33f2a5ae0f779023dee9af7cbe925add8357e027c4865bac74a4451e84e",
+                        "size": 4105.0,
+                        "storageId": "kg21b7za75zag7wcbvsr3nmfn181z5mc"
+                    },
+                    {
+                        "contentType": "text/plain",
+                        "path": "references/data-coverage.md",
+                        "sha256": "2652803c8d1f09b5498d45b419402e8c0a626d4fa0d71d8444c3a852dbb61b6c",
+                        "size": 2015.0,
+                        "storageId": "kg288zydgczfdfyw31cqx9rwbd81yfgw"
+                    },
+                    {
+                        "contentType": "text/plain",
+                        "path": "references/schemas.md",
+                        "sha256": "34ab533912ad0d833055cbe8653a8e3ea8a2b5f8b39bc3b21c4a4d42584ef1be",
+                        "size": 4574.0,
+                        "storageId": "kg20jk6p6cdkpsjka5x06b0jps81yfhm"
+                    },
+                    {
+                        "contentType": "text/plain",
+                        "path": "scripts/validate_params.sh",
+                        "sha256": "70598bb9807d7a23b898fc5a3e661b0d34a2a222e132ae2b62e8a7a5cdd2ad6f",
+                        "size": 757.0,
+                        "storageId": "kg2dr2fswst2hn5fdfshws9q4981yb0h"
+                    }
+                ],
+                "fingerprint": "dc03c4a3085e328f116b5c24e886a38f6e6f9dd2d963691cfe4c35a768d26e7b",
+                "llmAnalysis": {
+                    "checkedAt": 1772236704496.0,
+                    "confidence": "medium",
+                    "dimensions": [
+                        {
+                            "detail": "The name/description map to the documented commands and data coverage. The skill does not request unrelated credentials, binaries, or config paths; the included scripts and reference docs only describe football data commands and formats.",
+                            "label": "Purpose & Capability",
+                            "name": "purpose_capability",
+                            "rating": "ok"
+                        },
+                        {
+                            "detail": "SKILL.md confines the agent to specific football data commands, explains which leagues support which endpoints, and instructs deriving season IDs via get_current_season or the system date. It does not instruct reading unrelated files, secrets, or system configuration.",
+                            "label": "Instruction Scope",
+                            "name": "instruction_scope",
+                            "rating": "ok"
+                        },
+                        {
+                            "detail": "There is no formal install spec in the metadata (instruction-only), but SKILL.md tells users/agents to run `pip install sports-skills` or install from GitHub. Installing packages from PyPI or from a GitHub repo can execute arbitrary code on the host; this increases risk compared with an instruction-only skill that performs no installs. Recommend inspecting the sports-skills package/repo before installing.",
+                            "label": "Install Mechanism",
+                            "name": "install_mechanism",
+                            "rating": "note"
+                        },
+                        {
+                            "detail": "No environment variables, credentials, or config paths are required. The skill documents public data sources (ESPN, Understat, Transfermarkt) which explains the lack of API keys. Network access to fetch data or to pip-install the client is expected and proportionate to the stated purpose.",
+                            "label": "Credentials",
+                            "name": "environment_proportionality",
+                            "rating": "ok"
+                        },
+                        {
+                            "detail": "Skill does not request always:true and uses default model-invocation behavior. It does not modify other skills or request persistent system-wide changes in the provided files.",
+                            "label": "Persistence & Privilege",
+                            "name": "persistence_privilege",
+                            "rating": "ok"
+                        }
+                    ],
+                    "guidance": "This skill appears to do what it says: structured access to football data with no extra credentials. Two practical cautions before installing or running it: (1) SKILL.md recommends installing a third‑party Python package (sports-skills) from PyPI or GitHub — verify the package on PyPI and inspect the GitHub repository (code, maintainer, recent commits, issues) before running pip, since installing packages runs code on your system. (2) Because the skill fetches data from external websites (ESPN, Understat, Transfermarkt), it will make network requests; if you need to be cautious, run it in a sandbox or isolated environment and avoid installing as root. If you want higher assurance, ask the author for the package repository URL or a homepage and inspect the package source and recent activity; that information would increase confidence.",
+                    "model": "gpt-5-mini",
+                    "status": "clean",
+                    "summary": "The skill's files and runtime instructions are internally consistent with a football-data lookup tool and do not request unrelated credentials or system access, but it relies on installing a third‑party Python package from PyPI/GitHub (no install spec included) so verify the package source before use.",
+                    "verdict": "benign"
+                },
+                "parsed": {
+                    "frontmatter": {
+                        "description": "Football (soccer) data across 13 leagues — standings, schedules, match stats, xG, transfers, player profiles. Zero config, no API keys. Covers Premier League, La Liga, Bundesliga, Serie A, Ligue 1, MLS, Champions League, World Cup, Championship, Eredivisie, Primeira Liga, Serie A Brazil, European Championship.\n\nUse when: user asks about football/soccer standings, fixtures, match stats, xG, lineups, player values, transfers, injury news, league tables, daily fixtures, or player profiles.\nDon't use when: user asks about American football/NFL (use nfl-data), college football (use cfb-data), NBA (use nba-data), WNBA (use wnba-data), college basketball (use cbb-data), NHL (use nhl-data), MLB (use mlb-data), tennis (use tennis-data), golf (use golf-data), Formula 1 (use fastf1), or betting odds (use polymarket or kalshi). Don't use for live/real-time scores — data updates post-match. Don't use get_season_leaders or get_missing_players for non-Premier League leagues (they return empty). Don't use get_event_xg for leagues outside the top 5 (EPL, La Liga, Bundesliga, Serie A, Ligue 1).",
+                        "license": "MIT",
+                        "metadata": {
+                            "author": "machina-sports",
+                            "version": "0.1.0"
+                        },
+                        "name": "football-data"
+                    },
+                    "metadata": {
+                        "_clawhubQuality": {
+                            "decision": "pass",
+                            "evaluatedAt": 1772236665472.0,
+                            "reason": "Quality checks passed.",
+                            "score": 86.0,
+                            "signals": {
+                                "bodyChars": 17761.0,
+                                "bodyWords": 2589.0,
+                                "bulletCount": 83.0,
+                                "cjkChars": 0.0,
+                                "genericSummary": false,
+                                "headingCount": 37.0,
+                                "templateMarkerHits": 0.0,
+                                "uniqueWordRatio": 0.2529934337582078
+                            },
+                            "similarRecentCount": 0.0,
+                            "trustTier": "low"
+                        },
+                        "author": "machina-sports",
+                        "source": {
+                            "commit": "3a97b98b1efdc9ea97c8d9c8c863b438d60db19b",
+                            "importedAt": 1772236655761.0,
+                            "kind": "github",
+                            "path": "skills/football-data",
+                            "ref": "HEAD",
+                            "repo": "machina-sports/sports-skills",
+                            "url": "https://github.com/machina-sports/sports-skills"
+                        },
+                        "version": "0.1.0"
+                    }
+                },
+                "sha256hash": "f5035910da64751dfc1500af3424a672ad63212c25f5f78fc289ef32a72930a2",
+                "skillId": "kd7ajkjsq49tmfjr7tfbn4cb3d81z0ey",
+                "version": "0.1.0",
+                "vtAnalysis": {
+                    "analysis": "Type: OpenClaw Skill\nName: football-data\nVersion: 0.1.0\n\nThe skill is classified as suspicious primarily due to the installation instructions in `SKILL.md` that direct the AI agent to execute `pip install git+https://github.com/machina-sports/sports-skills.git`. This command installs a package directly from a remote Git repository, representing a significant supply chain risk as it allows arbitrary code execution during setup if the GitHub repository were compromised. Additionally, the skill relies on executing an external CLI tool (`sports-skills`), which, while common, introduces a dependency on the security of that external tool and could be a shell injection vector if the CLI itself is vulnerable or if the agent constructs arguments poorly, despite the `SKILL.md` attempting to restrict command usage.",
+                    "checkedAt": 1773032328257.0,
+                    "source": "palm",
+                    "status": "suspicious",
+                    "verdict": "suspicious"
+                }
+            },
+            "moderationInfo": {
+                "engineVersion": "v2.0.0",
+                "isHiddenByMod": false,
+                "isMalwareBlocked": false,
+                "isPendingScan": false,
+                "isRemoved": false,
+                "isSuspicious": true,
+                "reasonCodes": [
+                    "suspicious.vt_suspicious"
+                ],
+                "summary": "Detected: suspicious.vt_suspicious",
+                "updatedAt": 1773032328548.0,
+                "verdict": "suspicious"
+            },
+            "owner": {
+                "_creationTime": 1769969392574.0647,
+                "_id": "kn71rx1m8k9nq4kk340kd8pvs980a4j8",
+                "createdAt": 1769969392574.0647,
+                "displayName": "André Antonelli",
+                "email": "antonelli182@gmail.com",
+                "emailVerificationTime": 1772236560121.0,
+                "githubCreatedAt": 1507326358000.0,
+                "githubProfileSyncedAt": 1772236565419.0,
+                "handle": "antonelli182",
+                "image": "https://avatars.githubusercontent.com/u/32582969?v=4",
+                "name": "antonelli182",
+                "role": "user",
+                "updatedAt": 1772236655818.0
+            },
+            "pendingReview": false,
+            "skill": {
+                "_creationTime": 1772236668806.2974,
+                "_id": "kd7ajkjsq49tmfjr7tfbn4cb3d81z0ey",
+                "badges": {},
+                "createdAt": 1772236668806.0,
+                "displayName": "Football Data",
+                "latestVersionId": "k972zqt85ygyrgzk8e4kqs7mdx81zvdr",
+                "ownerUserId": "kn71rx1m8k9nq4kk340kd8pvs980a4j8",
+                "slug": "football-data",
+                "stats": {
+                    "comments": 0.0,
+                    "downloads": 139.0,
+                    "installsAllTime": 1.0,
+                    "installsCurrent": 1.0,
+                    "stars": 0.0,
+                    "versions": 1.0
+                },
+                "summary": "Football (soccer) data across 13 leagues — standings, schedules, match stats, xG, transfers, player profiles. Zero config, no API keys. Covers Premier League...",
+                "tags": {
+                    "latest": "k972zqt85ygyrgzk8e4kqs7mdx81zvdr"
+                },
+                "updatedAt": 1773032328548.0
+            }
+        },
+        "readme": {
+            "path": "SKILL.md",
+            "text": "---\nname: football-data\ndescription: |\n  Football (soccer) data across 13 leagues — standings, schedules, match stats, xG, transfers, player profiles. Zero config, no API keys. Covers Premier League, La Liga, Bundesliga, Serie A, Ligue 1, MLS, Champions League, World Cup, Championship, Eredivisie, Primeira Liga, Serie A Brazil, European Championship.\n\n  Use when: user asks about football/soccer standings, fixtures, match stats, xG, lineups, player values, transfers, injury news, league tables, daily fixtures, or player profiles.\n  Don't use when: user asks about American football/NFL (use nfl-data), college football (use cfb-data), NBA (use nba-data), WNBA (use wnba-data), college basketball (use cbb-data), NHL (use nhl-data), MLB (use mlb-data), tennis (use tennis-data), golf (use golf-data), Formula 1 (use fastf1), or betting odds (use polymarket or kalshi). Don't use for live/real-time scores — data updates post-match. Don't use get_season_leaders or get_missing_players for non-Premier League leagues (they return empty). Don't use get_event_xg for leagues outside the top 5 (EPL, La Liga, Bundesliga, Serie A, Ligue 1).\nlicense: MIT\nmetadata:\n  author: machina-sports\n  version: \"0.1.0\"\n---\n\n# Football Data\n\n## Setup\n\nBefore first use, check if the CLI is available:\n```bash\nwhich sports-skills || pip install sports-skills\n```\nIf `pip install` fails (package not found or Python version error), install from GitHub:\n```bash\npip install git+https://github.com/machina-sports/sports-skills.git\n```\nThe package requires Python 3.10+. If your default Python is older, use a specific version:\n```bash\npython3 --version  # check version\n# If < 3.10, try: python3.12 -m pip install sports-skills\n# On macOS with Homebrew: /opt/homebrew/bin/python3.12 -m pip install sports-skills\n```\nNo API keys required.\n\n## Quick Start\n\nPrefer the CLI — it avoids Python import path issues:\n```bash\nsports-skills football get_daily_schedule\nsports-skills football get_season_standings --season_id=premier-league-2025\n```\n\nPython SDK (alternative):\n```python\nfrom sports_skills import football\n\nstandings = football.get_season_standings(season_id=\"premier-league-2025\")\nschedule = football.get_daily_schedule()\n```\n\n## Choosing the Season\n\nDerive the current year from the system prompt's date (e.g., `currentDate: 2026-02-16` → current year is 2026).\n\n- **If the user specifies a season**, use it as-is.\n- **If the user says \"current\", \"latest\", or doesn't specify**: Call `get_current_season(competition_id=\"...\")` to get the active season_id. Do NOT guess or hardcode the year.\n- **Season format**: Always `{league-slug}-{year}` (e.g., `\"premier-league-2025\"` for the 2025-26 season). The year is the start year of the season, not the end year.\n- **MLS exception**: MLS runs spring-fall within a single calendar year. Use `get_current_season(competition_id=\"mls\")` — don't assume MLS follows European calendar.\n- **Never hardcode a season_id.** Always derive it via `get_current_season()` or from the system date.\n\n## Data Coverage by League\n\nNot all data is available for every league. Use the right command for the right league.\n\n| Command | All 13 leagues | Top 5 only | PL only |\n|---------|:-:|:-:|:-:|\n| get_season_standings | x | | |\n| get_daily_schedule | x | | |\n| get_season_schedule | x | | |\n| get_season_teams | x | | |\n| search_team | x | | |\n| get_team_schedule | x | | |\n| get_team_profile | x | | |\n| get_event_summary | x | | |\n| get_event_lineups | x | | |\n| get_event_statistics | x | | |\n| get_event_timeline | x | | |\n| get_current_season | x | | |\n| get_competitions | x | | |\n| get_event_xg | | x | |\n| get_event_players_statistics (with xG) | | x | |\n| get_season_leaders | | | x |\n| get_missing_players | | | x |\n\n**Top 5 leagues** (Understat): EPL, La Liga, Bundesliga, Serie A, Ligue 1.\n**PL only** (FPL): Premier League — injury news, player stats, ownership, ICT index.\n**All leagues**: via ESPN — scores, standings, schedules, match summaries, lineups, team stats.\n**Transfermarkt**: Works for any player with a `tm_player_id` — market values and transfer history.\n\n**Note**: MLS uses a different season structure (spring-fall calendar). Use `get_current_season(competition_id=\"mls\")` to detect the right season_id.\n\n## ID Conventions\n\n- **season_id**: `{league-slug}-{year}` e.g. `\"premier-league-2025\"`, `\"la-liga-2025\"`\n- **competition_id**: league slug e.g. `\"premier-league\"`, `\"serie-a\"`, `\"champions-league\"`\n- **team_id**: ESPN team ID (numeric string) e.g. `\"359\"` (Arsenal), `\"86\"` (Real Madrid)\n- **event_id**: ESPN event ID (numeric string) e.g. `\"740847\"`\n- **fpl_id**: FPL element ID or code (PL players only)\n- **tm_player_id**: Transfermarkt player ID e.g. `\"433177\"` (Saka), `\"342229\"` (Mbappe)\n\n## Commands\n\n### get_current_season\nDetect current season for a competition. Works for all leagues.\n- `competition_id` (str, required): Competition slug\n\nReturns `data.competition` and `data.season`:\n```json\n{\"competition\": {\"id\": \"premier-league\", \"name\": \"Premier League\"}, \"season\": {\"id\": \"premier-league-2025\", \"name\": \"2025-26 English Premier League\", \"year\": \"2025\"}}\n```\n\n### get_competitions\nList available competitions with current season info. No params. Works for all leagues.\n\nReturns `data.competitions[]` with `id`, `name`, `code`, `current_season`.\n\n### get_competition_seasons\nGet available seasons for a competition. Works for all leagues.\n- `competition_id` (str, required): Competition slug\n\n### get_season_schedule\nGet full season match schedule. Works for all leagues.\n- `season_id` (str, required): Season slug (e.g., \"premier-league-2025\")\n\nReturns `data.schedules[]` — same shape as events below.\n\n### get_season_standings\nGet league table for a season. Works for all leagues.\n- `season_id` (str, required): Season slug\n\nReturns `data.standings[].entries[]`:\n```json\n{\n  \"position\": 1,\n  \"team\": {\"id\": \"359\", \"name\": \"Arsenal\", \"short_name\": \"Arsenal\", \"abbreviation\": \"ARS\", \"crest\": \"https://...\"},\n  \"played\": 26, \"won\": 17, \"drawn\": 6, \"lost\": 3,\n  \"goals_for\": 50, \"goals_against\": 18, \"goal_difference\": 32, \"points\": 57\n}\n```\n\n### get_season_leaders\nGet top scorers/leaders for a season. **Premier League only** (via FPL).\n- `season_id` (str, required): Season slug (must be `premier-league-*`)\n\nReturns `data.leaders[]` — note: player name is nested under `.player.name`:\n```json\n{\n  \"player\": {\"id\": \"223094\", \"name\": \"Erling Haaland\", \"first_name\": \"Erling\", \"last_name\": \"Haaland\", \"position\": \"Forward\"},\n  \"team\": {\"id\": \"43\", \"name\": \"Man City\"},\n  \"goals\": 22, \"assists\": 6, \"penalties\": 0, \"played_matches\": 25\n}\n```\nReturns empty for non-PL leagues.\n\n### get_season_teams\nGet teams in a season. Works for all leagues.\n- `season_id` (str, required): Season slug\n\n### search_team\nSearch for a team by name across all leagues (or a specific one). Uses fuzzy matching.\n- `query` (str, required): Team name to search (e.g., \"Corinthians\", \"Barcelona\", \"Man Utd\")\n- `competition_id` (str, optional): Limit search to one league (e.g., \"serie-a-brazil\", \"premier-league\")\n\nReturns `data.results[]` with `team`, `competition`, and `season` for each match:\n```json\n{\"team\": {\"id\": \"874\", \"name\": \"Corinthians\"}, \"competition\": {\"id\": \"serie-a-brazil\", \"name\": \"Serie A Brazil\"}, \"season\": {\"id\": \"serie-a-brazil-2025\", \"year\": \"2025\"}}\n```\n\n### get_team_profile\nGet basic team info (name, crest, venue). **Does not return squad/roster** — use `get_season_leaders` to find PL player IDs, then `get_player_profile` for individual player data.\n- `team_id` (str, required): ESPN team ID\n- `league_slug` (str, optional): League hint (faster resolution)\n\nReturns `data.team` and `data.venue`. `data.players[]` is empty — see \"Deep dive on a PL team\" example below for the recommended workflow.\n\n### get_daily_schedule\nGet all matches for a specific date across all leagues.\n- `date` (str, optional): Date in YYYY-MM-DD format. Defaults to today.\n\nReturns `data.date` and `data.events[]`:\n```json\n{\n  \"id\": \"748381\", \"status\": \"not_started\", \"start_time\": \"2026-02-16T20:00Z\",\n  \"competition\": {\"id\": \"la-liga\", \"name\": \"La Liga\"},\n  \"season\": {\"id\": \"la-liga-2025\", \"year\": \"2025\"},\n  \"venue\": {\"name\": \"Estadi Montilivi\", \"city\": \"Girona\"},\n  \"competitors\": [\n    {\"team\": {\"id\": \"9812\", \"name\": \"Girona\", \"abbreviation\": \"GIR\"}, \"qualifier\": \"home\", \"score\": 0},\n    {\"team\": {\"id\": \"83\", \"name\": \"Barcelona\", \"abbreviation\": \"BAR\"}, \"qualifier\": \"away\", \"score\": 0}\n  ],\n  \"scores\": {\"home\": 0, \"away\": 0}\n}\n```\nStatus values: `\"not_started\"`, `\"live\"`, `\"halftime\"`, `\"closed\"`, `\"postponed\"`.\n\n### get_event_summary\nGet match summary with scores. Works for all leagues.\n- `event_id` (str, required): Match/event ID\n\nReturns `data.event` (same shape as daily schedule events).\n\n### get_event_lineups\nGet match lineups. Works for all leagues (when available from ESPN).\n- `event_id` (str, required): Match/event ID\n\nReturns `data.lineups[]`:\n```json\n{\n  \"team\": {\"id\": \"364\", \"name\": \"Liverpool\", \"abbreviation\": \"LIV\"},\n  \"qualifier\": \"home\",\n  \"formation\": \"4-3-3\",\n  \"starting\": [{\"id\": \"275599\", \"name\": \"Caoimhín Kelleher\", \"position\": \"Goalkeeper\", \"shirt_number\": 1}],\n  \"bench\": [{\"id\": \"...\", \"name\": \"...\", \"position\": \"...\", \"shirt_number\": 62}]\n}\n```\n\n### get_event_statistics\nGet match team statistics. Works for all leagues.\n- `event_id` (str, required): Match/event ID\n\nReturns `data.teams[]`:\n```json\n{\n  \"team\": {\"id\": \"244\", \"name\": \"Brentford\"},\n  \"qualifier\": \"home\",\n  \"statistics\": {\"ball_possession\": \"40.8\", \"shots_total\": \"10\", \"shots_on_target\": \"3\", \"fouls\": \"12\", \"corners\": \"4\"}\n}\n```\n\n### get_event_timeline\nGet match timeline/key events (goals, cards, substitutions). Works for all leagues.\n- `event_id` (str, required): Match/event ID\n\nReturns `data.timeline[]` with goal, card, and substitution events.\n\n### get_team_schedule\nGet schedule for a specific team — includes both past results and upcoming fixtures. Works for all leagues.\n- `team_id` (str, required): ESPN team ID\n- `league_slug` (str, optional): League hint (faster resolution)\n- `season_year` (str, optional): Season year filter\n- `competition_id` (str, optional): Filter results to a single competition (e.g., \"serie-a-brazil\", \"premier-league\")\n\n### get_head_to_head\n**UNAVAILABLE** — requires licensed data. Do not call this command; it will return empty results. Instead, use `get_team_schedule` for both teams and filter overlapping matches manually.\n- `team_id` (str, required): First team ID\n- `team_id_2` (str, required): Second team ID\n\n### get_event_xg\nGet expected goals (xG) data from Understat. **Top 5 leagues only**: EPL, La Liga, Bundesliga, Serie A, Ligue 1. Returns empty for other leagues.\n- `event_id` (str, required): Match/event ID\n\nReturns `data.teams[]` and `data.shots[]`:\n```json\n{\"team\": {\"id\": \"244\", \"name\": \"Brentford\"}, \"qualifier\": \"home\", \"xg\": 1.812}\n```\n`data.shots[]` contains individual shot data with xG per shot. Note: very recent matches (last 24-48h) may not be indexed on Understat yet.\n\n### get_event_players_statistics\nGet player-level match statistics with xG enrichment. Works for all leagues (basic stats from ESPN). xG/xA enrichment only for top 5 leagues (Understat).\n- `event_id` (str, required): Match/event ID\n\nReturns `data.teams[].players[]`:\n```json\n{\n  \"id\": \"...\", \"name\": \"Bukayo Saka\", \"position\": \"Midfielder\", \"shirt_number\": 7, \"starter\": true,\n  \"statistics\": {\"appearances\": \"1\", \"shotsTotal\": \"3\", \"shotsOnTarget\": \"1\", \"foulsCommitted\": \"1\", \"xg\": \"0.45\", \"xa\": \"0.12\"}\n}\n```\n`xg` and `xa` fields only present for top 5 leagues.\n\n### get_missing_players\nGet injured/missing/doubtful players. **Premier League only** (via FPL). Returns empty for other leagues.\n- `season_id` (str, required): Season slug (must be `premier-league-*`)\n\nReturns `data.teams[].players[]`:\n```json\n{\n  \"id\": \"463748\", \"name\": \"Mikel Merino Zazón\", \"web_name\": \"Merino\",\n  \"position\": \"Midfielder\", \"status\": \"injured\",\n  \"news\": \"Foot injury - Unknown return date\",\n  \"chance_of_playing_this_round\": 0, \"chance_of_playing_next_round\": 0\n}\n```\nStatus values: `\"injured\"`, `\"unavailable\"`, `\"doubtful\"`, `\"suspended\"`.\n\n### get_season_transfers\nGet transfer history for specific players via Transfermarkt. Works for any league.\n- `season_id` (str, required): Season slug (used to filter transfers by year)\n- `tm_player_ids` (list, required): Transfermarkt player IDs\n\nReturns `data.transfers[]`:\n```json\n{\n  \"player_tm_id\": \"433177\", \"date\": \"2019-07-01\", \"season\": \"19/20\",\n  \"from_team\": {\"name\": \"Arsenal U23\", \"image\": \"https://...\"},\n  \"to_team\": {\"name\": \"Arsenal\", \"image\": \"https://...\"},\n  \"fee\": \"-\", \"market_value\": \"-\"\n}\n```\n\n### get_player_season_stats\nGet player season stats via ESPN overview endpoint. Works for any league with ESPN athlete IDs.\n- `player_id` (str, required): ESPN athlete ID\n- `league_slug` (str, optional): League slug hint (e.g., \"eng.1\", \"esp.1\"). Defaults to auto-detect.\n\nReturns season stats (goals, assists, appearances, etc.) and game log when available.\n\n### get_player_profile\nGet player profile. Works for any player if you have their Transfermarkt or FPL ID. At least one ID required.\n- `fpl_id` (str, optional): FPL player ID (PL players only)\n- `tm_player_id` (str, optional): Transfermarkt player ID (any league)\n\nWith `tm_player_id`, returns `data.player` with:\n```json\n{\n  \"market_value\": {\"value\": 130000000, \"currency\": \"EUR\", \"formatted\": \"€130.00m\", \"date\": \"09/12/2025\", \"age\": \"24\", \"club\": \"Arsenal FC\"},\n  \"market_value_history\": [{\"value\": 7000000, \"formatted\": \"€7.00m\", \"date\": \"23/09/2019\", \"club\": \"Arsenal FC\"}],\n  \"transfer_history\": [\n    {\"player_tm_id\": \"433177\", \"date\": \"2019-07-01\", \"season\": \"19/20\", \"from_team\": {\"name\": \"Arsenal U23\"}, \"to_team\": {\"name\": \"Arsenal\"}, \"fee\": \"-\"}\n  ]\n}\n```\n\nWith `fpl_id`, also includes `data.player.fpl_data` with FPL stats (points, form, ICT index, ownership, etc.).\n\n## Supported Leagues\n\nPremier League, La Liga, Bundesliga, Serie A, Ligue 1, MLS, Championship, Eredivisie, Primeira Liga, Serie A Brazil, Champions League, European Championship, World Cup.\n\n## Data Sources\n\n| Source | What it provides | League coverage |\n|--------|-----------------|-----------------|\n| ESPN | Scores, standings, schedules, lineups, match stats, timelines | All 13 leagues |\n| openfootball | Schedules, standings, team lists (fallback when ESPN is down) | 10 leagues (all except CL, Euros, World Cup) |\n| Understat | xG per match, xG per shot, player xG/xA | Top 5 (EPL, La Liga, Bundesliga, Serie A, Ligue 1) |\n| FPL | Top scorers, injuries, player stats, ownership | Premier League only |\n| Transfermarkt | Market values, transfer history | Any player (requires tm_player_id) |\n\nFor licensed data with full coverage across all sports (Sportradar, Opta, Genius Sports), see [Machina Sports](https://machina.gg).\n\n## Examples\n\nUser: \"Show me the Premier League table\"\n1. Call `get_current_season(competition_id=\"premier-league\")` to get the current season_id\n2. Call `get_season_standings(season_id=<season_id from step 1>)`\n3. Present standings table with position, team, played, won, drawn, lost, GD, points\n\nUser: \"How did Arsenal vs Liverpool go?\"\n1. Call `get_daily_schedule()` or `get_team_schedule(team_id=\"359\")` to find the event_id\n2. Call `get_event_summary(event_id=\"...\")` for the score\n3. Call `get_event_statistics(event_id=\"...\")` for possession, shots, etc.\n4. Call `get_event_xg(event_id=\"...\")` for xG comparison (EPL — top 5 only)\n5. Present match report with scores, key stats, and xG\n\nUser: \"Deep dive on Chelsea's recent form\"\n1. Call `search_team(query=\"Chelsea\")` → team_id=363, competition=premier-league\n2. Call `get_team_schedule(team_id=\"363\", competition_id=\"premier-league\")` → find recent closed events\n3. For each recent match, call in parallel:\n   - `get_event_xg(event_id=\"...\")` for xG comparison and shot map\n   - `get_event_statistics(event_id=\"...\")` for possession, shots, passes\n   - `get_event_players_statistics(event_id=\"...\")` for individual player xG/xA\n4. Call `get_missing_players(season_id=<season_id>)` → filter Chelsea's injured/doubtful players\n5. Call `get_season_leaders(season_id=<season_id>)` → filter Chelsea players, get their FPL IDs\n6. Call `get_player_profile(fpl_id=\"...\", tm_player_id=\"...\")` for key players — combine FPL stats (form, ownership, ICT) with Transfermarkt data (market value, transfer history)\n7. Present: xG trend across matches, key player stats, injury report, market values\n\nUser: \"What's Saka's market value?\"\n1. Call `get_player_profile(tm_player_id=\"433177\")` for Transfermarkt data\n2. Optionally add `fpl_id` for FPL stats if Premier League player\n3. Present market value, value history, and transfer history\n\nUser: \"Tell me about Corinthians\"\n1. Call `search_team(query=\"Corinthians\")` → team_id=874, competition=serie-a-brazil\n2. Call `get_team_schedule(team_id=\"874\", competition_id=\"serie-a-brazil\")` for fixtures\n3. Pick a recent match and call `get_event_timeline(event_id=\"...\")` for goals, cards, subs\n4. Note: xG, FPL stats, and season leaders are NOT available for Brazilian Serie A\n\n## Error Handling\n\nWhen a command fails (wrong event_id, missing data, network error, etc.), **do not surface the raw error to the user**. Instead:\n\n1. **Catch it silently** — treat the failure as an exploratory miss, not a fatal error.\n2. **Try alternatives** — e.g., if an event_id returns no data, call `get_daily_schedule()` or `get_team_schedule()` to discover the correct ID. If ESPN is down, openfootball data may still be available via `get_season_standings` or `get_season_schedule`.\n3. **Only report failure after exhausting alternatives** — and when you do, give a clean human-readable message (e.g., \"I couldn't find that match — can you confirm the teams or date?\"), not a traceback or raw CLI output.\n\nThis is especially important when the agent is responding through messaging platforms (Telegram, Slack, etc.) where raw exec failures look broken.\n\n## Common Mistakes\n\n**These are the ONLY valid commands.** Do not invent or guess command names:\n- `get_current_season`\n- `get_competitions`\n- `get_competition_seasons`\n- `get_season_schedule`\n- `get_season_standings`\n- `get_season_leaders`\n- `get_season_teams`\n- `search_team`\n- `get_team_profile`\n- `get_daily_schedule`\n- `get_event_summary`\n- `get_event_lineups`\n- `get_event_statistics`\n- `get_event_timeline`\n- `get_team_schedule`\n- `get_head_to_head`\n- `get_event_xg`\n- `get_event_players_statistics`\n- `get_missing_players`\n- `get_season_transfers`\n- `get_player_profile`\n- `get_player_season_stats`\n\n**Commands that DO NOT exist** (commonly hallucinated):\n- ~~`get_standings`~~ — the correct command is `get_season_standings` (requires `season_id`).\n- ~~`get_live_scores`~~ — not available. Use `get_daily_schedule()` for today's matches; status field shows \"live\" for in-progress games.\n- ~~`get_team_squad`~~ / ~~`get_team_roster`~~ — `get_team_profile` does NOT return players. Use `get_season_leaders` for PL player IDs, then `get_player_profile` for individual data.\n- ~~`get_transfers`~~ — the correct command is `get_season_transfers` (requires `season_id` + `tm_player_ids`).\n- ~~`get_match_results`~~ / ~~`get_match`~~ — use `get_event_summary` with an `event_id`.\n- ~~`get_player_stats`~~ — use `get_event_players_statistics` for match-level stats, or `get_player_profile` for career data.\n\n**Other common mistakes:**\n- Using `get_season_leaders` or `get_missing_players` on non-PL leagues — they return empty. Check the Data Coverage table.\n- Using `get_event_xg` on leagues outside the top 5 — returns empty. Only works for EPL, La Liga, Bundesliga, Serie A, Ligue 1.\n- Guessing `team_id` or `event_id` instead of discovering them via `search_team`, `get_daily_schedule`, or `get_season_schedule`.\n\nIf you're unsure whether a command exists, check this list. Do not try commands that aren't listed above.\n\n## Troubleshooting\n\n- **`sports-skills` command not found**: Package not installed. Run `pip install sports-skills`. If the package is not found on PyPI, install from GitHub: `pip install git+https://github.com/machina-sports/sports-skills.git`. Requires Python 3.10+ — see Setup section.\n- **`ModuleNotFoundError: No module named 'sports_skills'`**: Same as above — install the package. Prefer the CLI over Python imports to avoid path issues.\n- **Empty results for PL-only commands on other leagues**: `get_season_leaders` and `get_missing_players` only return data for Premier League. They silently return empty for other leagues — check the Data Coverage table.\n- **`get_team_profile` returns empty players**: This is expected — squad rosters are not available. To get player data for a PL team, use `get_season_leaders` to find players and their FPL IDs, then `get_player_profile(fpl_id=\"...\")` for detailed stats. For Transfermarkt data, you need the player's `tm_player_id`.\n- **Finding FPL IDs and Transfermarkt IDs**: Use `get_season_leaders(season_id=\"premier-league-2025\")` to discover FPL IDs for PL players. Transfermarkt IDs must be looked up on [transfermarkt.com](https://www.transfermarkt.com) — the ID is the number at the end of the player's URL. Well-known examples: Cole Palmer = `568177`, Bukayo Saka = `433177`, Mbappe = `342229`.\n- **No xG for recent matches**: Understat data may lag 24-48 hours after a match ends. If `get_event_xg` returns empty for a recent top-5 match, try again later.\n- **Wrong season_id format**: Must be `{league-slug}-{year}` e.g. `\"premier-league-2025\"`. Not `\"2025-2026\"`, not `\"EPL-2025\"`. Use `get_current_season()` to discover the correct format.\n- **Team/event IDs unknown**: Use `search_team(query=\"team name\")` to find team IDs by name, or `get_season_teams` to list all teams in a season. Use `get_daily_schedule` or `get_season_schedule` to find event IDs. IDs are ESPN numeric strings.\n"
+        }
+    }
+}
