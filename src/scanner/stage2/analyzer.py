@@ -211,7 +211,7 @@ class SemanticAnalyzer:
     async def _call_llm(self, prompt: str) -> dict[str, Any]:
         response = await self._client.chat.completions.create(
             model=self._model,
-            max_tokens=1024,
+            max_tokens=4096,
             messages=[{"role": "user", "content": prompt}],
         )
         raw = response.choices[0].message.content
