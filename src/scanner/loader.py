@@ -44,9 +44,15 @@ def detect_source(file_path: Path) -> str:
     return "unknown"
 
 
-def generate_id(source: str, file_path: Path) -> str:
-    path_hash = hashlib.sha256(str(file_path).encode()).hexdigest()[:12]
-    return f"{source}-{path_hash}"
+def generate_id(file_path: Path) -> str:
+    """Generate skill ID using directory name as prefix + short hash for uniqueness."""
+    dir_name = file_path.name if file_path.is_dir() else file_path.stem
+    # Sanitize: keep only alphanumeric, hyphen, underscore
+    safe_name = "".join(c if c.isalnum() or c in "-_" else "-" for c in dir_name).strip("-")
+    if not safe_name:
+        safe_name = "unnamed"
+    path_hash = hashlib.sha256(str(file_path).encode()).hexdigest()[:8]
+    return f"{safe_name}-{path_hash}"
 
 
 def _find_entry_file(skill_dir: Path) -> Path | None:
@@ -117,7 +123,7 @@ def _load_skill_from_zip(
             source = detect_source(original_dir)
 
             yield SkillFile(
-                id=generate_id(source, original_dir),
+                id=generate_id(original_dir),
                 source=source,
                 file_path=str(original_dir / zip_path.name),
                 content=full_content,
@@ -202,7 +208,7 @@ def load_skills(
                 content = path.read_text(encoding="utf-8", errors="replace")
                 source = detect_source(path)
                 yield SkillFile(
-                    id=generate_id(source, path),
+                    id=generate_id(path),
                     source=source,
                     file_path=str(path),
                     content=content,
@@ -221,7 +227,7 @@ def _load_one_skill(skill_dir: Path, entry: Path) -> Generator[SkillFile, None, 
         source = detect_source(skill_dir)
 
         yield SkillFile(
-            id=generate_id(source, skill_dir),
+            id=generate_id(skill_dir),
             source=source,
             file_path=str(entry),
             content=full_content,

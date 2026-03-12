@@ -373,8 +373,8 @@ class Reporter:
             cat_counter[f["category"]] += 1
         top_cats = "、".join(c for c, _ in cat_counter.most_common(3))
 
-        # Key finding IDs (top 3 by severity)
-        key_ids = [f["id"] for f in findings[:3]]
+        # Key finding IDs (all findings, already sorted by severity)
+        key_ids = [f["id"] for f in findings]
 
         if result == "MALICIOUS":
             summary = (

@@ -24,10 +24,10 @@ class TestLoader:
         assert detect_source(Path("/data/other/skill.md")) == "unknown"
 
     def test_generate_id(self):
-        id1 = generate_id("clawhub", Path("/a/b.md"))
-        id2 = generate_id("clawhub", Path("/a/c.md"))
-        assert id1.startswith("clawhub-")
-        assert id2.startswith("clawhub-")
+        id1 = generate_id(Path("/a/b.md"))
+        id2 = generate_id(Path("/a/c.md"))
+        assert id1.startswith("b-")
+        assert id2.startswith("c-")
         assert id1 != id2
 
     def test_load_skill_directory_with_entry(self):
