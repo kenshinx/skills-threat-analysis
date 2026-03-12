@@ -9,6 +9,7 @@ from pathlib import Path
 import yaml
 
 from scanner.models import RuleMatch, Severity, Stage1Result, Verdict
+from scanner.stage1.advanced import AdvancedAnalyzer
 
 _RULES_PATH = Path(__file__).parent / "rules.yaml"
 
@@ -28,6 +29,7 @@ class RuleEngine:
         with open(path, encoding="utf-8") as f:
             data = yaml.safe_load(f)
         self._rules = data["rules"]
+        self._advanced = AdvancedAnalyzer()
         self._compiled: list[dict] = []
         for rule in self._rules:
             compiled_patterns = []
@@ -61,6 +63,10 @@ class RuleEngine:
                         position=(m.start(), m.end()),
                         pattern=pattern.pattern,
                     ))
+
+        # Run advanced code-level detection passes (PA-001 ~ PA-006).
+        advanced_matches = self._advanced.scan(content, masked_ranges)
+        matches.extend(advanced_matches)
 
         verdict = self._classify(matches)
         elapsed_ms = int((time.monotonic() - start) * 1000)

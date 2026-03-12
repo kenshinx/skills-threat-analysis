@@ -31,6 +31,14 @@ class ThreatType(Enum):
     STEGANOGRAPHIC_INJECTION = "steganographic_injection"
     DANGEROUS_OPERATION = "dangerous_operation"
     SOCIAL_ENGINEERING = "social_engineering"
+    # New threat types from skill-scan-1.0.0 integration
+    CREDENTIAL_ACCESS = "credential_access"
+    NETWORK_EXFILTRATION = "network_exfiltration"
+    FILESYSTEM_DESTRUCTION = "filesystem_destruction"
+    OBFUSCATION = "obfuscation"
+    CRYPTO_WALLET_ACCESS = "crypto_wallet_access"
+    PERSISTENCE_MECHANISM = "persistence_mechanism"
+    PRIVILEGE_ESCALATION = "privilege_escalation"
 
 
 @dataclass
