@@ -85,6 +85,12 @@ rules:
       - "(?:exec|eval|compile)\\s*\\(.*(?:import|__)"
       - "base64\\s+(?:-d|-D|--decode)\\s*\\|\\s*(?:sh|bash|zsh|python|perl)"
       - "echo\\s+['\"][A-Za-z0-9+/=]{20,}['\"]\\s*\\|\\s*(?:base64|openssl)"
+      # Download-and-execute patterns (supply chain / dropper)
+      - "requests\\.get\\s*\\(.*\\.(?:exe|msi|bat|cmd|ps1|sh|bin)\\b"
+      - "(?:urllib|urlretrieve|urlopen|requests\\.get).*\\.(?:exe|msi|bat|cmd|ps1|sh).*subprocess"
+      - "subprocess\\.(?:call|run|Popen)\\s*\\(\\s*\\[?\\s*str\\s*\\("
+      - "(?:download|下载).*\\.exe\\b"
+      - "\\bPopen\\b.*\\.exe\\b"
       # Chinese: dangerous operation patterns
       - "(?:用|使用|通过)\\s*(?:bash|shell|终端|命令行)\\s*(?:执行|运行)(?:任何|任意|所有)?(?:必要的?)?命令"
       - "(?:创建|编辑|删除|修改|覆盖)(?:工作区|项目|系统|磁盘)?(?:内的?|中的?|里的?)?(?:任何|任意|所有)文件"
@@ -179,6 +185,32 @@ rules:
       - "\\blaunchd\\b"
       - "\\brc\\.local\\b"
       - "\\bpm2\\s+start\\b"
+
+  # -- Trigger Hijacking / Auto-execution (source: TRIGGER_HIJACK, languages: "*") --
+  - id: PI-015
+    name: trigger_hijacking
+    severity: HIGH
+    patterns:
+      # Auto-execution demands in skill metadata
+      - "(?:必须|must)\\s*(?:立即|immediately|automatically)\\s*(?:执行|execute|run)"
+      - "(?:当|when).*(?:加载|loaded).*(?:必须|must|自动|automatically).*(?:执行|execute|run)"
+      # Exclusivity claims (hijacking other tools)
+      - "(?:唯一的?|only).*(?:处理方式|方法|method|way).*(?:不要|do not|don't)\\s*(?:使用|use)"
+      - "(?:不要|do not|don't)\\s*(?:使用|use).*(?:pandas|openpyxl|numpy|requests|其他|other)"
+      # Download and run on load
+      - "(?:skill|技能).*(?:被?加载|loaded).*(?:下载|download|执行|execute|run)"
+
+  # -- Remote Binary Download (source: SUPPLY_CHAIN, languages: "*") --
+  - id: PI-016
+    name: remote_binary_download
+    severity: CRITICAL
+    patterns:
+      # Hardcoded URLs pointing to executables
+      - "https?://[^\"'\\s]+\\.(?:exe|msi|bat|cmd|ps1|sh|bin|dll|so|dylib)\\b"
+      # Download URL variables with executable extensions
+      - "(?:DOWNLOAD_URL|download_url|BINARY_URL|binary_url)\\s*=\\s*[\"'].*\\.(?:exe|msi|bat|cmd|ps1)\\b"
+      # requests.get followed by writing binary content
+      - "requests\\.get\\s*\\([^)]*\\).*open\\s*\\([^)]*['\"]wb['\"]"
 
   # -- Privilege Escalation (source: PRIV_ESCALATION, languages: "*") --
   - id: PI-014

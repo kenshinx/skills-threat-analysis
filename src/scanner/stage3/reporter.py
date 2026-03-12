@@ -596,6 +596,23 @@ class Reporter:
             f"| Suspicious | {summary.suspicious} |",
             f"| Malicious | {summary.malicious} |",
             "",
+        ]
+
+        if summary.malicious_skills:
+            lines.append("### Malicious Skills")
+            lines.append("")
+            for fp in summary.malicious_skills:
+                lines.append(f"- `{fp}`")
+            lines.append("")
+
+        if summary.suspicious_skills:
+            lines.append("### Suspicious Skills")
+            lines.append("")
+            for fp in summary.suspicious_skills:
+                lines.append(f"- `{fp}`")
+            lines.append("")
+
+        lines += [
             "## Top Threat Types",
             "",
         ]

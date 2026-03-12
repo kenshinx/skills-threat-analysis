@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 # Known skill entry file names (case-insensitive matching)
 SKILL_ENTRY_NAMES = {"skill.md", "skill.yaml", "skill.yml"}
 
-SUPPORTED_EXTENSIONS = {".md", ".yaml", ".yml", ".txt", ".json"}
+SUPPORTED_EXTENSIONS = {".md", ".yaml", ".yml", ".txt", ".json", ".py", ".js", ".ts", ".sh", ".bash"}
 
 # Files to ignore when scanning directories
 IGNORED_FILES = {"detail.json"}

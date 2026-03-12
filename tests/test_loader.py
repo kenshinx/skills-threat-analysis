@@ -40,14 +40,16 @@ class TestLoader:
             refs.mkdir()
             (refs / "guide.md").write_text("# Guide content")
             (refs / "data.json").write_text('{"key": "value"}')
-            (refs / "ignore.py").write_text("print('hi')")  # Not included
+            (refs / "helper.py").write_text("print('hi')")  # .py now included
+            (refs / "ignore.csv").write_text("a,b,c")  # Not included
 
             skills = list(load_skills(tmpdir))
             assert len(skills) == 1
             assert "# My Skill" in skills[0].content
             assert "Guide content" in skills[0].content
             assert "key" in skills[0].content
-            assert "print" not in skills[0].content
+            assert "print" in skills[0].content  # .py is supported
+            assert "a,b,c" not in skills[0].content  # .csv is not
 
     def test_load_multiple_skill_directories(self):
         """Each skill directory yields one SkillFile."""
@@ -65,10 +67,11 @@ class TestLoader:
         with tempfile.TemporaryDirectory() as tmpdir:
             (Path(tmpdir) / "skill1.md").write_text("# Skill 1")
             (Path(tmpdir) / "skill2.yaml").write_text("name: skill2")
-            (Path(tmpdir) / "ignore.py").write_text("print('hi')")
+            (Path(tmpdir) / "helper.py").write_text("print('hi')")
+            (Path(tmpdir) / "ignore.csv").write_text("a,b,c")
 
             skills = list(load_skills(tmpdir))
-            assert len(skills) == 2
+            assert len(skills) == 3  # .md + .yaml + .py
             assert all(s.content for s in skills)
 
     def test_load_skills_empty_dir(self):
