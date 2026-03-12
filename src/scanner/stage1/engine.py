@@ -109,7 +109,7 @@ class RuleEngine:
         if high >= 2:
             return Verdict.SUSPICIOUS
         if high == 1:
-            return Verdict.NEEDS_REVIEW
+            return Verdict.SUSPICIOUS
         if medium >= 2:
-            return Verdict.NEEDS_REVIEW
+            return Verdict.SUSPICIOUS
         return Verdict.CLEAN

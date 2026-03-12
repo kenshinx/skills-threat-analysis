@@ -13,11 +13,12 @@ from typing import Any
 import openai
 
 from scanner.models import (
+    AnalyzerStatus,
     RuleMatch,
     Severity,
     Stage2Result,
     Threat,
-    ThreatType,
+    ThreatCategory,
     Verdict,
 )
 
@@ -38,14 +39,22 @@ class LLMRefusalError(Exception):
 
 
 _PROMPT_TEMPLATE_PATH = Path(__file__).parent / "prompt_template.md"
-_THREAT_TYPE_MAP = {
-    "instruction_override": ThreatType.INSTRUCTION_OVERRIDE,
-    "role_hijacking": ThreatType.ROLE_HIJACKING,
-    "context_exfiltration": ThreatType.CONTEXT_EXFILTRATION,
-    "steganographic_injection": ThreatType.STEGANOGRAPHIC_INJECTION,
-    "dangerous_operation": ThreatType.DANGEROUS_OPERATION,
-    "social_engineering": ThreatType.SOCIAL_ENGINEERING,
-    "system_prompt_manipulation": ThreatType.SYSTEM_PROMPT_MANIPULATION,
+_THREAT_CATEGORY_MAP = {
+    "instruction_override": ThreatCategory.PROMPT_INJECTION,
+    "role_hijacking": ThreatCategory.PROMPT_INJECTION,
+    "context_exfiltration": ThreatCategory.DATA_EXFILTRATION,
+    "steganographic_injection": ThreatCategory.UNICODE_STEGANOGRAPHY,
+    "dangerous_operation": ThreatCategory.COMMAND_INJECTION,
+    "social_engineering": ThreatCategory.SOCIAL_ENGINEERING,
+    "system_prompt_manipulation": ThreatCategory.PROMPT_INJECTION,
+    # New categories from skill-scan-1.0.0 integration
+    "prompt_injection": ThreatCategory.PROMPT_INJECTION,
+    "command_injection": ThreatCategory.COMMAND_INJECTION,
+    "data_exfiltration": ThreatCategory.DATA_EXFILTRATION,
+    "hardcoded_secrets": ThreatCategory.HARDCODED_SECRETS,
+    "obfuscation": ThreatCategory.OBFUSCATION,
+    "privilege_escalation": ThreatCategory.PRIVILEGE_ESCALATION,
+    "unicode_steganography": ThreatCategory.UNICODE_STEGANOGRAPHY,
 }
 _SEVERITY_MAP = {
     "CRITICAL": Severity.CRITICAL,
@@ -112,7 +121,7 @@ class SemanticAnalyzer:
                     result = await self._call_llm(prompt)
                     elapsed_ms = int((time.monotonic() - start) * 1000)
                     parsed = self._parse_response(result, elapsed_ms)
-                    threat_summary = ", ".join(t.type.value for t in parsed.threats) if parsed.threats else "none"
+                    threat_summary = ", ".join(t.category.value for t in parsed.threats) if parsed.threats else "none"
                     logger.debug(
                         "Skill %s: verdict=%s confidence=%.2f threats=[%s] (%dms)",
                         skill_id, parsed.verdict.value, parsed.confidence,
@@ -126,13 +135,14 @@ class SemanticAnalyzer:
                         skill_id, e,
                     )
                     logger.debug(
-                        "Skill %s: verdict=error (LLM refusal) (%dms)",
+                        "Skill %s: verdict=suspicious (LLM refusal) (%dms)",
                         skill_id, elapsed_ms,
                     )
                     return Stage2Result(
-                        verdict=Verdict.ERROR,
+                        verdict=Verdict.SUSPICIOUS,
                         summary="LLM refused to analyze — content triggered safety filter",
                         duration_ms=elapsed_ms,
+                        status=AnalyzerStatus.FAILED,
                     )
                 except (json.JSONDecodeError, KeyError, ValueError) as e:
                     logger.warning(
@@ -172,12 +182,14 @@ class SemanticAnalyzer:
 
         elapsed_ms = int((time.monotonic() - start) * 1000)
         logger.debug(
-            "Skill %s: verdict=error (all retries exhausted) (%dms)",
+            "Skill %s: verdict=suspicious (all retries exhausted) (%dms)",
             skill_id, elapsed_ms,
         )
         return Stage2Result(
-            verdict=Verdict.ERROR, summary="Analysis failed after retries",
+            verdict=Verdict.SUSPICIOUS,
+            summary="Analysis failed after retries",
             duration_ms=elapsed_ms,
+            status=AnalyzerStatus.FAILED,
         )
 
     def _build_prompt(self, content: str, matched_rules: list[RuleMatch]) -> str:
@@ -269,17 +281,18 @@ class SemanticAnalyzer:
         verdict_map = {
             "MALICIOUS": Verdict.MALICIOUS,
             "SUSPICIOUS": Verdict.SUSPICIOUS,
-            "BENIGN": Verdict.BENIGN,
+            "BENIGN": Verdict.CLEAN,
+            "CLEAN": Verdict.CLEAN,
         }
-        verdict = verdict_map.get(verdict_str, Verdict.NEEDS_REVIEW)
+        verdict = verdict_map.get(verdict_str, Verdict.SUSPICIOUS)
 
         threats = []
         for t in data.get("threats", []):
-            threat_type = _THREAT_TYPE_MAP.get(t.get("type", ""))
+            threat_cat = _THREAT_CATEGORY_MAP.get(t.get("type", ""))
             severity = _SEVERITY_MAP.get(t.get("severity", "").upper())
-            if threat_type and severity:
+            if threat_cat and severity:
                 threats.append(Threat(
-                    type=threat_type,
+                    category=threat_cat,
                     severity=severity,
                     evidence=t.get("evidence", ""),
                     explanation=t.get("explanation", ""),
@@ -291,4 +304,5 @@ class SemanticAnalyzer:
             threats=threats,
             summary=data.get("summary", ""),
             duration_ms=elapsed_ms,
+            status=AnalyzerStatus.COMPLETED,
         )
