@@ -376,7 +376,9 @@ class Reporter:
 
         # Stage 2 LLM verdict takes priority when available and successful
         s2 = r.stage2
-        has_llm_verdict = s2 is not None and s2.verdict not in (Verdict.ERROR,)
+        has_llm_verdict = (
+            s2 is not None and s2.status == AnalyzerStatus.COMPLETED
+        )
 
         if has_llm_verdict:
             if s2.verdict == Verdict.MALICIOUS:
@@ -387,7 +389,7 @@ class Reporter:
                 result = Verdict.SUSPICIOUS
                 action = RecommendedAction.REVIEW
                 confidence = s2.confidence
-            elif s2.verdict in (Verdict.BENIGN, Verdict.CLEAN):
+            elif s2.verdict == Verdict.CLEAN:
                 result = Verdict.CLEAN
                 action = RecommendedAction.ALLOW
                 confidence = s2.confidence
