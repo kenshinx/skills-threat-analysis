@@ -319,35 +319,66 @@ class Reporter:
     def _compute_verdict(
         self, r: ScanResult, findings: list[dict[str, Any]]
     ) -> dict[str, Any]:
-        """Compute verdict following the QAX priority logic.
+        """Compute verdict combining Stage 1 findings and Stage 2 LLM assessment.
 
-        Priority 2: CRITICAL findings >= 1 → MALICIOUS, BLOCK
-        Priority 3: HIGH findings >= 1 or total >= 3 → SUSPICIOUS, REVIEW
-        Priority 4: Any finding → SUSPICIOUS, REVIEW
-        Priority 5: No findings → CLEAN, ALLOW
+        When Stage 2 LLM has completed:
+        - MALICIOUS → trust LLM, MALICIOUS/BLOCK
+        - SUSPICIOUS → trust LLM, SUSPICIOUS/REVIEW
+        - BENIGN/CLEAN → LLM overrides Stage 1 false positives, CLEAN/ALLOW
+        - ERROR → fall back to Stage 1 findings-based logic
+
+        When Stage 2 is absent (stage-1-only mode), use findings-based logic:
+        - CRITICAL findings >= 1 → MALICIOUS, BLOCK
+        - HIGH findings >= 1 or total >= 3 → SUSPICIOUS, REVIEW
+        - Any finding → SUSPICIOUS, REVIEW
+        - No findings → CLEAN, ALLOW
         """
         critical = sum(1 for f in findings if f["severity"] == "CRITICAL")
         high = sum(1 for f in findings if f["severity"] == "HIGH")
         total = len(findings)
 
-        if critical >= 1:
-            result = "MALICIOUS"
-            action = "BLOCK"
-            confidence = max(0.8, r.stage2.confidence if r.stage2 else 0.8)
-        elif high >= 1 or total >= 3:
-            result = "SUSPICIOUS"
-            action = "REVIEW"
-            confidence = r.stage2.confidence if r.stage2 else 0.6
-        elif total > 0:
-            result = "SUSPICIOUS"
-            action = "REVIEW"
-            confidence = r.stage2.confidence if r.stage2 else 0.4
-        else:
-            result = "CLEAN"
-            action = "ALLOW"
-            confidence = 1.0
+        # Stage 2 LLM verdict takes priority when available and successful
+        s2 = r.stage2
+        has_llm_verdict = s2 is not None and s2.verdict not in (Verdict.ERROR,)
 
-        # Highest severity level
+        if has_llm_verdict:
+            if s2.verdict == Verdict.MALICIOUS:
+                result = "MALICIOUS"
+                action = "BLOCK"
+                confidence = max(0.8, s2.confidence)
+            elif s2.verdict == Verdict.SUSPICIOUS:
+                result = "SUSPICIOUS"
+                action = "REVIEW"
+                confidence = s2.confidence
+            elif s2.verdict in (Verdict.BENIGN, Verdict.CLEAN):
+                # LLM says safe — Stage 1 findings are likely false positives
+                result = "CLEAN"
+                action = "ALLOW"
+                confidence = s2.confidence
+            else:
+                # Unexpected verdict, fall back to findings-based
+                has_llm_verdict = False
+
+        if not has_llm_verdict:
+            # Stage-1-only or LLM error: use findings-based logic
+            if critical >= 1:
+                result = "MALICIOUS"
+                action = "BLOCK"
+                confidence = 0.8
+            elif high >= 1 or total >= 3:
+                result = "SUSPICIOUS"
+                action = "REVIEW"
+                confidence = 0.6
+            elif total > 0:
+                result = "SUSPICIOUS"
+                action = "REVIEW"
+                confidence = 0.4
+            else:
+                result = "CLEAN"
+                action = "ALLOW"
+                confidence = 1.0
+
+        # Highest severity level (always based on findings, for informational purposes)
         if critical > 0:
             level = "CRITICAL"
         elif high > 0:
@@ -393,6 +424,16 @@ class Reporter:
             summary_en = (
                 f"Suspicious behavior detected, found {total} security issues ({sev_str}), "
                 f"primary threat types: {top_cats}. Recommend manual review."
+            )
+        elif result == "CLEAN" and total > 0:
+            # LLM overrode Stage 1 findings
+            summary = (
+                f"规则扫描命中 {total} 个疑似问题（{sev_str}），"
+                f"经 LLM 复验判定为安全，属于误报。"
+            )
+            summary_en = (
+                f"Rule scan matched {total} potential issues ({sev_str}), "
+                f"but LLM verification determined them as false positives."
             )
         else:
             summary = "未检测到安全威胁。"
