@@ -49,6 +49,7 @@ class RuleMatch:
     severity: Severity
     matched_text: str
     position: tuple[int, int]
+    pattern: str = ""  # Original regex pattern string
 
 
 @dataclass

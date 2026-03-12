@@ -59,6 +59,7 @@ class RuleEngine:
                         severity=rule["severity"],
                         matched_text=m.group(),
                         position=(m.start(), m.end()),
+                        pattern=pattern.pattern,
                     ))
 
         verdict = self._classify(matches)
