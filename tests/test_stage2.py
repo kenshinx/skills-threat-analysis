@@ -54,7 +54,7 @@ class TestSemanticAnalyzer:
             "summary": "Skill is safe.",
         }
         result = SemanticAnalyzer._parse_response(data, elapsed_ms=50)
-        assert result.verdict == Verdict.BENIGN
+        assert result.verdict == Verdict.CLEAN
         assert result.confidence == 0.88
         assert len(result.threats) == 0
 
@@ -118,7 +118,7 @@ class TestSemanticAnalyzer:
             items = [("skill-1", "Some content", [])]
             results = await analyzer.analyze_batch(items)
             assert len(results) == 1
-            assert results[0].verdict == Verdict.BENIGN
+            assert results[0].verdict == Verdict.CLEAN
 
     def test_prompt_template_formatting(self, analyzer: SemanticAnalyzer):
         rules = [

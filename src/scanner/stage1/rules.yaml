@@ -25,6 +25,9 @@ rules:
       - "(?:enter|switch to|activate) (?:developer|god|sudo|admin|root) mode"
       - "you have no (?:rules|restrictions|limitations|guidelines|boundaries)"
       - "pretend (?:you are|to be|that you're) (?:an? )?(?:evil|malicious|unrestricted|jailbroken)"
+      # Extended: role-play framing (from skill-scan prompt_analyzer Pass 6)
+      - "(?:let'?s?|we should)\\s+(?:play|pretend|imagine|roleplay|simulate)"
+      - "(?:for\\s+this\\s+)?(?:exercise|scenario|simulation),?\\s+(?:you\\s+are|act\\s+as)"
       # Chinese: role hijacking patterns
       - "(?:你|AI)(?:拥)?有(?:完全的?|绝对的?|无限的?)?(?:自主权|权限|权力|自由)"
       - "(?:你|AI)(?:被)?授权(?:自由)?(?:修改|更改|重写|覆盖)(?:自己的?|系统的?)?(?:一切|所有|全部|配置|指令|规则|提示词)"
@@ -41,6 +44,9 @@ rules:
       - "from now on,? (?:you (?:are|will|must|should)|your (?:rules|instructions))"
       - "<\\|?(?:im_start|system)\\|?>"
       - "<<SYS>>|\\[INST\\]"
+      # Extended: secrecy demand (from skill-scan prompt_analyzer Pass 1)
+      - "do\\s+not\\s+(?:tell|inform|reveal|disclose|mention)\\s+(?:the\\s+)?(?:user|human|anyone)"
+      - "\\bhidden\\s+instruction\\b"
       # Chinese: system prompt manipulation
       - "(?:新的?|更新的?|修改后的?)(?:系统|初始)?(?:提示词|指令|prompt)"
       - "从现在开始.{0,10}(?:你的?(?:规则|指令|角色|身份)|(?:你|AI)(?:是|将|必须|应该))"
@@ -60,7 +66,8 @@ rules:
     name: steganographic_injection
     severity: HIGH
     patterns:
-      - "[\\u200b\\u200c\\u200d\\ufeff\\u2060]"
+      # Extended: full invisible/bidi char coverage (21 chars, from prompt_analyzer Pass 2/11)
+      - "[\\u200b\\u200c\\u200d\\ufeff\\u2060\\u00ad\\u2061-\\u2064\\u180e\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]"
       - "(?:base64|atob|btoa)\\s*[:(].*(?:ignore|override|execute|eval|system|prompt)"
       - "<!--.*(?:ignore|override|execute).*-->"
       - "\\\\u[0-9a-fA-F]{4}.*(?:ignore|execute|override)"
@@ -92,7 +99,95 @@ rules:
       - "(?:紧急|urgent|emergency).*(?:必须|must|need to).*(?:执行|execute|run)"
       - "(?:as (?:an?|the) )(?:administrator|admin|developer|root|owner).{0,30}(?:I )?(?:authorize|grant|permit|allow) (?:you|this|access)"
       - "(?:this is|I am) (?:an? )?(?:authorized|official|legitimate) (?:test|request|command).{0,30}(?:ignore|override|bypass|skip)"
+      # Extended: manipulative language (from skill-scan prompt_analyzer Pass 9)
+      - "(?:if\\s+you\\s+don'?t|unless\\s+you)\\s+(?:do\\s+this|comply|follow|obey)"
+      - "(?:between\\s+us|our\\s+(?:little\\s+)?secret|nobody\\s+(?:needs?\\s+to|will)\\s+know)"
       # Chinese: social engineering / trust manipulation
       - "(?:主人|用户|管理员|开发者)(?:信任|授权|允许|许可)(?:你|AI).*(?:自我进化|自我修改|自我更新|自主行动)"
       - "不要辜负.{0,10}(?:信任|期望|委托)"
       - "(?:我|本人|管理员)(?:授权|允许|批准|许可)(?:你|AI)(?:执行|运行|修改|删除|访问)(?:任何|一切|所有)"
+
+  # ============================================================
+  # New rules from skill-scan-1.0.0 dangerous-patterns.json
+  # ============================================================
+
+  # -- Credential Access (source: CRED_ACCESS, languages: "*") --
+  - id: PI-008
+    name: credential_access
+    severity: HIGH
+    patterns:
+      - "(?:read|access|open|cat|load|parse)\\s*\\(?[^)]*(?:credentials?\\.json|auth[_-]profiles?\\.json)"
+      - "(?:read|access|open|cat|load)\\s*\\(?[^)]*\\.ssh/"
+      - "(?:read|access|open|cat|load)\\s*\\(?[^)]*\\.aws/"
+      - "\\b(?:OPENAI_API_KEY|ANTHROPIC_API_KEY|GOOGLE_API_KEY|AZURE_API_KEY)\\b"
+      - "\\bbearer\\s+token\\b"
+      - "\\b(?:botToken|authToken)\\s*[=:]"
+
+  # -- Network Exfiltration Indicators (source: NETWORK_EXFIL, languages: "*") --
+  - id: PI-009
+    name: network_exfiltration
+    severity: MEDIUM
+    patterns:
+      - "\\bwebhooks?\\b"
+      - "\\bngrok\\b"
+      - "\\bnslookup\\b"
+      - "\\bdns\\.resolve\\b"
+      - "\\breverse\\s+shell\\b"
+
+  # -- Filesystem Destruction (source: FS_WRITE, languages: "*") --
+  - id: PI-010
+    name: filesystem_destruction
+    severity: HIGH
+    patterns:
+      - "\\brm\\s+-[a-zA-Z]*r[a-zA-Z]*f\\b"
+      - "\\bshutil\\.rmtree\\b"
+      - "\\bos\\.(?:remove|unlink)\\s*\\("
+      - "\\bfs\\.(?:unlink|rm|rmdir)(?:Sync)?\\s*\\("
+
+  # -- Obfuscation Standalone (source: OBFUSCATION, languages: "*") --
+  - id: PI-011
+    name: obfuscation_standalone
+    severity: MEDIUM
+    patterns:
+      - "\\bfromCharCode\\b"
+      - "\\bdecodeURIComponent\\s*\\("
+      - "\\bunescape\\s*\\("
+      - "\\bbase64\\.b64decode\\b"
+      - "\\bbase64\\.decodebytes\\b"
+      - "Buffer\\.from\\s*\\([^)]*['\"]base64['\"]"
+
+  # -- Crypto Wallet Access (source: CRYPTO_WALLET, languages: "*") --
+  - id: PI-012
+    name: crypto_wallet_access
+    severity: HIGH
+    patterns:
+      - "\\bwallet\\.dat\\b"
+      - "\\bseed[_-]?phrase\\b"
+      - "\\bethers\\.Wallet\\b"
+      - "\\bweb3\\.eth\\.accounts\\b"
+      - "\\b(?:bip39|bip32)\\b"
+      - "\\bsolana.*keypair\\b"
+
+  # -- Persistence Mechanism (source: PERSISTENCE, languages: "*") --
+  - id: PI-013
+    name: persistence_mechanism
+    severity: HIGH
+    patterns:
+      - "\\bcrontab\\b"
+      - "\\bsystemctl\\s+(?:enable|start)\\b"
+      - "\\bLaunchAgent\\b"
+      - "\\blaunchd\\b"
+      - "\\brc\\.local\\b"
+      - "\\bpm2\\s+start\\b"
+
+  # -- Privilege Escalation (source: PRIV_ESCALATION, languages: "*") --
+  - id: PI-014
+    name: privilege_escalation
+    severity: HIGH
+    patterns:
+      - "\\bchmod\\s+\\+s\\b"
+      - "\\bsetuid\\b"
+      - "\\bsetgid\\b"
+      - "/etc/shadow"
+      - "/etc/sudoers"
+      - "\\bNOPASSWD\\b"

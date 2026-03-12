@@ -8,12 +8,9 @@ from typing import Optional
 
 
 class Verdict(Enum):
-    CLEAN = "clean"
-    SUSPICIOUS = "suspicious"
-    NEEDS_REVIEW = "needs_review"
     MALICIOUS = "malicious"
-    BENIGN = "benign"
-    ERROR = "error"
+    SUSPICIOUS = "suspicious"
+    CLEAN = "clean"
 
 
 class Severity(Enum):
@@ -21,16 +18,45 @@ class Severity(Enum):
     HIGH = "high"
     MEDIUM = "medium"
     LOW = "low"
+    INFO = "info"
+    SAFE = "safe"
 
 
-class ThreatType(Enum):
-    INSTRUCTION_OVERRIDE = "instruction_override"
-    ROLE_HIJACKING = "role_hijacking"
-    SYSTEM_PROMPT_MANIPULATION = "system_prompt_manipulation"
-    CONTEXT_EXFILTRATION = "context_exfiltration"
-    STEGANOGRAPHIC_INJECTION = "steganographic_injection"
-    DANGEROUS_OPERATION = "dangerous_operation"
+class ThreatCategory(Enum):
+    PROMPT_INJECTION = "prompt_injection"
+    COMMAND_INJECTION = "command_injection"
+    DATA_EXFILTRATION = "data_exfiltration"
+    HARDCODED_SECRETS = "hardcoded_secrets"
+    UNAUTHORIZED_TOOL_USE = "unauthorized_tool_use"
+    OBFUSCATION = "obfuscation"
     SOCIAL_ENGINEERING = "social_engineering"
+    RESOURCE_ABUSE = "resource_abuse"
+    SUPPLY_CHAIN_ATTACK = "supply_chain_attack"
+    PRIVILEGE_ESCALATION = "privilege_escalation"
+    MALICIOUS_GUIDANCE = "malicious_guidance"
+    SKILL_MD_MISMATCH = "skill_md_mismatch"
+    CODE_QUALITY = "code_quality"
+    BYTECODE_TAMPERING = "bytecode_tampering"
+    TRIGGER_HIJACKING = "trigger_hijacking"
+    UNICODE_STEGANOGRAPHY = "unicode_steganography"
+    TRANSITIVE_TRUST_ABUSE = "transitive_trust_abuse"
+
+
+class RecommendedAction(Enum):
+    BLOCK = "block"
+    REVIEW = "review"
+    ALLOW = "allow"
+
+
+class AnalyzerStatus(Enum):
+    COMPLETED = "completed"
+    SKIPPED = "skipped"
+    FAILED = "failed"
+    TIMEOUT = "timeout"
+
+
+# Backward compatibility alias
+ThreatType = ThreatCategory
 
 
 @dataclass
@@ -54,7 +80,7 @@ class RuleMatch:
 
 @dataclass
 class Threat:
-    type: ThreatType
+    category: ThreatCategory
     severity: Severity
     evidence: str
     explanation: str
@@ -74,6 +100,7 @@ class Stage2Result:
     threats: list[Threat] = field(default_factory=list)
     summary: str = ""
     duration_ms: int = 0
+    status: AnalyzerStatus = AnalyzerStatus.COMPLETED
 
 
 @dataclass
@@ -92,8 +119,6 @@ class ScanSummary:
     clean: int = 0
     suspicious: int = 0
     malicious: int = 0
-    needs_human_review: int = 0
-    scan_error: int = 0
     threat_type_counts: dict[str, int] = field(default_factory=dict)
     threat_type_skills: dict[str, list[str]] = field(default_factory=dict)
     source_breakdown: dict[str, dict] = field(default_factory=dict)

@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Generator
 
 from scanner.loader import load_skills
-from scanner.models import ScanResult, SkillFile, Verdict
+from scanner.models import AnalyzerStatus, ScanResult, SkillFile, Verdict
 from scanner.stage1.engine import RuleEngine
 from scanner.stage2.analyzer import SemanticAnalyzer
 from scanner.stage3.reporter import Reporter
@@ -76,7 +76,7 @@ class Orchestrator:
                 ScanResult(
                     skill=skill,
                     stage1=None,
-                    final_verdict=Verdict.NEEDS_REVIEW  # Force all to be analyzed
+                    final_verdict=Verdict.SUSPICIOUS  # Force all to be analyzed
                 )
                 for skill in load_skills(self._skills_dir)
             ]
@@ -85,13 +85,11 @@ class Orchestrator:
             # Normal flow: stage 1 → stage 2 (if not stage 1 only)
             stage1_results = self._run_stage1()
             logger.info(
-                "Stage 1 complete: %d total, %d clean, %d suspicious, %d needs_review",
+                "Stage 1 complete: %d total, %d clean, %d suspicious",
                 len(stage1_results),
                 sum(1 for r in stage1_results if r.stage1.verdict == Verdict.CLEAN),
                 sum(1 for r in stage1_results if r.stage1.verdict ==
                     Verdict.SUSPICIOUS),
-                sum(1 for r in stage1_results if r.stage1.verdict ==
-                    Verdict.NEEDS_REVIEW),
             )
 
             if self._stage == "1":
@@ -149,12 +147,9 @@ class Orchestrator:
             # In stage 2-only mode, analyze all skills
             to_analyze = stage1_results
         else:
-            # Normal mode: only analyze NEEDS_REVIEW and SUSPICIOUS
-            needs_review = [
-                r for r in stage1_results if r.stage1.verdict == Verdict.NEEDS_REVIEW]
-            suspicious = [
+            # Normal mode: only analyze SUSPICIOUS (non-CLEAN)
+            to_analyze = [
                 r for r in stage1_results if r.stage1.verdict == Verdict.SUSPICIOUS]
-            to_analyze = needs_review + suspicious
 
         logger.info("Stage 2: analyzing %d skills with LLM", len(to_analyze))
 
@@ -175,21 +170,23 @@ class Orchestrator:
             for r, s2 in zip(batch, stage2_results):
                 r.stage2 = s2
                 # Determine final verdict
-                if s2.verdict == Verdict.ERROR:
+                if s2.status == AnalyzerStatus.FAILED:
                     # LLM analysis failed — fall back to stage 1 verdict
                     r.final_verdict = (
                         r.stage1.verdict if r.stage1
-                        else Verdict.NEEDS_REVIEW
+                        else Verdict.SUSPICIOUS
                     )
                 elif s2.verdict == Verdict.MALICIOUS:
                     r.final_verdict = Verdict.MALICIOUS
                 elif s2.verdict == Verdict.SUSPICIOUS:
                     r.final_verdict = Verdict.SUSPICIOUS
-                elif s2.verdict == Verdict.BENIGN:
-                    # Stage 1 was SUSPICIOUS but LLM says BENIGN → downgrade
-                    r.final_verdict = Verdict.CLEAN
-                elif s2.confidence < 0.7:
-                    r.final_verdict = Verdict.NEEDS_REVIEW
+                elif s2.verdict == Verdict.CLEAN:
+                    if s2.confidence >= 0.7:
+                        # LLM confident it's clean → downgrade
+                        r.final_verdict = Verdict.CLEAN
+                    else:
+                        # Low confidence clean → keep suspicious
+                        r.final_verdict = Verdict.SUSPICIOUS
                 else:
                     r.final_verdict = s2.verdict
 

@@ -41,7 +41,7 @@ class TestRuleEngine:
     def test_social_engineering_skill(self, engine: RuleEngine):
         content = (FIXTURES / "social_engineering_skill.md").read_text()
         result = engine.scan(content)
-        assert result.verdict in (Verdict.SUSPICIOUS, Verdict.NEEDS_REVIEW)
+        assert result.verdict == Verdict.SUSPICIOUS
 
     def test_instruction_override_patterns(self, engine: RuleEngine):
         cases = [

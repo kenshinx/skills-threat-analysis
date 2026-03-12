@@ -15,7 +15,7 @@ from scanner.models import (
     Stage1Result,
     Stage2Result,
     Threat,
-    ThreatType,
+    ThreatCategory,
     RuleMatch,
     Verdict,
 )
@@ -42,7 +42,7 @@ def _make_result(
     return ScanResult(
         skill=_make_skill(skill_id, source),
         stage1=Stage1Result(
-            verdict=verdict if not stage2 else Verdict.NEEDS_REVIEW,
+            verdict=verdict if not stage2 else Verdict.SUSPICIOUS,
             matched_rules=matched_rules or [],
             duration_ms=1,
         ),
@@ -66,7 +66,7 @@ class TestReporter:
                         confidence=0.95,
                         threats=[
                             Threat(
-                                type=ThreatType.INSTRUCTION_OVERRIDE,
+                                category=ThreatCategory.PROMPT_INJECTION,
                                 severity=Severity.CRITICAL,
                                 evidence="ignore instructions",
                                 explanation="Override attempt",
