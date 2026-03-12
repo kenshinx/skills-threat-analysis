@@ -1,0 +1,167 @@
+{
+    "task_params": {
+        "owner_handle": "Be1Human",
+        "skill_slug": "respond-first",
+        "detail_url": "https://clawhub.ai/Be1Human/respond-first",
+        "skill_name": "Respond First",
+        "summary": "Multi-agent dispatcher skill. Main agent acts as a pure coordinator — chatting with users and delegating all real work to 5 persistent sub-agents via round-robin scheduling with fixed sessionKeys.",
+        "version": "11.0.0",
+        "downloads": 830,
+        "stars": 2,
+        "comments": 0,
+        "requires": {},
+        "created_at_ts": 1770696249664.0,
+        "updated_at_ts": 1772250659585.0
+    },
+    "crawled_at": 1773045024.515248,
+    "detail_content": {
+        "skill_info": {
+            "canonical": null,
+            "forkOf": null,
+            "latestVersion": {
+                "_creationTime": 1770724159920.134,
+                "_id": "k972jjm9a7d38zwpdkfr8cvas980xv3q",
+                "changelog": "Rewritten as generic multi-agent dispatcher: 5 persistent sub-agents (alpha/bravo/charlie/delta/echo), round-robin scheduling, speak-first protocol. No theme — pure coordination framework.",
+                "changelogSource": "user",
+                "createdAt": 1770724159920.0,
+                "createdBy": "kn76zwpdqxwr3pd6pywfsxgm5180wk5j",
+                "files": [
+                    {
+                        "contentType": "text/markdown",
+                        "path": "SKILL.md",
+                        "sha256": "c8b8bb29533312323f6c10bd6ec2853080352c42da299f1e13b593684ea1c2c1",
+                        "size": 4163.0,
+                        "storageId": "kg20nzxdazpm979fts76gc9bp980x8h6"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "_meta.json",
+                        "sha256": "212c97b33e9b778ca3ed12446c5077d9758a870b784bd7842cd38b1c4b27af7d",
+                        "size": 109.0,
+                        "storageId": "kg22rytgk9brb9tka6dej2v23x80xhcx"
+                    },
+                    {
+                        "contentType": "application/json",
+                        "path": "skill.json",
+                        "sha256": "fc5b864d0a19b0a3a0c5ebcbe76e3a93edf948538b61263edc8fe20e1b8b1d61",
+                        "size": 464.0,
+                        "storageId": "kg2dd68htws7kd6nn006yxt3ph80w3kz"
+                    }
+                ],
+                "fingerprint": "5810cb0ace2c3d7069d7db11c3e2f5248bb17e2fb907c0642b7efffb321485d6",
+                "llmAnalysis": {
+                    "checkedAt": 1770802576701.0,
+                    "confidence": "high",
+                    "dimensions": [
+                        {
+                            "detail": "Name/description, declared requirements, and instructions align: it's an instruction-only dispatcher that relies on platform session spawning. There are no unrelated environment variables, binaries, or install steps requested.",
+                            "label": "Purpose & Capability",
+                            "name": "purpose_capability",
+                            "rating": "ok"
+                        },
+                        {
+                            "detail": "SKILL.md strictly limits the main agent to chat-and-delegate behavior (no exec, file I/O, search) and defines the exact spawn payload. This is coherent, but the instructions require the main agent to put a 'self-contained' task (including all necessary context) into every spawn call — meaning user messages and context will be forwarded to sub-agents. The skill also uses permanent sessionKeys (persistent sub-agents) but does not provide guidance about memory clearing or data isolation between tasks; that creates a privacy/data-retention consideration.",
+                            "label": "Instruction Scope",
+                            "name": "instruction_scope",
+                            "rating": "note"
+                        },
+                        {
+                            "detail": "No install spec and no code files — lowest-risk delivery model (instruction-only). Nothing is written to disk by the skill itself.",
+                            "label": "Install Mechanism",
+                            "name": "install_mechanism",
+                            "rating": "ok"
+                        },
+                        {
+                            "detail": "The skill requests no environment variables, credentials, or config paths — proportional to an instruction-only dispatcher. Note: sensitive user data is still forwarded in spawn tasks (by design), so privacy—not credential—risk is the main concern.",
+                            "label": "Credentials",
+                            "name": "environment_proportionality",
+                            "rating": "ok"
+                        },
+                        {
+                            "detail": "always:false (no forced permanent inclusion). However, the design depends on five 'persistent' sub-agents identified by fixed sessionKeys; persistent agents may retain state between tasks beyond what the skill describes. Combined with normal autonomous invocation behavior of the platform, persistence increases the blast radius for any retained data or misbehavior by a sub-agent, though the skill itself does not request elevated platform privileges.",
+                            "label": "Persistence & Privilege",
+                            "name": "persistence_privilege",
+                            "rating": "note"
+                        }
+                    ],
+                    "guidance": "This skill appears to do what it says (coordinate and delegate). Before installing or using it: 1) Treat the sub-agents as separate recipients — any user content you put into tasks will be forwarded to those sub-agents and may be retained by them. Avoid sending sensitive secrets or private data unless you confirm how session memory is handled. 2) Ask the platform or skill proprietor whether the persistent sessionKeys retain conversation history across tasks and whether you can clear or isolate that memory. 3) Test with non-sensitive inputs to observe behavior (who gets spawned, what the spawn payload looks like in logs). 4) Confirm platform audit/logging and revocation procedures in case you need to stop sub-agents or delete retained data. If you require strict data isolation or must not forward user context to other agents, do not use this skill.",
+                    "model": "gpt-5-mini",
+                    "status": "clean",
+                    "summary": "The skill is internally consistent with its stated purpose (a dispatcher that delegates work to five persistent sub-agents), but it will forward user-provided context to persistent sub-agents so you should review data-retention/privacy implications before use.",
+                    "verdict": "benign"
+                },
+                "parsed": {
+                    "frontmatter": {
+                        "author": "cloudboy",
+                        "description": "Multi-agent dispatcher skill. Main agent acts as a pure coordinator — chatting with users and delegating all real work to 5 persistent sub-agents via round-robin scheduling with fixed sessionKeys.",
+                        "keywords": [
+                            "multi-agent",
+                            "dispatcher",
+                            "async",
+                            "delegation",
+                            "sub-agents",
+                            "round-robin",
+                            "sessions"
+                        ],
+                        "name": "respond-first",
+                        "version": "11.0.0"
+                    }
+                },
+                "sha256hash": "255b5d4b491c0e375385ab0b0bb76783652004f9552a8ec9e55ad65bbde0d6d8",
+                "skillId": "kd76c1hswqm2azss8xferfkdph80x1g1",
+                "version": "11.0.0",
+                "vtAnalysis": {
+                    "analysis": "Type: OpenClaw Skill\nName: respond-first\nVersion: 11.0.0\n\nThe skill is designed as a multi-agent dispatcher, explicitly prohibiting the main agent from using `exec`, file read/write, search, or any execution tools. Its sole function is to delegate tasks to pre-defined sub-agents via `sessions_spawn` with strict parameters. There is no evidence of data exfiltration, malicious execution, persistence mechanisms, or prompt injection attempts against the main agent within the provided `SKILL.md` instructions or other metadata files. The instructions clearly define a constrained, coordinating role for the agent.",
+                    "checkedAt": 1773027973612.0,
+                    "source": "palm",
+                    "status": "clean",
+                    "verdict": "benign"
+                }
+            },
+            "moderationInfo": null,
+            "owner": {
+                "_creationTime": 1770696195693.1897,
+                "_id": "kn76zwpdqxwr3pd6pywfsxgm5180wk5j",
+                "createdAt": 1770696195693.1897,
+                "displayName": "Be1Human",
+                "email": "guotengtao123@163.com",
+                "emailVerificationTime": 1771164550657.0,
+                "githubCreatedAt": 1529488911000.0,
+                "githubFetchedAt": 1770914108312.0,
+                "handle": "Be1Human",
+                "image": "https://avatars.githubusercontent.com/u/40425943?v=4",
+                "name": "Be1Human",
+                "role": "user",
+                "updatedAt": 1771513856592.0
+            },
+            "pendingReview": false,
+            "skill": {
+                "_creationTime": 1770696249664.6582,
+                "_id": "kd76c1hswqm2azss8xferfkdph80x1g1",
+                "badges": {},
+                "createdAt": 1770696249664.0,
+                "displayName": "Respond First",
+                "latestVersionId": "k972jjm9a7d38zwpdkfr8cvas980xv3q",
+                "ownerUserId": "kn76zwpdqxwr3pd6pywfsxgm5180wk5j",
+                "slug": "respond-first",
+                "stats": {
+                    "comments": 0.0,
+                    "downloads": 833.0,
+                    "installsAllTime": 2.0,
+                    "installsCurrent": 2.0,
+                    "stars": 2.0,
+                    "versions": 6.0
+                },
+                "summary": "Multi-agent dispatcher skill. Main agent acts as a pure coordinator — chatting with users and delegating all real work to 5 persistent sub-agents via round-robin scheduling with fixed sessionKeys.",
+                "tags": {
+                    "latest": "k972jjm9a7d38zwpdkfr8cvas980xv3q"
+                },
+                "updatedAt": 1772250659585.0
+            }
+        },
+        "readme": {
+            "path": "SKILL.md",
+            "text": "---\nname: respond-first\nversion: 11.0.0\ndescription: >\n  Multi-agent dispatcher skill. Main agent acts as a pure coordinator —\n  chatting with users and delegating all real work to 5 persistent sub-agents\n  via round-robin scheduling with fixed sessionKeys.\nauthor: cloudboy\nkeywords: [multi-agent, dispatcher, async, delegation, sub-agents, round-robin, sessions]\n---\n\n# Respond-First — Multi-Agent Dispatcher\n\n## What You Are\n\nYou are a **pure dispatcher / coordinator**. Your only two jobs:\n1. Chat with the user\n2. Delegate tasks to your 5 fixed sub-agents\n\n**You CANNOT use exec, file read/write, search, or any execution tools.**\nAll real work MUST be delegated via `sessions_spawn`.\n\n## Your Sub-Agent Pool (5 Fixed Agents)\n\nYou have 5 persistent sub-agents, each with a **permanent sessionKey**:\n\n| # | sessionKey | Role | Best For |\n|---|-----------|------|----------|\n| 1 | `alpha` | Heavy Lifter | Complex tasks, large-scale work, hard problems |\n| 2 | `bravo` | Analyst | Code review, architecture analysis, all-rounder |\n| 3 | `charlie` | Strategist | Planning, design, deep-thinking tasks |\n| 4 | `delta` | Fixer | Bug fixes, documentation, precision work |\n| 5 | `echo` | Scout | Search, research, intel gathering, reports |\n\n### Round-Robin Dispatch\n\nTask 1 → `alpha`, Task 2 → `bravo`, Task 3 → `charlie`, Task 4 → `delta`, Task 5 → `echo`, Task 6 → back to `alpha`...\n\nIf a sub-agent is busy (previous spawn hasn't announced back yet), skip to the next available one.\n\n---\n\n## ⚡ TWO ABSOLUTE LAWS ⚡\n\n### Law #1: Speak First, Then Spawn\n\n**You MUST output a text reply to the user BEFORE calling `sessions_spawn`.**\n\nUsers cannot see tool calls — they only see your text. If you spawn silently, the user thinks you're ignoring them.\n\nCorrect order:\n1. **First** — Reply with text (confirm receipt, say who you're assigning)\n2. **Then** — Call `sessions_spawn`\n3. **Stop** — No more text after spawn\n\n### Law #2: Always Pass sessionKey\n\n**Every `sessions_spawn` call MUST include the `sessionKey` parameter.**\n**sessionKey MUST be one of: `alpha`, `bravo`, `charlie`, `delta`, `echo`.**\n**Missing sessionKey = critical error. Creates garbage sessions.**\n\n---\n\n## Spawn Format (Strict)\n\n```json\n{\n  \"task\": \"Complete, self-contained task description with all necessary context\",\n  \"sessionKey\": \"alpha\",\n  \"runTimeoutSeconds\": 300\n}\n```\n\nThree required fields:\n1. **task** — Self-contained description (sub-agent has NO context from your conversation)\n2. **sessionKey** — One of: alpha / bravo / charlie / delta / echo\n3. **runTimeoutSeconds** — Always 300\n\n---\n\n## Examples\n\n### Example 1: User requests a task\n\nUser: \"Search for XX and compile a report\"\n\n**Step 1 — Speak first (REQUIRED):**\n`Got it, assigning alpha to handle this.`\n\n**Step 2 — Spawn:**\n```json\nsessions_spawn({\n  \"task\": \"Search for XX and compile a structured report covering...\",\n  \"sessionKey\": \"alpha\",\n  \"runTimeoutSeconds\": 300\n})\n```\n\n**Step 3 — STOP.** No more output after spawn.\n\n### Example 2: Second task (round-robin → bravo)\n\nUser: \"Fix the bug in the login module\"\n\n**Speak first:** `On it — bravo will take care of this.`\n\n**Then spawn:**\n```json\nsessions_spawn({\n  \"task\": \"Fix the bug in the login module. File path: ..., issue: ...\",\n  \"sessionKey\": \"bravo\",\n  \"runTimeoutSeconds\": 300\n})\n```\n\n### Example 3: Pure chat (no spawn)\n\nUser: \"How's it going?\"\n\nYou: Just reply normally. No `sessions_spawn` needed.\n\n### Example 4: Task completed (announce received)\n\nWhen a sub-agent completes its task, the system sends an announce. Summarize the results for the user in your own words.\n\n---\n\n## After Spawn — STOP\n\nOnce `sessions_spawn` returns `accepted`, your turn is over. **Do not write any more text.**\n\n## Absolute Prohibitions ❌\n\n- ❌ Spawning without speaking first (user sees nothing!)\n- ❌ Calling `sessions_spawn` without `sessionKey`\n- ❌ Using any sessionKey other than: alpha, bravo, charlie, delta, echo\n- ❌ Using exec / file read-write / search tools yourself\n- ❌ Writing more text after spawn returns accepted\n- ❌ Using the `message` tool\n- ❌ Silent failure — always inform the user\n"
+        }
+    }
+}

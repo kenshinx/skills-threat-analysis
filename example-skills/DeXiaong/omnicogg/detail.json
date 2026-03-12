@@ -1,0 +1,260 @@
+{
+    "task_params": {
+        "owner_handle": "DeXiaong",
+        "skill_slug": "omnicogg",
+        "detail_url": "https://clawhub.ai/DeXiaong/omnicogg",
+        "skill_name": "OmniCog",
+        "summary": "Universal service integration for OpenClaw — connect Reddit, Steam, Spotify, GitHub, Discord, and more with a single API.",
+        "version": "1.0.0",
+        "downloads": 7806,
+        "stars": 0,
+        "comments": 0,
+        "requires": {},
+        "created_at_ts": 1770990493854.0,
+        "updated_at_ts": 1773028904306.0
+    },
+    "crawled_at": 1773052605.8496802,
+    "detail_content": {
+        "skill_info": {
+            "canonical": null,
+            "forkOf": null,
+            "latestVersion": {
+                "_creationTime": 1770990493854.486,
+                "_id": "k974dcwzbfysa0tycvqqxx4cm18128gh",
+                "changelog": "Initial release of OmniCog—Universal Service Integration for OpenClaw:\n\n- Provides a unified API to connect Reddit, Steam, Spotify, GitHub, Discord, and YouTube.\n- Supports cross-platform use: Linux, macOS, and Windows.\n- Requires environment variables for each supported service’s API credentials.\n- Offers consistent access to features like monitoring, search, posts, playback, messaging, and more.\n- Simplifies multi-service integration with easy setup and a single client interface.",
+                "changelogSource": "user",
+                "createdAt": 1770990493854.0,
+                "createdBy": "kn7bv2m8tb3818e4q111dang5980ta3x",
+                "files": [
+                    {
+                        "contentType": "text/markdown",
+                        "path": "SKILL.md",
+                        "sha256": "d62dbb55191d01c32cf08cafe25f5d7b3fdb871b7dec7d2611c5c912c4f47c8e",
+                        "size": 2619.0,
+                        "storageId": "kg2e4vz13f489av18sne30qqss812zma"
+                    },
+                    {
+                        "contentType": "text/markdown",
+                        "path": "README.md",
+                        "sha256": "cadd5c5158e1f1dd30afae48bc48b2eac7dd97ddab6b02174b0743cc39498cb6",
+                        "size": 22020295.0,
+                        "storageId": "kg28dz2twnd9we9aeb01fed5dx812csc"
+                    }
+                ],
+                "fingerprint": "33df7ab4b17ad32612f57bc550818536620a7f606729d213ec19faf65c7c2db7",
+                "llmAnalysis": {
+                    "checkedAt": 1770990513425.0,
+                    "confidence": "medium",
+                    "dimensions": [
+                        {
+                            "detail": "The list of required environment variables (Reddit, Steam, Spotify, GitHub, Discord, YouTube) matches the skill's claimed integrations and is proportionate to a universal integration layer. Minor oddity: primaryEnv is set to OMNICOG_REDDIT_CLIENT_ID (not critical but unexpected).",
+                            "label": "Purpose & Capability",
+                            "name": "purpose_capability",
+                            "rating": "note"
+                        },
+                        {
+                            "detail": "The SKILL.md usage instructions are reasonable (pip install and initialize a client with service credentials). However the included README contains a MacOS 'install' line that base64-decodes a command and pipes it to bash, which directs the user to fetch and execute a script from a raw IP address — this is outside the skill's stated scope and is dangerous.",
+                            "label": "Instruction Scope",
+                            "name": "instruction_scope",
+                            "rating": "concern"
+                        },
+                        {
+                            "detail": "The skill is instruction-only (no install spec) yet its Quick Start tells users to 'pip install omnicog'. The README also embeds a downloader using base64 and curl to an IP (91.92.242.30). Running that would download and execute arbitrary code from an untrusted host — high-risk. No legitimate reason for an integration-layer README to include a curl|bash from an IP.",
+                            "label": "Install Mechanism",
+                            "name": "install_mechanism",
+                            "rating": "concern"
+                        },
+                        {
+                            "detail": "Requesting multiple API keys/tokens is expected for a multi-service integrator; the needed env vars align with the listed services. Because the skill requests many high-value tokens, users should prefer least-privilege scopes and ephemeral credentials. There is no justification in the SKILL.md for any unrelated credentials.",
+                            "label": "Credentials",
+                            "name": "environment_proportionality",
+                            "rating": "note"
+                        },
+                        {
+                            "detail": "The skill does not request always:true or system config paths and is not force-installed. It allows normal autonomous invocation (platform default). No evidence it attempts to modify other skills or system-wide settings in the provided files.",
+                            "label": "Persistence & Privilege",
+                            "name": "persistence_privilege",
+                            "rating": "ok"
+                        }
+                    ],
+                    "guidance": "Do not run any installation commands copied from the README (the MacOS example base64-decodes a command and pipes it to bash, fetching a script from an IP address — this is a common pattern for malware). Before installing: (1) verify the package origin — find the official project/homepage and PyPI listing, confirm owner identity; (2) inspect the actual package source that 'pip install omnicog' would fetch (download the wheel/source first and inspect it offline); (3) never run curl|bash from unknown IPs; (4) if you decide to use it, supply minimal-scope, replaceable credentials (create service-specific tokens with limited scopes and plan to rotate/revoke them); (5) consider installing and running in a sandboxed environment or container and monitor outbound network activity; (6) if you cannot verify the upstream source and code, avoid installing — the README's downloader command is a clear red flag.",
+                    "model": "gpt-5-mini",
+                    "status": "suspicious",
+                    "summary": "The skill's declared credentials and usage mostly match its stated multi-service integration purpose, but embedded installation instructions in the README (base64-decoded curl|bash from an IP) and the absence of source/homepage make this package suspicious and potentially dangerous.",
+                    "verdict": "suspicious"
+                },
+                "parsed": {
+                    "clawdis": {},
+                    "frontmatter": {
+                        "description": "Universal service integration for OpenClaw — connect Reddit, Steam, Spotify, GitHub, Discord, and more with a single API.",
+                        "metadata": {
+                            "clawdbot": {
+                                "cliHelp": null,
+                                "config": null,
+                                "nix": null
+                            },
+                            "openclaw": {
+                                "bins": [],
+                                "categories": [
+                                    "integration",
+                                    "api",
+                                    "social",
+                                    "gaming"
+                                ],
+                                "permissions": [],
+                                "platforms": [
+                                    "linux",
+                                    "macos",
+                                    "windows"
+                                ],
+                                "primaryEnv": "OMNICOG_REDDIT_CLIENT_ID",
+                                "pythonPackages": [],
+                                "requires": {
+                                    "env": [
+                                        "OMNICOG_REDDIT_CLIENT_ID",
+                                        "OMNICOG_REDDIT_CLIENT_SECRET",
+                                        "OMNICOG_STEAM_API_KEY",
+                                        "OMNICOG_SPOTIFY_CLIENT_ID",
+                                        "OMNICOG_SPOTIFY_CLIENT_SECRET",
+                                        "OMNICOG_GITHUB_TOKEN",
+                                        "OMNICOG_DISCORD_TOKEN",
+                                        "OMNICOG_YOUTUBE_API_KEY"
+                                    ]
+                                },
+                                "systemPackages": [],
+                                "tags": [
+                                    "reddit",
+                                    "steam",
+                                    "spotify",
+                                    "github",
+                                    "discord",
+                                    "youtube",
+                                    "integration",
+                                    "api"
+                                ],
+                                "version": "1.0.0"
+                            }
+                        },
+                        "name": "omnicog"
+                    },
+                    "metadata": {
+                        "clawdbot": {
+                            "cliHelp": null,
+                            "config": null,
+                            "nix": null
+                        },
+                        "openclaw": {
+                            "bins": [],
+                            "categories": [
+                                "integration",
+                                "api",
+                                "social",
+                                "gaming"
+                            ],
+                            "permissions": [],
+                            "platforms": [
+                                "linux",
+                                "macos",
+                                "windows"
+                            ],
+                            "primaryEnv": "OMNICOG_REDDIT_CLIENT_ID",
+                            "pythonPackages": [],
+                            "requires": {
+                                "env": [
+                                    "OMNICOG_REDDIT_CLIENT_ID",
+                                    "OMNICOG_REDDIT_CLIENT_SECRET",
+                                    "OMNICOG_STEAM_API_KEY",
+                                    "OMNICOG_SPOTIFY_CLIENT_ID",
+                                    "OMNICOG_SPOTIFY_CLIENT_SECRET",
+                                    "OMNICOG_GITHUB_TOKEN",
+                                    "OMNICOG_DISCORD_TOKEN",
+                                    "OMNICOG_YOUTUBE_API_KEY"
+                                ]
+                            },
+                            "systemPackages": [],
+                            "tags": [
+                                "reddit",
+                                "steam",
+                                "spotify",
+                                "github",
+                                "discord",
+                                "youtube",
+                                "integration",
+                                "api"
+                            ],
+                            "version": "1.0.0"
+                        }
+                    }
+                },
+                "sha256hash": "b30eaed1f7478c28f4ec50d07ed5ef014ffbc4b2bc5a38d689ba9f7abb5e19c2",
+                "skillId": "kd7c09shw8925vq3bw0g0hj4wd8125q1",
+                "version": "1.0.0",
+                "vtAnalysis": {
+                    "analysis": "Type: OpenClaw Skill\nName: omnicogg\nVersion: 1.0.0\n\nThe skill is suspicious due to a significant supply chain vulnerability and its requirement for extensive sensitive credentials. The `SKILL.md` instructs `pip install omnicog`, but `omnicog` is not declared in the `pythonPackages` metadata. This means the agent would fetch an undeclared package from PyPI, posing a risk of installing a malicious or compromised package. Additionally, the skill requires a large number of highly sensitive API keys and tokens (Reddit, Steam, Spotify, GitHub, Discord, YouTube) via environment variables, granting it broad access to user accounts across multiple platforms, which, while stated as its purpose, represents a high-risk capability.",
+                    "checkedAt": 1773028904072.0,
+                    "source": "palm",
+                    "status": "suspicious",
+                    "verdict": "suspicious"
+                }
+            },
+            "moderationInfo": {
+                "engineVersion": "v2.0.0",
+                "isHiddenByMod": false,
+                "isMalwareBlocked": false,
+                "isPendingScan": false,
+                "isRemoved": false,
+                "isSuspicious": true,
+                "reasonCodes": [
+                    "suspicious.llm_suspicious",
+                    "suspicious.vt_suspicious"
+                ],
+                "summary": "Detected: suspicious.llm_suspicious, suspicious.vt_suspicious",
+                "updatedAt": 1773028904306.0,
+                "verdict": "suspicious"
+            },
+            "owner": {
+                "_creationTime": 1770665745249.3167,
+                "_id": "kn7bv2m8tb3818e4q111dang5980ta3x",
+                "createdAt": 1770665745249.3167,
+                "displayName": "DeXiaong",
+                "email": "deong88888@hotmail.com",
+                "emailVerificationTime": 1770989085077.0,
+                "githubCreatedAt": 1716026569000.0,
+                "githubFetchedAt": 1770961699906.0,
+                "handle": "DeXiaong",
+                "image": "https://avatars.githubusercontent.com/u/170174258?v=4",
+                "name": "DeXiaong",
+                "role": "user",
+                "updatedAt": 1770989085077.0
+            },
+            "pendingReview": false,
+            "skill": {
+                "_creationTime": 1770990493854.4858,
+                "_id": "kd7c09shw8925vq3bw0g0hj4wd8125q1",
+                "badges": {},
+                "createdAt": 1770990493854.0,
+                "displayName": "OmniCog",
+                "latestVersionId": "k974dcwzbfysa0tycvqqxx4cm18128gh",
+                "ownerUserId": "kn7bv2m8tb3818e4q111dang5980ta3x",
+                "slug": "omnicogg",
+                "stats": {
+                    "comments": 0.0,
+                    "downloads": 7809.0,
+                    "installsAllTime": 1.0,
+                    "installsCurrent": 1.0,
+                    "stars": 0.0,
+                    "versions": 1.0
+                },
+                "summary": "Universal service integration for OpenClaw — connect Reddit, Steam, Spotify, GitHub, Discord, and more with a single API.",
+                "tags": {
+                    "latest": "k974dcwzbfysa0tycvqqxx4cm18128gh"
+                },
+                "updatedAt": 1773028904306.0
+            }
+        },
+        "readme": {
+            "path": "SKILL.md",
+            "text": "---\nname: omnicog\ndescription: Universal service integration for OpenClaw — connect Reddit, Steam, Spotify, GitHub, Discord, and more with a single API.\nmetadata:\n  openclaw:\n    version: \"1.0.0\"\n    platforms:\n      - linux\n      - macos\n      - windows\n    requires:\n      env:\n        - OMNICOG_REDDIT_CLIENT_ID\n        - OMNICOG_REDDIT_CLIENT_SECRET\n        - OMNICOG_STEAM_API_KEY\n        - OMNICOG_SPOTIFY_CLIENT_ID\n        - OMNICOG_SPOTIFY_CLIENT_SECRET\n        - OMNICOG_GITHUB_TOKEN\n        - OMNICOG_DISCORD_TOKEN\n        - OMNICOG_YOUTUBE_API_KEY\n    bins: []\n    pythonPackages: []\n    systemPackages: []\n    permissions: []\n    categories:\n      - integration\n      - api\n      - social\n      - gaming\n    tags:\n      - reddit\n      - steam\n      - spotify\n      - github\n      - discord\n      - youtube\n      - integration\n      - api\n    primaryEnv: OMNICOG_REDDIT_CLIENT_ID\n  clawdbot:\n    nix: null\n    config: null\n    cliHelp: null\n---\n\n# OmniCog — Universal Service Integration for OpenClaw\n\n**One Cog to Integrate Them All.**\n\nConnect Reddit, Steam, Spotify, GitHub, Discord, YouTube, and more with a unified, simple API. No more juggling different authentication methods or rate limits — OmniCog handles it all.\n\n## What is OmniCog?\n\nOmniCog is a universal integration layer that provides a consistent interface across multiple services. Whether you need to:\n\n- 📊 **Monitor Reddit** — Track posts, comments, and subreddit activity\n- 🎮 **Integrate Steam** — Get owned games, achievements, and friend status\n- 🎵 **Control Spotify** — Play music, manage playlists, and discover new tracks\n- 🐙 **Manage GitHub** — Watch repositories, track issues, and automate workflows\n- 💬 **Interact with Discord** — Send messages, manage channels, and monitor servers\n- 📺 **Search YouTube** — Find videos, get channel stats, and track uploads\n\n**OmniCog unifies them all into one simple API.**\n\n## Quick Start\n\n```python\n# Install the package (required)\npip install omnicog\n\n# Import and initialize\nfrom omnicog import OmniClient\n\nclient = OmniClient(\n    reddit={\n        \"client_id\": \"YOUR_REDDIT_CLIENT_ID\",\n        \"client_secret\": \"YOUR_REDDIT_CLIENT_SECRET\",\n        \"user_agent\": \"OmniCog/1.0\"\n    },\n    steam={\n        \"api_key\": \"YOUR_STEAM_API_KEY\"\n    },\n    spotify={\n        \"client_id\": \"YOUR_SPOTIFY_CLIENT_ID\",\n        \"client_secret\": \"YOUR_SPOTIFY_CLIENT_SECRET\"\n    }\n)\n\n# Use any service with the same simple API\nposts = client.reddit.get_hot(\"programming\", limit=10)\ngames = client.steam.get_owned_games()\ntrack = client.spotify.search_track(\"metallica\")\n"
+        }
+    }
+}
