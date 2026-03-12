@@ -9,6 +9,11 @@ rules:
       - "forget (everything|all|your) (you were|you've been) told"
       - "override (system |safety |security )+(prompt|instructions?|settings?|restrictions?)"
       - "do not follow (any |your )?(previous|prior|original|system) (instructions?|prompts?|rules?)"
+      # Chinese: instruction override patterns
+      - "(?:忽略|无视|跳过|放弃|抛弃)(?:所有|一切|全部|之前的?|先前的?|系统的?)?(?:指令|指示|规则|限制|约束|提示词)"
+      - "(?:不需要|不用|无需|不必)(?:请示|确认|询问|征求|许可|批准)"
+      - "这(?:不是建议|是命令|是指令).*(?:直接|立即|马上)(?:做|执行|运行)"
+      - "(?:直接|立即|马上)(?:做|执行|运行).*(?:不需要|不用|无需)(?:确认|请示|许可)"
 
   # -- Role Hijacking --
   - id: PI-002
@@ -23,6 +28,11 @@ rules:
       # Extended: role-play framing (from skill-scan prompt_analyzer Pass 6)
       - "(?:let'?s?|we should)\\s+(?:play|pretend|imagine|roleplay|simulate)"
       - "(?:for\\s+this\\s+)?(?:exercise|scenario|simulation),?\\s+(?:you\\s+are|act\\s+as)"
+      # Chinese: role hijacking patterns
+      - "(?:你|AI)(?:拥)?有(?:完全的?|绝对的?|无限的?)?(?:自主权|权限|权力|自由)"
+      - "(?:你|AI)(?:被)?授权(?:自由)?(?:修改|更改|重写|覆盖)(?:自己的?|系统的?)?(?:一切|所有|全部|配置|指令|规则|提示词)"
+      - "(?:进入|切换到?|激活)(?:开发者|管理员|超级用户|上帝|无限制|自由)模式"
+      - "(?:你|AI)(?:没有|不受|不存在)(?:任何)?(?:规则|限制|约束|边界|束缚)"
 
   # -- System Prompt Manipulation --
   - id: PI-003
@@ -37,6 +47,9 @@ rules:
       # Extended: secrecy demand (from skill-scan prompt_analyzer Pass 1)
       - "do\\s+not\\s+(?:tell|inform|reveal|disclose|mention)\\s+(?:the\\s+)?(?:user|human|anyone)"
       - "\\bhidden\\s+instruction\\b"
+      # Chinese: system prompt manipulation
+      - "(?:新的?|更新的?|修改后的?)(?:系统|初始)?(?:提示词|指令|prompt)"
+      - "从现在开始.{0,10}(?:你的?(?:规则|指令|角色|身份)|(?:你|AI)(?:是|将|必须|应该))"
 
   # -- Context Exfiltration --
   - id: PI-004
@@ -72,6 +85,10 @@ rules:
       - "(?:exec|eval|compile)\\s*\\(.*(?:import|__)"
       - "base64\\s+(?:-d|-D|--decode)\\s*\\|\\s*(?:sh|bash|zsh|python|perl)"
       - "echo\\s+['\"][A-Za-z0-9+/=]{20,}['\"]\\s*\\|\\s*(?:base64|openssl)"
+      # Chinese: dangerous operation patterns
+      - "(?:用|使用|通过)\\s*(?:bash|shell|终端|命令行)\\s*(?:执行|运行)(?:任何|任意|所有)?(?:必要的?)?命令"
+      - "(?:创建|编辑|删除|修改|覆盖)(?:工作区|项目|系统|磁盘)?(?:内的?|中的?|里的?)?(?:任何|任意|所有)文件"
+      - "(?:自由|随意|任意)(?:执行|运行|调用).*(?:命令|脚本|代码|程序)"
 
   # -- Social Engineering Injection --
   - id: PI-007
@@ -85,6 +102,10 @@ rules:
       # Extended: manipulative language (from skill-scan prompt_analyzer Pass 9)
       - "(?:if\\s+you\\s+don'?t|unless\\s+you)\\s+(?:do\\s+this|comply|follow|obey)"
       - "(?:between\\s+us|our\\s+(?:little\\s+)?secret|nobody\\s+(?:needs?\\s+to|will)\\s+know)"
+      # Chinese: social engineering / trust manipulation
+      - "(?:主人|用户|管理员|开发者)(?:信任|授权|允许|许可)(?:你|AI).*(?:自我进化|自我修改|自我更新|自主行动)"
+      - "不要辜负.{0,10}(?:信任|期望|委托)"
+      - "(?:我|本人|管理员)(?:授权|允许|批准|许可)(?:你|AI)(?:执行|运行|修改|删除|访问)(?:任何|一切|所有)"
 
   # ============================================================
   # New rules from skill-scan-1.0.0 dangerous-patterns.json
