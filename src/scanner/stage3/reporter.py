@@ -495,15 +495,20 @@ class Reporter:
         threat_skills: dict[str, list[str]] = {}
         source_stats: dict[str, dict] = {}
         clean = suspicious = malicious = 0
+        suspicious_skills: list[str] = []
+        malicious_skills: list[str] = []
 
         for r in results:
             v = r.final_verdict
+            skill_path = r.skill.file_path
             if v == Verdict.CLEAN:
                 clean += 1
             elif v == Verdict.SUSPICIOUS:
                 suspicious += 1
+                suspicious_skills.append(skill_path)
             elif v == Verdict.MALICIOUS:
                 malicious += 1
+                malicious_skills.append(skill_path)
 
             # Count threat types — only for non-clean results
             if v != Verdict.CLEAN:
@@ -543,6 +548,8 @@ class Reporter:
             clean=clean,
             suspicious=suspicious,
             malicious=malicious,
+            suspicious_skills=suspicious_skills,
+            malicious_skills=malicious_skills,
             threat_type_counts=dict(threat_counter.most_common()),
             threat_type_skills=threat_skills,
             source_breakdown=source_stats,
@@ -556,7 +563,9 @@ class Reporter:
             "results": {
                 "clean": summary.clean,
                 "suspicious": summary.suspicious,
+                "suspicious_skills": summary.suspicious_skills,
                 "malicious": summary.malicious,
+                "malicious_skills": summary.malicious_skills,
             },
             "top_threat_types": [
                 {

@@ -119,6 +119,8 @@ class ScanSummary:
     clean: int = 0
     suspicious: int = 0
     malicious: int = 0
+    suspicious_skills: list[str] = field(default_factory=list)
+    malicious_skills: list[str] = field(default_factory=list)
     threat_type_counts: dict[str, int] = field(default_factory=dict)
     threat_type_skills: dict[str, list[str]] = field(default_factory=dict)
     source_breakdown: dict[str, dict] = field(default_factory=dict)
