@@ -67,6 +67,10 @@ _SEVERITY_MAP = {
 _MAX_CONTENT_LENGTH = 12000
 # Max number of matched rules to include in LLM prompt.
 _MAX_RULES_IN_PROMPT = 30
+# Threshold above which we switch to snippet extraction instead of full content.
+_SNIPPET_THRESHOLD = 3000
+# Context chars before/after each matched rule position for snippet extraction.
+_SNIPPET_CONTEXT_CHARS = 500
 
 # Default: Volcano Engine ARK API
 _DEFAULT_API_BASE = "https://ark.cn-beijing.volces.com/api/v3"
@@ -193,7 +197,12 @@ class SemanticAnalyzer:
         )
 
     def _build_prompt(self, content: str, matched_rules: list[RuleMatch]) -> str:
-        escaped = content[:_MAX_CONTENT_LENGTH]
+        # Smart content extraction: if content is large and we have matched rules,
+        # send only the relevant snippets around matches to reduce token usage.
+        if matched_rules and len(content) > _SNIPPET_THRESHOLD:
+            escaped = self._extract_snippets(content, matched_rules)
+        else:
+            escaped = content[:_MAX_CONTENT_LENGTH]
 
         if not matched_rules:
             rules_desc = "None"
@@ -220,10 +229,51 @@ class SemanticAnalyzer:
             matched_rules=rules_desc,
         )
 
+    @staticmethod
+    def _extract_snippets(
+        content: str, matched_rules: list[RuleMatch],
+        context_chars: int = _SNIPPET_CONTEXT_CHARS,
+    ) -> str:
+        """Extract content snippets around matched rule positions.
+
+        Instead of sending the full content, send:
+        1. First 500 chars (skill header/description)
+        2. Context around each match position
+        3. Merge overlapping ranges
+        """
+        ranges: list[tuple[int, int]] = [(0, min(500, len(content)))]
+
+        for m in matched_rules:
+            start = max(0, m.position[0] - context_chars)
+            end = min(len(content), m.position[1] + context_chars)
+            ranges.append((start, end))
+
+        # Sort and merge overlapping ranges
+        ranges.sort()
+        merged: list[tuple[int, int]] = [ranges[0]]
+        for start, end in ranges[1:]:
+            if start <= merged[-1][1] + 100:  # merge if gap < 100 chars
+                merged[-1] = (merged[-1][0], max(merged[-1][1], end))
+            else:
+                merged.append((start, end))
+
+        parts = []
+        for i, (start, end) in enumerate(merged):
+            snippet = content[start:end]
+            if i == 0 and start == 0:
+                parts.append(snippet)
+            else:
+                parts.append(f"\n[... content omitted ...]\n{snippet}")
+
+        result = "".join(parts)
+        if len(result) > _MAX_CONTENT_LENGTH:
+            result = result[:_MAX_CONTENT_LENGTH]
+        return result
+
     async def _call_llm(self, prompt: str) -> dict[str, Any]:
         response = await self._client.chat.completions.create(
             model=self._model,
-            max_tokens=4096,
+            max_tokens=2048,
             messages=[{"role": "user", "content": prompt}],
         )
         raw = response.choices[0].message.content

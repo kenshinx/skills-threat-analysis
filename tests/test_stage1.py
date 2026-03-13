@@ -25,7 +25,7 @@ class TestRuleEngine:
     def test_malicious_skill(self, engine: RuleEngine):
         content = (FIXTURES / "malicious_skill.md").read_text()
         result = engine.scan(content)
-        assert result.verdict == Verdict.SUSPICIOUS
+        assert result.verdict in (Verdict.SUSPICIOUS, Verdict.MALICIOUS)
         assert len(result.matched_rules) > 0
         rule_ids = {m.rule_id for m in result.matched_rules}
         # Should match instruction override, role hijacking, system manipulation, dangerous ops
@@ -41,7 +41,7 @@ class TestRuleEngine:
     def test_social_engineering_skill(self, engine: RuleEngine):
         content = (FIXTURES / "social_engineering_skill.md").read_text()
         result = engine.scan(content)
-        assert result.verdict == Verdict.SUSPICIOUS
+        assert result.verdict in (Verdict.SUSPICIOUS, Verdict.MALICIOUS)
 
     def test_instruction_override_patterns(self, engine: RuleEngine):
         cases = [
@@ -74,7 +74,7 @@ class TestRuleEngine:
         ]
         for text in cases:
             result = engine.scan(text)
-            assert result.verdict == Verdict.SUSPICIOUS, f"Failed for: {text}"
+            assert result.verdict in (Verdict.SUSPICIOUS, Verdict.MALICIOUS), f"Failed for: {text}"
             assert any(m.rule_id == "PI-006" for m in result.matched_rules)
 
     def test_code_block_masking(self, engine: RuleEngine):

@@ -147,9 +147,19 @@ class Orchestrator:
             # In stage 2-only mode, analyze all skills
             to_analyze = stage1_results
         else:
-            # Normal mode: only analyze SUSPICIOUS (non-CLEAN)
+            # Normal mode: only analyze SUSPICIOUS (non-CLEAN, non-MALICIOUS)
+            # MALICIOUS from Stage 1 = high-confidence, skip LLM verification
             to_analyze = [
                 r for r in stage1_results if r.stage1.verdict == Verdict.SUSPICIOUS]
+            auto_malicious = sum(
+                1 for r in stage1_results
+                if r.stage1 and r.stage1.verdict == Verdict.MALICIOUS
+            )
+            if auto_malicious:
+                logger.info(
+                    "Stage 1 auto-classified %d skills as MALICIOUS (skipping Stage 2)",
+                    auto_malicious,
+                )
 
         logger.info("Stage 2: analyzing %d skills with LLM", len(to_analyze))
 
