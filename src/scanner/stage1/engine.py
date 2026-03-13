@@ -104,20 +104,11 @@ class RuleEngine:
         high = sum(1 for m in matches if m.severity == Severity.HIGH)
         medium = sum(1 for m in matches if m.severity == Severity.MEDIUM)
 
-        # Count distinct rules (not just matches) for more accurate classification
-        critical_rules = len({m.rule_id for m in matches if m.severity == Severity.CRITICAL})
-        high_rules = len({m.rule_id for m in matches if m.severity == Severity.HIGH})
-
-        # Auto-MALICIOUS: high-confidence cases skip Stage 2
-        if critical_rules >= 2:
-            return Verdict.MALICIOUS
-        if critical_rules >= 1 and high_rules >= 2:
-            return Verdict.MALICIOUS
-
-        # SUSPICIOUS: sent to Stage 2 for LLM verification
         if critical >= 1:
             return Verdict.SUSPICIOUS
-        if high >= 1:
+        if high >= 2:
+            return Verdict.SUSPICIOUS
+        if high == 1:
             return Verdict.SUSPICIOUS
         if medium >= 2:
             return Verdict.SUSPICIOUS
