@@ -94,17 +94,26 @@ _MD_LINK_RE     = re.compile(r"\[([^\]]{20,})\]\([^)]+\)")
 _MD_DATA_URI_RE = re.compile(r"\(data:[^)]+\)")
 
 # Instruction-signal phrases used by _looks_like_instruction().
+# NOTE: Only include phrases strongly indicative of prompt injection.
+# Common skill phrases like "you must", "execute", "important:" cause
+# massive false positives in PA-005 gradual escalation detection.
 _INSTRUCTION_SIGNALS: list[str] = [
-    "you must", "you should", "you will", "you are now",
-    "ignore", "forget", "disregard", "override",
+    # Instruction override / hijacking signals
+    "ignore all", "ignore previous", "ignore prior", "ignore system",
+    "disregard", "override system", "override safety",
+    "forget everything", "forget your",
+    # Secrecy / suppression signals
     "do not tell", "don't tell", "never tell", "never mention",
+    "do not reveal", "don't reveal", "never reveal",
+    # Prompt / instruction manipulation
     "new instructions", "real instructions", "actual instructions",
-    "system prompt", "execute", "send all", "share your",
-    "api key", "credential", "token", "password", "secret",
-    "immediately", "right now", "at once",
-    "pretend", "act as", "role play", "simulate",
-    "admin mode", "debug mode", "developer mode",
-    "important:", "critical:", "urgent:",
+    "system prompt", "hidden instruction",
+    # Role hijacking
+    "you are now DAN", "you are now STAN", "jailbreak",
+    "pretend you are", "pretend to be",
+    "admin mode", "debug mode", "developer mode", "god mode",
+    # Data exfiltration signals
+    "send all", "share your", "exfiltrate", "leak",
 ]
 
 
@@ -342,7 +351,7 @@ class AdvancedAnalyzer:
     @staticmethod
     def _detect_gradual_escalation(content: str) -> list[RuleMatch]:
         paragraphs = re.split(r"\n\s*\n", content)
-        if len(paragraphs) < 3:
+        if len(paragraphs) < 5:
             return []
 
         has_early_innocent = False
@@ -357,7 +366,7 @@ class AdvancedAnalyzer:
             if position > 0.7 and is_instr:
                 late_aggressive_count += 1
 
-        if has_early_innocent and late_aggressive_count >= 2:
+        if has_early_innocent and late_aggressive_count >= 3:
             return [RuleMatch(
                 rule_id="PA-005",
                 rule_name="gradual_escalation",

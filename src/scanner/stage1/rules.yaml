@@ -125,8 +125,11 @@ rules:
       - "(?:read|access|open|cat|load|parse)\\s*\\(?[^)]*(?:credentials?\\.json|auth[_-]profiles?\\.json)"
       - "(?:read|access|open|cat|load)\\s*\\(?[^)]*\\.ssh/"
       - "(?:read|access|open|cat|load)\\s*\\(?[^)]*\\.aws/"
-      - "\\b(?:OPENAI_API_KEY|ANTHROPIC_API_KEY|GOOGLE_API_KEY|AZURE_API_KEY)\\b"
-      - "\\bbearer\\s+token\\b"
+      # API key names require action context (read/send/access/extract), not mere mention in docs
+      - "(?:read|access|extract|steal|exfiltrate|send|post|upload|print|dump|log).{0,40}(?:OPENAI_API_KEY|ANTHROPIC_API_KEY|GOOGLE_API_KEY|AZURE_API_KEY)"
+      - "(?:OPENAI_API_KEY|ANTHROPIC_API_KEY|GOOGLE_API_KEY|AZURE_API_KEY).{0,40}(?:send|post|upload|fetch|request|exfiltrate|webhook|https?://)"
+      # os.environ/getenv access to sensitive keys
+      - "(?:os\\.environ|os\\.getenv|process\\.env)\\s*\\[?\\s*[\"'](?:OPENAI_API_KEY|ANTHROPIC_API_KEY|GOOGLE_API_KEY|AZURE_API_KEY)"
       - "\\b(?:botToken|authToken)\\s*[=:]"
 
   # -- Network Exfiltration Indicators (source: NETWORK_EXFIL, languages: "*") --
@@ -134,7 +137,6 @@ rules:
     name: network_exfiltration
     severity: MEDIUM
     patterns:
-      - "\\bwebhooks?\\b"
       - "\\bngrok\\b"
       - "\\bnslookup\\b"
       - "\\bdns\\.resolve\\b"
@@ -205,8 +207,10 @@ rules:
     name: remote_binary_download
     severity: CRITICAL
     patterns:
-      # Hardcoded URLs pointing to executables
-      - "https?://[^\"'\\s]+\\.(?:exe|msi|bat|cmd|ps1|sh|bin|dll|so|dylib)\\b"
+      # Hardcoded URLs pointing to executables (require path component to avoid matching TLDs like .sh .so)
+      - "https?://[^\"'\\s]+/[^\"'\\s]*\\.(?:exe|msi|bat|cmd|ps1|dll|dylib)(?:[?#\"'\\s]|$)"
+      # Separate pattern for .sh/.bin/.so with stricter path requirement (must have filename-like segment)
+      - "https?://[^\"'\\s]+/[^\"'\\s]+\\.(?:sh|bin|so)(?:[?#\"'\\s]|$)"
       # Download URL variables with executable extensions
       - "(?:DOWNLOAD_URL|download_url|BINARY_URL|binary_url)\\s*=\\s*[\"'].*\\.(?:exe|msi|bat|cmd|ps1)\\b"
       # requests.get followed by writing binary content
