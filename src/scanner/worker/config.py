@@ -16,7 +16,7 @@ class RabbitMQConfig:
     username: str = "guest"
     password: str = "guest"
     vhost: str = "/"
-    queue_name: str = "skill.scan.queue"
+    queue_name: str = "skill.scan.queuebatch"
     prefetch_count: int = 1
     heartbeat: int = 600
     max_retries: int = 3

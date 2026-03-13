@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import json
 import logging
+import uuid
 from datetime import datetime, timezone
 from typing import Any
 
@@ -13,6 +15,9 @@ from scanner.worker.config import MongoConfig
 
 logger = logging.getLogger(__name__)
 
+_MAX_REPORT_BYTES = 12 * 1024 * 1024  # 12 MB
+_MAX_INLINE_FINDINGS = 500
+
 
 class MongoStore:
     """Thread-safe MongoDB client for task management and report persistence."""
@@ -22,11 +27,13 @@ class MongoStore:
         db = self._client[config.database]
         self._tasks: Collection = db[config.tasks_collection]
         self._reports: Collection = db[config.reports_collection]
+        self._findings: Collection = db["findings"]
         self._ensure_indexes()
 
     def _ensure_indexes(self) -> None:
         self._tasks.create_index("task_id", unique=True, background=True)
         self._reports.create_index("task_id", unique=True, background=True)
+        self._findings.create_index("ref_id", unique=True, background=True)
 
     def close(self) -> None:
         self._client.close()
@@ -70,7 +77,35 @@ class MongoStore:
         scan_id: str,
         report: dict[str, Any],
     ) -> None:
-        """Upsert the scan report keyed by task_id (idempotent)."""
+        """Upsert the scan report keyed by task_id (idempotent).
+
+        When the report exceeds size limits (>12 MB or >500 inline findings),
+        findings are stored in a separate collection and the report carries
+        a ``findings_ref`` pointer instead.
+        """
+        report = dict(report)
+        findings = report.get("findings", [])
+        needs_split = len(findings) > _MAX_INLINE_FINDINGS
+
+        if not needs_split:
+            raw_size = len(json.dumps(report, ensure_ascii=False).encode("utf-8"))
+            needs_split = raw_size > _MAX_REPORT_BYTES
+
+        if needs_split:
+            ref_id = f"findings_{scan_id}_{uuid.uuid4().hex[:8]}"
+            self._findings.replace_one(
+                {"ref_id": ref_id},
+                {"ref_id": ref_id, "scan_id": scan_id, "findings": findings},
+                upsert=True,
+            )
+            report["findings"] = []
+            report["findings_ref"] = ref_id
+            report["findings_stored_separately"] = True
+            logger.info(
+                "Task %s: %d findings stored separately (ref=%s)",
+                task_id, len(findings), ref_id,
+            )
+
         doc = {
             "task_id": task_id,
             "scan_id": scan_id,

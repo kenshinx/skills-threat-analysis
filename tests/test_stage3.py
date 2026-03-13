@@ -98,6 +98,24 @@ class TestReporter:
             # Check threat detail report
             threat_path = Path(tmpdir) / "threats" / "s3.json"
             assert threat_path.exists()
+            threat_data = json.loads(threat_path.read_text())
+            assert threat_data["schema_version"] == "2.0"
+            # v2.0 stats: by_analyzer present, old fields removed
+            assert "by_analyzer" in threat_data["stats"]
+            assert "analyzers_used" not in threat_data["stats"]
+            assert "files_scanned" not in threat_data["stats"]
+            # v2.0 key_finding_ids: at most 3
+            assert len(threat_data["verdict"]["key_finding_ids"]) <= 3
+            # v2.0 skill_metadata structure
+            assert "trigger_description" in threat_data["skill_metadata"]
+            assert "author" in threat_data["skill_metadata"]
+            assert "version" in threat_data["skill_metadata"]
+            assert "file_count" not in threat_data["skill_metadata"]
+            # v2.0 scan_config structure
+            assert "mode" in threat_data["scan_config"]
+            assert "name" in threat_data["scan_config"]
+            assert "disabled_rules" in threat_data["scan_config"]
+            assert "policy" not in threat_data["scan_config"]
 
     def test_no_threat_reports_for_clean(self):
         with tempfile.TemporaryDirectory() as tmpdir:

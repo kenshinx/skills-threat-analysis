@@ -187,18 +187,21 @@ class TestMongoStore:
             MockClient.return_value.__getitem__ = MagicMock(return_value=mock_db)
             mock_tasks = MagicMock()
             mock_reports = MagicMock()
+            mock_findings = MagicMock()
             mock_db.__getitem__ = MagicMock(side_effect=lambda k: {
                 "tasks": mock_tasks,
                 "reports": mock_reports,
+                "findings": mock_findings,
             }[k])
 
             store = MongoStore(config)
             store._tasks = mock_tasks
             store._reports = mock_reports
-            return store, mock_tasks, mock_reports
+            store._findings = mock_findings
+            return store, mock_tasks, mock_reports, mock_findings
 
     def test_update_task_status_found(self):
-        store, mock_tasks, _ = self._make_store()
+        store, mock_tasks, _, _ = self._make_store()
         mock_tasks.update_one.return_value = MagicMock(matched_count=1)
         store.update_task_status("task123", "processing")
         mock_tasks.update_one.assert_called_once()
@@ -207,24 +210,35 @@ class TestMongoStore:
         assert call_args[0][1]["$set"]["status"] == "processing"
 
     def test_update_task_status_not_found_no_error(self):
-        store, mock_tasks, _ = self._make_store()
+        store, mock_tasks, _, _ = self._make_store()
         mock_tasks.update_one.return_value = MagicMock(matched_count=0)
         store.update_task_status("missing_task", "processing")
 
     def test_update_task_status_with_error(self):
-        store, mock_tasks, _ = self._make_store()
+        store, mock_tasks, _, _ = self._make_store()
         mock_tasks.update_one.return_value = MagicMock(matched_count=1)
         store.update_task_status("task123", "failed", error="download failed")
         call_args = mock_tasks.update_one.call_args
         assert call_args[0][1]["$set"]["error"] == "download failed"
 
     def test_save_report_upsert(self):
-        store, _, mock_reports = self._make_store()
-        store.save_report("task123", "scan-001", {"verdict": "CLEAN"})
+        store, _, mock_reports, _ = self._make_store()
+        store.save_report("task123", "scan-001", {"verdict": "CLEAN", "findings": []})
         mock_reports.replace_one.assert_called_once()
         call_args = mock_reports.replace_one.call_args
         assert call_args[0][0] == {"task_id": "task123"}
         assert call_args[1]["upsert"] is True
+
+    def test_save_report_splits_large_findings(self):
+        store, _, mock_reports, mock_findings = self._make_store()
+        large_findings = [{"id": f"f_{i}", "severity": "LOW"} for i in range(600)]
+        report = {"verdict": "SUSPICIOUS", "findings": large_findings, "stats": {}}
+        store.save_report("task_big", "scan-big", report)
+        mock_findings.replace_one.assert_called_once()
+        saved_report = mock_reports.replace_one.call_args[0][1]
+        assert saved_report["findings_stored_separately"] is True
+        assert "findings_ref" in saved_report
+        assert saved_report["findings"] == []
 
 
 # ------------------------------------------------------------------ #
@@ -352,7 +366,19 @@ class TestReporterPublicAPI:
 
             report = reporter.build_skill_report(result, "scan-test-001")
             assert isinstance(report, dict)
-            assert report["schema_version"] == "1.0"
+            assert report["schema_version"] == "2.0"
             assert report["scan_id"] == "scan-test-001"
             assert report["verdict"]["result"] in ("MALICIOUS", "SUSPICIOUS", "CLEAN")
             assert len(report["findings"]) > 0
+            # v2.0 stats
+            assert "by_analyzer" in report["stats"]
+            assert "analyzers_used" not in report["stats"]
+            # v2.0 analyzer_results extra
+            assert report["analyzer_results"]["static"]["extra"]["rules_triggered"] == 1
+            assert report["analyzer_results"]["static"]["extra"]["files_scanned"] == 1
+            # v2.0 skill_metadata
+            assert "trigger_description" in report["skill_metadata"]
+            assert "file_count" not in report["skill_metadata"]
+            # v2.0 scan_config
+            assert report["scan_config"]["mode"] == "balanced"
+            assert "policy" not in report["scan_config"]

@@ -1,6 +1,6 @@
 """Stage 3: Result aggregation and report generation.
 
-Outputs per-skill reports conforming to the QAX ScanReport schema v1.0,
+Outputs per-skill reports conforming to the QAX ScanReport schema v2.0,
 covering only the `static` (Stage 1) and `llm_semantic` (Stage 2) analyzers.
 """
 
@@ -153,7 +153,7 @@ class Reporter:
         return self._build_skill_report(result, scan_id)
 
     # ------------------------------------------------------------------ #
-    #  Per-skill report (QAX ScanReport schema v1.0)
+    #  Per-skill report (QAX ScanReport schema v2.0)
     # ------------------------------------------------------------------ #
 
     def _write_threat_reports(self, results: list[ScanResult], scan_id: str) -> None:
@@ -272,31 +272,18 @@ class Reporter:
         severity_counter: dict[str, int] = {
             "CRITICAL": 0, "HIGH": 0, "MEDIUM": 0, "LOW": 0, "INFO": 0}
         category_counter: Counter[str] = Counter()
+        analyzer_counter: Counter[str] = Counter()
         for f in findings:
             severity_counter[f["severity"]] = severity_counter.get(
                 f["severity"], 0) + 1
             category_counter[f["category"]] += 1
-
-        analyzers_used = []
-        if r.stage1:
-            analyzers_used.append("static")
-        if r.stage2:
-            analyzers_used.append("llm_semantic")
-
-        # Determine analyzer statuses
-        analyzers_failed = []
-        analyzers_skipped = []
-        if r.stage2 and r.stage2.status == AnalyzerStatus.FAILED:
-            analyzers_failed.append("llm_semantic")
+            analyzer_counter[f["analyzer_id"]] += 1
 
         stats = {
             "total_findings": len(findings),
             "by_severity": severity_counter,
             "by_category": dict(category_counter),
-            "analyzers_used": analyzers_used,
-            "analyzers_failed": analyzers_failed,
-            "analyzers_skipped": analyzers_skipped,
-            "files_scanned": 1,
+            "by_analyzer": dict(analyzer_counter),
         }
 
         # --- Analyzer results ---
@@ -311,7 +298,10 @@ class Reporter:
                 "findings": static_findings,
                 "verdict": r.stage1.verdict.value.upper(),
                 "verdict_confidence": 0.0,
-                "extra": {},
+                "extra": {
+                    "rules_triggered": len(r.stage1.matched_rules),
+                    "files_scanned": 1,
+                },
                 "error": None,
             }
         if r.stage2:
@@ -325,6 +315,9 @@ class Reporter:
                 "verdict": r.stage2.verdict.value.upper(),
                 "verdict_confidence": r.stage2.confidence,
                 "extra": {
+                    "provider": "",
+                    "total_batches": 1,
+                    "batch_errors": 0,
                     "llm_findings_count": len(llm_findings),
                 },
                 "error": r.stage2.summary if r.stage2.status == AnalyzerStatus.FAILED else None,
@@ -334,8 +327,11 @@ class Reporter:
         total_ms = (r.stage1.duration_ms if r.stage1 else 0) + \
                    (r.stage2.duration_ms if r.stage2 else 0)
 
+        # --- Determine which analyzers were used ---
+        analyzers_used = list(analyzer_results.keys())
+
         return {
-            "schema_version": "1.0",
+            "schema_version": "2.0",
             "scan_id": scan_id,
             "skill_name": r.skill.id,
             "skill_path": r.skill.file_path,
@@ -349,14 +345,22 @@ class Reporter:
                 "name": r.skill.id,
                 "description": "",
                 "allowed_tools": [],
-                "file_count": 1,
-                "binary_files": [],
-                "has_pyc": False,
+                "trigger_description": "",
+                "author": "",
+                "version": "",
             },
             "scan_config": {
-                "policy": "balanced",
-                "analyzers_used": analyzers_used,
-                "llm_enabled": r.stage2 is not None,
+                "name": "balanced",
+                "mode": "balanced",
+                "disabled_rules": [],
+                "severity_overrides": {},
+                "disabled_analyzers": [],
+                "yara_mode": "balanced",
+                "max_findings_per_rule": 5,
+                "enable_cross_file": True,
+                "sensitive_file_patterns": [],
+                "known_test_values": [],
+                "file_size_limit_kb": 0,
             },
         }
 
@@ -449,8 +453,8 @@ class Reporter:
             cat_counter[f["category"]] += 1
         top_cats = "、".join(c for c, _ in cat_counter.most_common(3))
 
-        # Key finding IDs (all findings, already sorted by severity)
-        key_ids = [f["id"] for f in findings]
+        # Key finding IDs: top-3 by severity (findings already sorted)
+        key_ids = [f["id"] for f in findings[:3]]
 
         if result == Verdict.MALICIOUS:
             summary = (

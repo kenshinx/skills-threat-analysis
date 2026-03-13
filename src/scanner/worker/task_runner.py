@@ -35,12 +35,22 @@ class TaskRunner:
         url: str = task_msg["skill_download_url"]
         scan_options: dict = task_msg.get("scan_options", {})
         enable_llm = scan_options.get("enable_llm", True)
+        self._scan_options = {
+            "policy": scan_options.get("policy", "balanced"),
+            "enable_llm": enable_llm,
+            "enable_qax_ti": scan_options.get("enable_qax_ti", True),
+            "analyzers": scan_options.get("analyzers", None),
+            "disabled_rules": scan_options.get("disabled_rules", []),
+            "severity_overrides": scan_options.get("severity_overrides", {}),
+            "llm_provider": scan_options.get("llm_provider", ""),
+        }
         scan_id = (
             f"scan-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}"
             f"-{uuid.uuid4().hex[:6]}"
         )
 
-        logger.info("Task %s: starting scan %s for %s", task_id, scan_id, url)
+        logger.info("Task %s: starting scan %s for %s (policy=%s)",
+                     task_id, scan_id, url, self._scan_options["policy"])
 
         self._mongo.update_task_status(task_id, "processing")
 
