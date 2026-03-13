@@ -8,3 +8,5 @@ dist/
 build/
 .pytest_cache/
 checkpoint.json
+config.yaml
+logs/

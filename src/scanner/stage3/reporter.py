@@ -145,6 +145,13 @@ class Reporter:
         self._write_summary_md(summary, results)
         return summary
 
+    def build_skill_report(self, result: ScanResult, scan_id: str) -> dict[str, Any]:
+        """Build a QAX report dict for a single skill without writing to disk.
+
+        This is the public API consumed by the worker mode (MongoDB reporter).
+        """
+        return self._build_skill_report(result, scan_id)
+
     # ------------------------------------------------------------------ #
     #  Per-skill report (QAX ScanReport schema v1.0)
     # ------------------------------------------------------------------ #
