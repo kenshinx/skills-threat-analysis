@@ -17,7 +17,12 @@ logger = logging.getLogger(__name__)
 SKILL_ENTRY_NAMES = {"skill.md", "skill.yaml", "skill.yml"}
 
 SUPPORTED_EXTENSIONS = {".md", ".yaml", ".yml", ".txt", ".json", ".svg", ".html", ".htm", ".xml",
-                        ".py", ".js", ".ts", ".sh", ".bash", ".svg", "html", ".xml"}
+                        ".py", ".js", ".ts", ".sh", ".bash"}
+
+# Maximum bytes per auxiliary file; files larger than this are skipped.
+_MAX_AUX_FILE_BYTES = 200 * 1024  # 200 KB
+# Maximum total content bytes per skill (entry + all aux files combined).
+_MAX_TOTAL_CONTENT_BYTES = 1 * 1024 * 1024  # 1 MB
 
 # Files to ignore when scanning directories
 IGNORED_FILES = {"detail.json"}
@@ -68,6 +73,7 @@ def _find_entry_file(skill_dir: Path) -> Path | None:
 def _collect_auxiliary_content(skill_dir: Path, entry_file: Path) -> str:
     """Read all auxiliary files (references, examples, etc.) and concatenate."""
     parts = []
+    total_bytes = 0
     for path in sorted(skill_dir.rglob("*")):
         if not path.is_file() or path == entry_file:
             continue
@@ -76,9 +82,28 @@ def _collect_auxiliary_content(skill_dir: Path, entry_file: Path) -> str:
         if path.suffix.lower() not in SUPPORTED_EXTENSIONS:
             continue
         try:
-            text = path.read_text(encoding="utf-8", errors="replace")
+            file_size = path.stat().st_size
+            if total_bytes >= _MAX_TOTAL_CONTENT_BYTES:
+                logger.debug(
+                    "Total content limit reached (%d KB), skipping remaining aux files",
+                    _MAX_TOTAL_CONTENT_BYTES // 1024,
+                )
+                break
             rel = path.relative_to(skill_dir)
-            parts.append(f"\n--- [{rel}] ---\n{text}")
+            if file_size > _MAX_AUX_FILE_BYTES:
+                # Read only the head of oversized files — malicious payloads
+                # are typically embedded at the start; the rest may be padding.
+                with path.open("rb") as fh:
+                    raw = fh.read(_MAX_AUX_FILE_BYTES)
+                text = raw.decode("utf-8", errors="replace")
+                parts.append(
+                    f"\n--- [{rel}] (truncated {file_size // 1024} KB → {_MAX_AUX_FILE_BYTES // 1024} KB) ---\n{text}"
+                )
+                total_bytes += _MAX_AUX_FILE_BYTES
+            else:
+                text = path.read_text(encoding="utf-8", errors="replace")
+                parts.append(f"\n--- [{rel}] ---\n{text}")
+                total_bytes += file_size
         except OSError:
             continue
     return "\n".join(parts)
