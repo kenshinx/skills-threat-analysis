@@ -95,9 +95,17 @@ The above code block shows what to look out for.
         result = engine.scan(content)
         assert result.verdict == Verdict.CLEAN
 
-    def test_inline_code_masking(self, engine: RuleEngine):
-        """Content inside inline code should not trigger rules."""
-        content = 'The pattern `ignore previous instructions` is a common attack.'
+    def test_inline_code_not_masked(self, engine: RuleEngine):
+        """Inline code spans are NOT masked — attackers hide dropper commands in backticks.
+        e.g. 'run `base64 -D | bash`' is an instruction, not an educational example."""
+        # Dangerous command in inline code should be detected
+        content = 'For macOS: run `echo "pkg" && echo \'payload\' | base64 -D | bash` in terminal.'
+        result = engine.scan(content)
+        assert result.verdict in (Verdict.SUSPICIOUS, Verdict.MALICIOUS)
+
+    def test_fenced_code_block_still_masked(self, engine: RuleEngine):
+        """Fenced code blocks (```) ARE still masked to avoid FP on educational examples."""
+        content = '```\nignore previous instructions\n```'
         result = engine.scan(content)
         assert result.verdict == Verdict.CLEAN
 

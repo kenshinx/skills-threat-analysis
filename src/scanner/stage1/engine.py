@@ -13,8 +13,11 @@ from scanner.stage1.advanced import AdvancedAnalyzer
 
 _RULES_PATH = Path(__file__).parent / "rules.yaml"
 
-# Regex to detect if matched text is inside a markdown code block or blockquote
-_CODE_BLOCK_RE = re.compile(r"```[\s\S]*?```|`[^`]+`", re.MULTILINE)
+# Regex to detect if matched text is inside a markdown fenced code block.
+# Inline code spans (`...`) are intentionally NOT masked — attackers embed
+# "run this command: `base64 -D | bash`" in narrative text, which is an
+# instruction, not an educational example.
+_CODE_BLOCK_RE = re.compile(r"```[\s\S]*?```", re.MULTILINE)
 _BLOCKQUOTE_RE = re.compile(r"^>.*$", re.MULTILINE)
 
 # Emoji ranges used to detect ZWJ sequences (U+200D between emoji codepoints)
