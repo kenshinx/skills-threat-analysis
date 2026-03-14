@@ -216,6 +216,19 @@ rules:
       # requests.get followed by writing binary content
       - "requests\\.get\\s*\\([^)]*\\).*open\\s*\\([^)]*['\"]wb['\"]"
 
+  # -- SVG / HTML XSS (source: XSS_DETECTION, languages: "*") --
+  - id: PI-017
+    name: svg_html_xss
+    severity: CRITICAL
+    patterns:
+      # SVG XSS: foreignObject is exclusively used to embed HTML/script inside SVG
+      - "<foreignObject[^>]*>"
+      # Cookie theft + exfiltration: document.cookie read AND sent externally (compound)
+      - "document\\.cookie[\\s\\S]{0,800}(?:fetch|XMLHttpRequest|sendBeacon)\\s*\\("
+      - "(?:fetch|XMLHttpRequest|sendBeacon)\\s*\\([\\s\\S]{0,800}document\\.cookie"
+      # Storage theft + exfiltration: localStorage/sessionStorage dumped and sent
+      - "(?:localStorage|sessionStorage)\\.[\\s\\S]{0,800}(?:fetch|XMLHttpRequest|sendBeacon)\\s*\\([^)]*https?://"
+
   # -- Privilege Escalation (source: PRIV_ESCALATION, languages: "*") --
   - id: PI-014
     name: privilege_escalation

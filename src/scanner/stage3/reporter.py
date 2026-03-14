@@ -52,6 +52,10 @@ _RULE_CATEGORY_MAP = {
     "gradual_escalation": "social_engineering",
     "encoded_payload_base64": "obfuscation",
     "encoded_payload_rot13": "obfuscation",
+    # PI-015~017
+    "trigger_hijacking": "trigger_hijacking",
+    "remote_binary_download": "supply_chain_attack",
+    "svg_html_xss": "data_exfiltration",
 }
 
 # Map ThreatCategory value → ThreatCategory value for LLM findings.
@@ -401,9 +405,16 @@ class Reporter:
                 action = RecommendedAction.REVIEW
                 confidence = s2.confidence
             elif s2.verdict == Verdict.CLEAN:
-                result = Verdict.CLEAN
-                action = RecommendedAction.ALLOW
-                confidence = s2.confidence
+                if critical >= 1:
+                    # LLM says clean but Stage 1 has CRITICAL findings — downgrade
+                    # to SUSPICIOUS for human review rather than silently allowing.
+                    result = Verdict.SUSPICIOUS
+                    action = RecommendedAction.REVIEW
+                    confidence = min(s2.confidence, 0.5)
+                else:
+                    result = Verdict.CLEAN
+                    action = RecommendedAction.ALLOW
+                    confidence = s2.confidence
             else:
                 has_llm_verdict = False
 
