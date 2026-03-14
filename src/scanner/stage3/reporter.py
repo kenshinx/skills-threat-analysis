@@ -52,6 +52,10 @@ _RULE_CATEGORY_MAP = {
     "gradual_escalation": "social_engineering",
     "encoded_payload_base64": "obfuscation",
     "encoded_payload_rot13": "obfuscation",
+    # PI-015~017
+    "trigger_hijacking": "trigger_hijacking",
+    "remote_binary_download": "supply_chain_attack",
+    "svg_html_xss": "data_exfiltration",
 }
 
 # Map ThreatCategory value → ThreatCategory value for LLM findings.

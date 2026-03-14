@@ -16,7 +16,8 @@ logger = logging.getLogger(__name__)
 # Known skill entry file names (case-insensitive matching)
 SKILL_ENTRY_NAMES = {"skill.md", "skill.yaml", "skill.yml"}
 
-SUPPORTED_EXTENSIONS = {".md", ".yaml", ".yml", ".txt", ".json", ".py", ".js", ".ts", ".sh", ".bash"}
+SUPPORTED_EXTENSIONS = {".md", ".yaml", ".yml", ".txt", ".json", ".svg", ".html", ".htm", ".xml",
+                        ".py", ".js", ".ts", ".sh", ".bash", ".svg", "html", ".xml"}
 
 # Files to ignore when scanning directories
 IGNORED_FILES = {"detail.json"}
@@ -48,7 +49,8 @@ def generate_id(file_path: Path) -> str:
     """Generate skill ID using directory name as prefix + short hash for uniqueness."""
     dir_name = file_path.name if file_path.is_dir() else file_path.stem
     # Sanitize: keep only alphanumeric, hyphen, underscore
-    safe_name = "".join(c if c.isalnum() or c in "-_" else "-" for c in dir_name).strip("-")
+    safe_name = "".join(
+        c if c.isalnum() or c in "-_" else "-" for c in dir_name).strip("-")
     if not safe_name:
         safe_name = "unnamed"
     path_hash = hashlib.sha256(str(file_path).encode()).hexdigest()[:8]
