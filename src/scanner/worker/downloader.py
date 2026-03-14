@@ -14,7 +14,10 @@ import requests
 from scanner.loader import (
     SUPPORTED_EXTENSIONS,
     _collect_auxiliary_content,
+    _collect_file_hashes,
     _find_entry_file,
+    _hash_bytes,
+    _normalize_zip_root,
     detect_source,
 )
 from scanner.models import SkillFile
@@ -74,33 +77,31 @@ def _load_from_zip(archive_path: Path, url: str) -> SkillFile:
     with zipfile.ZipFile(archive_path, "r") as zf:
         zf.extractall(extract_dir)
 
-    entry = _find_entry_file(extract_dir)
-    skill_root = extract_dir
+    # Normalize: unwrap single top-level directory per spec §4.1
+    skill_root = _normalize_zip_root(extract_dir)
+    entry = _find_entry_file(skill_root)
 
-    if entry is None:
-        for sub in sorted(extract_dir.iterdir()):
-            if sub.is_dir():
-                entry = _find_entry_file(sub)
-                if entry:
-                    skill_root = sub
-                    break
-
+    filename = _filename_from_url(url)
     if entry is None:
         all_files = _collect_all_text(extract_dir)
         if not all_files:
             raise ValueError(f"No readable skill content found in archive from {url}")
         content = all_files
         file_path = url
+        entry_file = filename
     else:
         content = entry.read_text(encoding="utf-8", errors="replace")
         aux = _collect_auxiliary_content(skill_root, entry)
         if aux:
             content += aux
         file_path = entry.name
+        entry_file = entry.relative_to(skill_root).as_posix()
 
-    filename = _filename_from_url(url)
     source = detect_source(Path(filename))
     skill_id = _generate_skill_id(filename, url)
+
+    file_md5s, file_sha1s = _collect_file_hashes(skill_root)
+    pkg_md5, pkg_sha1 = _hash_bytes(archive_path.read_bytes())
 
     return SkillFile(
         id=skill_id,
@@ -108,22 +109,38 @@ def _load_from_zip(archive_path: Path, url: str) -> SkillFile:
         file_path=file_path,
         content=content,
         size_bytes=len(content.encode("utf-8")),
+        name=Path(filename).stem,
+        entry_file=entry_file,
+        skill_dir=str(skill_root),
+        file_md5s=file_md5s,
+        file_sha1s=file_sha1s,
+        package_md5=pkg_md5,
+        package_sha1=pkg_sha1,
     )
 
 
 def _load_single_file(file_path: Path, url: str) -> SkillFile:
     """Load a non-archive download as a single SkillFile."""
-    content = file_path.read_text(encoding="utf-8", errors="replace")
+    raw = file_path.read_bytes()
+    content = raw.decode("utf-8", errors="replace")
     filename = _filename_from_url(url)
     source = detect_source(Path(filename))
     skill_id = _generate_skill_id(filename, url)
+
+    m, s = _hash_bytes(raw)
+    rel = filename
 
     return SkillFile(
         id=skill_id,
         source=source,
         file_path=url,
         content=content,
-        size_bytes=len(content.encode("utf-8")),
+        size_bytes=len(raw),
+        name=Path(filename).stem,
+        entry_file=filename,
+        skill_dir="",
+        file_md5s={rel: m},
+        file_sha1s={rel: s},
     )
 
 

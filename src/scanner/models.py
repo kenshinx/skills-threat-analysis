@@ -66,6 +66,13 @@ class SkillFile:
     file_path: str
     content: str
     size_bytes: int
+    name: str = ""
+    entry_file: str = ""
+    skill_dir: str = ""
+    file_md5s: dict[str, str] = field(default_factory=dict)
+    file_sha1s: dict[str, str] = field(default_factory=dict)
+    package_md5: str = ""
+    package_sha1: str = ""
 
 
 @dataclass

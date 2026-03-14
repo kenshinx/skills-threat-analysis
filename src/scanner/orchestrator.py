@@ -32,6 +32,7 @@ class Orchestrator:
         model: str | None = None,
         api_base: str | None = None,
         api_key_env: str = "ARK_API_KEY",
+        report_all_skills: bool = False,
     ):
         self._skills_dir = Path(skills_dir)
         self._output_dir = Path(output_dir)
@@ -44,7 +45,7 @@ class Orchestrator:
         self._api_base = api_base
         self._api_key_env = api_key_env
         self._rule_engine = RuleEngine()
-        self._reporter = Reporter(self._output_dir)
+        self._reporter = Reporter(self._output_dir, report_all_skills=report_all_skills)
 
         if resume_scan_id:
             self._scan_id = resume_scan_id

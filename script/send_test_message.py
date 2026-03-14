@@ -36,7 +36,7 @@ def _s3_client():
         endpoint_url=OSS_ENDPOINT,
         aws_access_key_id=OSS_AK,
         aws_secret_access_key=OSS_SK,
-        config=Config(signature_version="s3v4"),
+        config=Config(signature_version="s3"),
         region_name="default",
     )
 
@@ -47,7 +47,8 @@ def upload_and_get_presigned_url(local_path: str) -> str:
     filename = Path(local_path).name
     key = f"test/{filename}"
     print(f"上传本地文件: {local_path} -> s3://{OSS_BUCKET}/{key}")
-    s3.upload_file(local_path, OSS_BUCKET, key)
+    with open(local_path, "rb") as f:
+        s3.put_object(Bucket=OSS_BUCKET, Key=key, Body=f.read())
     print("上传完成")
     return s3.generate_presigned_url(
         "get_object",
@@ -144,4 +145,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

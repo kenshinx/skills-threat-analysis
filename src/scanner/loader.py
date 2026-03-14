@@ -36,6 +36,32 @@ _SOURCE_KEYWORDS = {
 }
 
 
+def _hash_bytes(data: bytes) -> tuple[str, str]:
+    """Return (md5_hex, sha1_hex) for the given bytes."""
+    return hashlib.md5(data).hexdigest(), hashlib.sha1(data).hexdigest()
+
+
+def _collect_file_hashes(root_dir: Path) -> tuple[dict[str, str], dict[str, str]]:
+    """Walk *all* files under *root_dir* and return (file_md5s, file_sha1s).
+
+    Keys are POSIX-style relative paths (e.g. ``bin/run.js``).
+    """
+    md5s: dict[str, str] = {}
+    sha1s: dict[str, str] = {}
+    for p in sorted(root_dir.rglob("*")):
+        if not p.is_file():
+            continue
+        try:
+            data = p.read_bytes()
+            rel = p.relative_to(root_dir).as_posix()
+            m, s = _hash_bytes(data)
+            md5s[rel] = m
+            sha1s[rel] = s
+        except OSError:
+            continue
+    return md5s, sha1s
+
+
 def detect_source(file_path: Path) -> str:
     """Detect source platform from path using substring matching.
 
@@ -109,12 +135,25 @@ def _collect_auxiliary_content(skill_dir: Path, entry_file: Path) -> str:
     return "\n".join(parts)
 
 
+SKILL_ARCHIVE_EXTENSIONS = {".zip", ".skill"}
+
+
 def _find_zip_files(directory: Path) -> list[Path]:
-    """Find all .zip files in a directory, ignoring non-skill files."""
+    """Find all .zip / .skill archive files in a directory."""
     return [
         f for f in sorted(directory.iterdir())
-        if f.is_file() and f.suffix.lower() == ".zip"
+        if f.is_file() and f.suffix.lower() in SKILL_ARCHIVE_EXTENSIONS
     ]
+
+
+def _normalize_zip_root(tmp: Path) -> Path:
+    """Implement spec §4.1: unwrap single top-level directory if no top-level files exist."""
+    children = list(tmp.iterdir())
+    top_dirs = [c for c in children if c.is_dir()]
+    top_files = [c for c in children if c.is_file()]
+    if len(top_dirs) == 1 and len(top_files) == 0:
+        return top_dirs[0]
+    return tmp
 
 
 def _load_skill_from_zip(
@@ -128,26 +167,22 @@ def _load_skill_from_zip(
             with zipfile.ZipFile(zip_path, "r") as zf:
                 zf.extractall(tmp)
 
-            # Look for entry file in extracted contents
-            entry = _find_entry_file(tmp)
-            if entry is None:
-                # Check one level deeper (zip may have a wrapper dir)
-                for sub in sorted(tmp.iterdir()):
-                    if sub.is_dir():
-                        entry = _find_entry_file(sub)
-                        if entry:
-                            tmp = sub
-                            break
+            # Normalize: unwrap single top-level directory per spec §4.1
+            root = _normalize_zip_root(tmp)
 
+            entry = _find_entry_file(root)
             if entry is None:
                 logger.debug("No skill entry file in zip: %s", zip_path)
                 return
 
             # Build SkillFile but use original_dir for source/id/path
             entry_content = entry.read_text(encoding="utf-8", errors="replace")
-            aux_content = _collect_auxiliary_content(tmp, entry)
+            aux_content = _collect_auxiliary_content(root, entry)
             full_content = entry_content + aux_content
             source = detect_source(original_dir)
+
+            file_md5s, file_sha1s = _collect_file_hashes(root)
+            pkg_md5, pkg_sha1 = _hash_bytes(zip_path.read_bytes())
 
             yield SkillFile(
                 id=generate_id(original_dir),
@@ -155,6 +190,13 @@ def _load_skill_from_zip(
                 file_path=str(original_dir / zip_path.name),
                 content=full_content,
                 size_bytes=len(full_content.encode("utf-8")),
+                name=original_dir.name,
+                entry_file=entry.relative_to(root).as_posix(),
+                skill_dir=str(original_dir),
+                file_md5s=file_md5s,
+                file_sha1s=file_sha1s,
+                package_md5=pkg_md5,
+                package_sha1=pkg_sha1,
             )
     except (zipfile.BadZipFile, OSError) as e:
         logger.warning("Failed to process zip %s: %s", zip_path, e)
@@ -232,14 +274,22 @@ def load_skills(
             if path.suffix.lower() not in exts:
                 continue
             try:
-                content = path.read_text(encoding="utf-8", errors="replace")
+                raw = path.read_bytes()
+                content = raw.decode("utf-8", errors="replace")
                 source = detect_source(path)
+                m, s = _hash_bytes(raw)
+                rel = path.name
                 yield SkillFile(
                     id=generate_id(path),
                     source=source,
                     file_path=str(path),
                     content=content,
-                    size_bytes=path.stat().st_size,
+                    size_bytes=len(raw),
+                    name=path.stem,
+                    entry_file=path.name,
+                    skill_dir=str(path.parent),
+                    file_md5s={rel: m},
+                    file_sha1s={rel: s},
                 )
             except OSError as e:
                 logger.warning("Failed to read %s: %s", path, e)
@@ -252,6 +302,7 @@ def _load_one_skill(skill_dir: Path, entry: Path) -> Generator[SkillFile, None, 
         aux_content = _collect_auxiliary_content(skill_dir, entry)
         full_content = entry_content + aux_content
         source = detect_source(skill_dir)
+        file_md5s, file_sha1s = _collect_file_hashes(skill_dir)
 
         yield SkillFile(
             id=generate_id(skill_dir),
@@ -259,6 +310,11 @@ def _load_one_skill(skill_dir: Path, entry: Path) -> Generator[SkillFile, None, 
             file_path=str(entry),
             content=full_content,
             size_bytes=len(full_content.encode("utf-8")),
+            name=skill_dir.name,
+            entry_file=entry.relative_to(skill_dir).as_posix(),
+            skill_dir=str(skill_dir),
+            file_md5s=file_md5s,
+            file_sha1s=file_sha1s,
         )
     except OSError as e:
         logger.warning("Failed to read skill at %s: %s", skill_dir, e)

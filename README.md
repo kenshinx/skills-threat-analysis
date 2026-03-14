@@ -121,6 +121,9 @@ python -m scanner.cli --path ./skills/ --concurrency 5 --batch-size 10
 # Resume an interrupted scan
 python -m scanner.cli --resume scan-20260310-143000-abc123
 
+# Output per-skill report for every skill (threats → threats/, clean → clean/)
+python -m scanner.cli --path ./skills/ --report-all-skills
+
 # Verbose debug logging
 python -m scanner.cli --path ./skills/ -v
 ```
@@ -148,6 +151,7 @@ python -m scanner.cli --path ./skills/ -v
 | `--api-key-env` | `ARK_API_KEY` | Environment variable name for API key |
 | `--log-level` | `INFO` | Logging level: `DEBUG`, `INFO`, `WARNING`, `ERROR` |
 | `--verbose` / `-v` | — | Shorthand for `--log-level DEBUG` |
+| `--report-all-skills` | — | Output per-skill report for every skill: skills with findings → `threats/`, clean skills → `clean/` (default: only skills with findings get `threats/<id>.json`) |
 
 ## Output
 
@@ -158,10 +162,15 @@ report/
 ├── summary.json        # Machine-readable scan summary (with skill lists)
 ├── summary.md          # Human-readable report with tables
 ├── checkpoint.json     # Resume checkpoint (during scan)
-└── threats/
-    ├── {skill-name}-{hash}.json  # Per-skill threat detail (QAX ScanReport schema)
+├── threats/            # Per-skill reports for skills with findings (QAX ScanReport schema)
+│   ├── {skill-name}-{hash}.json
+│   └── ...
+└── clean/              # Only when --report-all-skills: per-skill reports for skills with no findings
+    ├── {skill-name}-{hash}.json
     └── ...
 ```
+
+By default, only skills that have stage1/stage2 findings or a non-clean verdict get a per-skill JSON file under `threats/`. With `--report-all-skills`, every skill gets a report: those with findings go to `threats/`, those with no findings go to `clean/`.
 
 ### Summary Report
 

@@ -341,8 +341,10 @@ class TestReporterPublicAPI:
                 id="test-skill",
                 source="clawhub",
                 file_path="skills/test/SKILL.md",
-                content="Some skill content here.",
-                size_bytes=24,
+                content="---\nname: test-skill\ndescription: A test\nauthor: dev\nversion: '2.0'\ntrigger: on demand\n---\nSome skill content here.",
+                size_bytes=120,
+                name="test",
+                skill_dir="skills/test",
             )
             stage1 = Stage1Result(
                 verdict=Verdict.SUSPICIOUS,
@@ -376,9 +378,23 @@ class TestReporterPublicAPI:
             # v2.0 analyzer_results extra
             assert report["analyzer_results"]["static"]["extra"]["rules_triggered"] == 1
             assert report["analyzer_results"]["static"]["extra"]["files_scanned"] == 1
-            # v2.0 skill_metadata
-            assert "trigger_description" in report["skill_metadata"]
+            # v2.0 skill_name / skill_path
+            assert report["skill_name"] == "test-skill"
+            assert report["skill_path"] == "skills/test"
+            # v2.0 skill_metadata from frontmatter
+            assert report["skill_metadata"]["name"] == "test-skill"
+            assert report["skill_metadata"]["description"] == "A test"
+            assert report["skill_metadata"]["author"] == "dev"
+            assert report["skill_metadata"]["version"] == "2.0"
+            assert report["skill_metadata"]["trigger_description"] == "on demand"
             assert "file_count" not in report["skill_metadata"]
+            # md5_info / sha1_info
+            assert "md5_info" in report["skill_metadata"]
+            assert "sha1_info" in report["skill_metadata"]
+            assert "files_md5" in report["skill_metadata"]["md5_info"]
+            assert "file_md5s" in report["skill_metadata"]["md5_info"]
+            assert "files_sha1" in report["skill_metadata"]["sha1_info"]
+            assert "file_sha1s" in report["skill_metadata"]["sha1_info"]
             # v2.0 scan_config
             assert report["scan_config"]["mode"] == "balanced"
             assert "policy" not in report["scan_config"]
