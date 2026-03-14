@@ -37,7 +37,17 @@ class RuleEngine:
         for rule in self._rules:
             compiled_patterns = []
             for pat in rule["patterns"]:
-                compiled_patterns.append(re.compile(pat, re.IGNORECASE))
+                # Pattern entries may be plain strings or dicts with {pattern, no_mask}.
+                # no_mask: true means this pattern bypasses ALL masking (fenced code blocks
+                # and blockquotes) — used for operationally-specific patterns that attackers
+                # hide inside code blocks / blockquotes to evade detection.
+                if isinstance(pat, dict):
+                    regex = re.compile(pat["pattern"], re.IGNORECASE)
+                    no_mask = bool(pat.get("no_mask", False))
+                else:
+                    regex = re.compile(pat, re.IGNORECASE)
+                    no_mask = False
+                compiled_patterns.append((regex, no_mask))
             self._compiled.append({
                 "id": rule["id"],
                 "name": rule["name"],
@@ -51,9 +61,9 @@ class RuleEngine:
         masked_ranges = self._get_masked_ranges(content)
 
         for rule in self._compiled:
-            for pattern in rule["patterns"]:
+            for pattern, no_mask in rule["patterns"]:
                 for m in pattern.finditer(content):
-                    if self._is_in_masked_range(m.start(), m.end(), masked_ranges):
+                    if not no_mask and self._is_in_masked_range(m.start(), m.end(), masked_ranges):
                         continue
                     # Skip U+200D (ZWJ) when it's part of an emoji sequence
                     if m.group() == "\u200d" and self._is_emoji_zwj(content, m.start()):
