@@ -12,7 +12,7 @@ With the rapid growth of community-contributed skills (~100k+), there is an incr
 |----------|-------------|-------|
 | Prompt Injection | Instruction override, role hijacking, system prompt manipulation | PI-001, PI-002, PI-003 |
 | Command Injection | Dangerous shell commands, code execution, encoded payload delivery | PI-006 |
-| Data Exfiltration | Context/system prompt extraction, network exfiltration via webhooks | PI-004, PI-009 |
+| Data Exfiltration | Context/system prompt extraction, network exfiltration, SVG/XSS browser data theft | PI-004, PI-009, PI-017 |
 | Hardcoded Secrets | Credential file access, API key exposure, bearer tokens | PI-008 |
 | Obfuscation | Zero-width chars, base64 encoding, Unicode steganography | PI-005, PI-011 |
 | Social Engineering | Authority/urgency manipulation, trust exploitation, secrecy demands | PI-007 |
@@ -20,8 +20,10 @@ With the rapid growth of community-contributed skills (~100k+), there is an incr
 | Persistence | Crontab, systemctl, LaunchAgent, pm2 persistence mechanisms | PI-013 |
 | Filesystem Destruction | rm -rf, shutil.rmtree, fs.unlink patterns | PI-010 |
 | Crypto Wallet Access | Wallet file access, seed phrase extraction, web3 key operations | PI-012 |
+| Supply Chain Attack | Remote binary download, download-and-execute droppers | PI-016 |
+| Trigger Hijacking | Auto-execution demands, exclusivity hijacking of other skills | PI-015 |
 
-### Stage 1 Detection Rules (14 rules)
+### Stage 1 Detection Rules (17 rules)
 
 | Rule ID | Name | Severity | Language |
 |---------|------|----------|----------|
@@ -39,6 +41,9 @@ With the rapid growth of community-contributed skills (~100k+), there is an incr
 | PI-012 | Crypto Wallet Access | HIGH | * |
 | PI-013 | Persistence Mechanism | HIGH | * |
 | PI-014 | Privilege Escalation | HIGH | * |
+| PI-015 | Trigger Hijacking | HIGH | EN + ZH |
+| PI-016 | Remote Binary Download | CRITICAL | * |
+| PI-017 | SVG / HTML XSS | CRITICAL | * |
 
 ### Stage 2 LLM Threat Categories
 
@@ -62,34 +67,36 @@ Stage 2 uses LLM semantic analysis to detect 17 threat categories:
  (14 regex)    (OpenAI API)   (JSON + MD)
 ```
 
-- **Stage 1** — Fast regex-based filtering with 14 rules (70+ patterns). Classifies skills as `CLEAN`, `SUSPICIOUS`, or `MALICIOUS`. Supports both English and Chinese patterns.
-- **Stage 2** — Semantic analysis via OpenAI-compatible LLM API for non-CLEAN skills. Async batched requests with retry logic. Detects 17 threat categories.
+- **Stage 1** — Fast regex-based filtering with 17 rules (80+ patterns). Classifies skills as `CLEAN` or `SUSPICIOUS`. Supports both English and Chinese patterns.
+- **Stage 2** — Semantic analysis via OpenAI-compatible LLM API for `SUSPICIOUS` skills. Async batched requests with retry logic. Detects 17 threat categories.
 - **Stage 3** — Generates per-skill threat reports (QAX ScanReport schema v1.0) and batch summary reports in JSON and Markdown.
 
 ### Verdict Logic
 
-When Stage 2 LLM analysis is available, its verdict takes priority:
+When Stage 2 LLM analysis is available, its verdict takes priority with one safety guard:
 
-| Stage 2 Verdict | Final Result | Action |
-|----------------|-------------|--------|
-| MALICIOUS | MALICIOUS | BLOCK |
-| SUSPICIOUS | SUSPICIOUS | REVIEW |
-| CLEAN | CLEAN | ALLOW (Stage 1 findings treated as false positives) |
+| Stage 2 Verdict | Stage 1 CRITICAL findings | Final Result | Action |
+|----------------|--------------------------|-------------|--------|
+| MALICIOUS | any | MALICIOUS | BLOCK |
+| SUSPICIOUS | any | SUSPICIOUS | REVIEW |
+| CLEAN | 0 | CLEAN | ALLOW (Stage 1 findings treated as false positives) |
+| CLEAN | ≥ 1 | SUSPICIOUS | REVIEW (LLM may have missed a high-confidence threat) |
 
 When Stage 2 is absent (stage-1-only mode), findings-based logic is used:
 
 | Condition | Result | Action |
 |-----------|--------|--------|
-| CRITICAL findings >= 1 | MALICIOUS | BLOCK |
-| HIGH findings >= 1 or total >= 3 | SUSPICIOUS | REVIEW |
-| Any finding | SUSPICIOUS | REVIEW |
+| CRITICAL findings >= 1 | SUSPICIOUS | REVIEW |
+| HIGH findings >= 1 | SUSPICIOUS | REVIEW |
+| MEDIUM findings >= 2 | SUSPICIOUS | REVIEW |
 | No findings | CLEAN | ALLOW |
 
 ### False Positive Mitigation
 
 - Code blocks and blockquotes are masked during rule matching
 - Educational / defensive skills referencing attack patterns are not flagged
-- Stage 2 LLM overrides Stage 1 false positives when it determines a skill is benign
+- Stage 2 LLM overrides Stage 1 false positives when it determines a skill is benign (for non-CRITICAL findings)
+- When Stage 2 says CLEAN but Stage 1 has ≥1 CRITICAL finding, result is downgraded to SUSPICIOUS/REVIEW as a safety guard
 - Low-confidence LLM results are routed to human review instead of auto-classified
 
 ## Installation
@@ -192,7 +199,7 @@ src/scanner/
 ├── models.py           # Data models (Verdict, ThreatCategory, etc.)
 ├── stage1/
 │   ├── engine.py       # Regex rule engine
-│   └── rules.yaml      # Detection rules (PI-001 ~ PI-014)
+│   └── rules.yaml      # Detection rules (PI-001 ~ PI-017)
 ├── stage2/
 │   ├── analyzer.py     # Async LLM semantic analyzer
 │   └── prompt_template.md

@@ -8,7 +8,7 @@
 
 ### 1.1 威胁范围
 
-#### Stage 1 规则引擎覆盖（14 条规则，70+ 模式）
+#### Stage 1 规则引擎覆盖（17 条规则，80+ 模式）
 
 | 规则 ID | 威胁类别 | 严重度 | 语言 | 说明 |
 |---------|---------|--------|------|------|
@@ -17,15 +17,18 @@
 | PI-003 | 系统设定篡改 | HIGH | EN+ZH | 覆盖或重写系统 prompt，含隐蔽指令注入 |
 | PI-004 | 上下文泄露 | HIGH | EN | 诱导模型输出系统 prompt 或对话历史 |
 | PI-005 | 隐蔽指令嵌入 | HIGH | * | Unicode 零宽字符（21种）、base64 编码、HTML 注释隐藏 |
-| PI-006 | 危险操作 | CRITICAL | EN+ZH | 诱导执行 rm -rf、curl\|sh、os.system 等 |
+| PI-006 | 危险操作 | CRITICAL | EN+ZH | 诱导执行 rm -rf、curl\|sh、os.system 等，含下载执行模式 |
 | PI-007 | 社工式注入 | MEDIUM | EN+ZH | 权威/紧急/信任操纵绕过安全限制 |
-| PI-008 | 凭据访问 | HIGH | * | 读取 credentials.json、.ssh/、.aws/、API Key |
-| PI-009 | 网络外泄 | MEDIUM | * | webhook、ngrok、nslookup、reverse shell |
+| PI-008 | 凭据访问 | HIGH | * | 读取 credentials.json、.ssh/、.aws/、API Key（需操作上下文） |
+| PI-009 | 网络外泄 | MEDIUM | * | ngrok、nslookup、reverse shell |
 | PI-010 | 文件系统破坏 | HIGH | * | rm -rf、shutil.rmtree、fs.unlink |
 | PI-011 | 混淆/反检测 | MEDIUM | * | fromCharCode、decodeURIComponent、base64 解码 |
 | PI-012 | 加密钱包访问 | HIGH | * | wallet.dat、seed phrase、web3 密钥操作 |
 | PI-013 | 持久化机制 | HIGH | * | crontab、systemctl、LaunchAgent、pm2 |
 | PI-014 | 权限提升 | HIGH | * | chmod +s、setuid、/etc/shadow、NOPASSWD |
+| PI-015 | 触发器劫持 | HIGH | EN+ZH | 强制自动执行、排他性劫持其他 skill 触发条件 |
+| PI-016 | 远程二进制下载 | CRITICAL | * | 硬编码 .exe/.ps1/.sh 下载 URL、download-and-execute dropper |
+| PI-017 | SVG/HTML XSS | CRITICAL | * | SVG foreignObject 嵌入、cookie/localStorage 窃取后外发（复合模式） |
 
 #### Stage 2 LLM 语义分析覆盖（17 类威胁）
 
@@ -88,7 +91,7 @@
 
 #### 1.1 检测规则概览
 
-14 条规则（PI-001 ~ PI-014），70+ 个正则模式，覆盖英文和中文攻击模式。
+17 条规则（PI-001 ~ PI-017），80+ 个正则模式，覆盖英文和中文攻击模式。
 
 完整规则定义见 [`src/scanner/stage1/rules.yaml`](../src/scanner/stage1/rules.yaml)。
 
@@ -129,15 +132,13 @@ rules:
 #### 1.2 分类逻辑
 
 ```
-IF   命中 CRITICAL 规则 ≥ 1     → SUSPICIOUS (直接标记高危)
-ELIF 命中 HIGH 规则 ≥ 2         → SUSPICIOUS
-ELIF 命中 HIGH 规则 = 1         → SUSPICIOUS
+IF   命中 CRITICAL 规则 ≥ 1     → SUSPICIOUS (送 Stage 2 精确复验)
+ELIF 命中 HIGH 规则 ≥ 1         → SUSPICIOUS
 ELIF 命中 MEDIUM 规则 ≥ 2       → SUSPICIOUS
-ELIF 命中 MEDIUM 规则 = 1       → CLEAN (记录但放行)
 ELSE                            → CLEAN
 ```
 
-**预期效果**: ~70% 的 skill 在 Stage 1 即可判定为 CLEAN，~5% 判定为 SUSPICIOUS，~25% 进入 Stage 2。
+**预期效果**: ~70% 的 skill 在 Stage 1 即可判定为 CLEAN，进入 Stage 2 约 30%。
 
 ---
 
@@ -148,6 +149,7 @@ ELSE                            → CLEAN
 **输入**: 非 CLEAN skill 的文本 + Stage 1 命中的规则上下文
 **输出**: 结构化判定结果（MALICIOUS / SUSPICIOUS / CLEAN）
 **LLM**: 支持 OpenAI 兼容 API（默认火山引擎 ARK，模型 glm-4-plus）
+**内容预处理**: 超过 3000 字符时仅发送命中规则附近的片段（±500 字符），减少 token 消耗
 
 #### 2.1 分析 Prompt 模板
 
@@ -187,16 +189,19 @@ skill content to determine whether it contains prompt injection attack intent.
 }
 ```
 
-#### 2.2 Verdict 优先级（Stage 2 覆盖 Stage 1）
+#### 2.2 Verdict 优先级（Stage 2 覆盖 Stage 1，含 CRITICAL 安全网）
 
-当 Stage 2 完成分析时，其结果**优先于** Stage 1：
+当 Stage 2 完成分析时，其结果**优先于** Stage 1，但有一个安全限制：
 
-| Stage 2 结果 | 最终 Verdict | Action | 说明 |
-|-------------|-------------|--------|------|
-| MALICIOUS | MALICIOUS | BLOCK | 确认恶意 |
-| SUSPICIOUS | SUSPICIOUS | REVIEW | 需人工审查 |
-| BENIGN/CLEAN | CLEAN | ALLOW | Stage 1 视为误报 |
-| ERROR | 按 Stage 1 | — | LLM 失败，回退到规则判定 |
+| Stage 2 结果 | Stage 1 CRITICAL 命中 | 最终 Verdict | Action | 说明 |
+|-------------|----------------------|-------------|--------|------|
+| MALICIOUS | 任意 | MALICIOUS | BLOCK | 确认恶意 |
+| SUSPICIOUS | 任意 | SUSPICIOUS | REVIEW | 需人工审查 |
+| CLEAN | 0 条 | CLEAN | ALLOW | Stage 1 视为误报，信任 LLM |
+| CLEAN | ≥ 1 条 | SUSPICIOUS | REVIEW | LLM 可能漏判，降级为人工复查 |
+| ERROR | — | 按 Stage 1 | — | LLM 失败，回退到规则判定 |
+
+**设计意图**: Stage 1 CRITICAL 规则（PI-001/PI-002/PI-006/PI-016/PI-017）精确度高、误报率低，若 LLM 与其结论冲突，优先保守处置。
 
 #### 2.3 批量处理策略
 
@@ -204,7 +209,7 @@ skill content to determine whether it contains prompt injection attack intent.
 - 并发请求数可配置（`--concurrency`，默认 3）
 - 超时/失败的自动重试（最多 3 次）
 - LLM 拒绝回答（中英文）自动检测，跳过不重试
-- max_tokens = 4096，防止复杂 skill 的 JSON 截断
+- max_tokens = 2048，防止复杂 skill 的 JSON 截断
 
 ---
 
@@ -334,11 +339,11 @@ python -m scanner.cli [options]
          │
          ▼
     ┌─────────────┐
-    │  加载文件列表  │  遍历目录，收集 .md/.yaml/.txt/.zip 文件
+    │  加载文件列表  │  遍历目录，收集 .md/.yaml/.txt/.json/.svg/.html/.js/.py 等，超大文件截断头部
     └──────┬──────┘
            ▼
     ┌─────────────┐
-    │   Stage 1   │  规则引擎快速过滤（14 条规则，70+ 模式）
+    │   Stage 1   │  规则引擎快速过滤（17 条规则，80+ 模式）
     │  ~2分钟/10万 │  输出: CLEAN / SUSPICIOUS / MALICIOUS
     └──────┬──────┘
            ▼
@@ -368,12 +373,12 @@ skills-threat-analysis/
 │       ├── __init__.py
 │       ├── cli.py                    # CLI 参数解析 & 入口
 │       ├── orchestrator.py           # 编排层：协调三阶段流水线
-│       ├── loader.py                 # 文件加载器：遍历目录、读取 skill 内容
+│       ├── loader.py                 # 文件加载器：遍历目录、读取 skill 内容（含 .svg/.html 等，200KB/文件上限）
 │       ├── models.py                 # 数据模型 (Verdict, ThreatCategory, etc.)
 │       ├── stage1/
 │       │   ├── __init__.py
 │       │   ├── engine.py             # 规则引擎主逻辑
-│       │   └── rules.yaml            # 检测规则定义 (PI-001 ~ PI-014)
+│       │   └── rules.yaml            # 检测规则定义 (PI-001 ~ PI-017)
 │       ├── stage2/
 │       │   ├── __init__.py
 │       │   ├── analyzer.py           # 异步 LLM 语义分析
@@ -551,9 +556,11 @@ class ScanSummary:
 |------|------|
 | **上下文感知** | 规则匹配时检查上下文——引号内引用、代码块中的示例不算命中 |
 | **LLM 覆盖** | Stage 2 LLM 判定 BENIGN 时覆盖 Stage 1 误报，最终 verdict 为 CLEAN |
+| **CRITICAL 安全网** | Stage 2 说 CLEAN 但 Stage 1 有 ≥1 CRITICAL 命中时，降级为 SUSPICIOUS/REVIEW |
 | **教育/防御豁免** | LLM 分析时明确区分"教学型 skill"和"攻击型 skill" |
 | **置信度阈值** | Stage 2 结果 confidence < 0.7 标记为需人工复核 |
 | **拒绝检测** | LLM 拒绝分析（中英文拒绝模式）时自动检测，跳过不重试 |
+| **超大文件截断** | 单个辅助文件超过 200 KB 时只读取头部（攻击 payload 通常在文件开头），防止垃圾填充绕过扫描 |
 
 ---
 
@@ -574,4 +581,4 @@ class ScanSummary:
 - Web Dashboard 可视化
 - 接入 CI/CD，skill 发布前自动扫描
 - 规则自动学习（从人工标注中更新规则库）
-- 支持更多文件格式（.py, .js 等代码文件的 AST 分析）
+- 代码文件的 AST 分析（取代纯正则，更精确检测语义级威胁）
