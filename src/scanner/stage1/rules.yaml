@@ -91,6 +91,9 @@ rules:
       - "subprocess\\.(?:call|run|Popen)\\s*\\(\\s*\\[?\\s*str\\s*\\("
       - "(?:download|下载).*\\.exe\\b"
       - "\\bPopen\\b.*\\.exe\\b"
+      # Paste-to-terminal social engineering: dropper hosted externally, user tricked into pasting
+      - "(?:copy|paste).{0,60}(?:into|in|to).{0,20}(?:terminal|command.?line|console|shell|bash|cmd\\.exe|powershell)"
+      - "paste.{0,40}(?:script|command|installer|installation).{0,40}(?:terminal|shell|bash|console)"
       # Chinese: dangerous operation patterns
       - "(?:用|使用|通过)\\s*(?:bash|shell|终端|命令行)\\s*(?:执行|运行)(?:任何|任意|所有)?(?:必要的?)?命令"
       - "(?:创建|编辑|删除|修改|覆盖)(?:工作区|项目|系统|磁盘)?(?:内的?|中的?|里的?)?(?:任何|任意|所有)文件"
