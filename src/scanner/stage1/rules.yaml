@@ -84,13 +84,23 @@ rules:
       - "subprocess\\.(?:call|run|Popen)\\s*\\(.*(?:rm |del |drop |curl.*\\||wget.*\\|)"
       - "(?:exec|eval|compile)\\s*\\(.*(?:import|__)"
       - "base64\\s+(?:-d|-D|--decode)\\s*\\|\\s*(?:sh|bash|zsh|python|perl)"
-      - "echo\\s+['\"][A-Za-z0-9+/=]{20,}['\"]\\s*\\|\\s*(?:base64|openssl)"
+      # no_mask: attackers embed real dropper payloads (40+ char base64) inside fenced code
+      # blocks / blockquotes labelled as "prerequisites". Real educational examples use short
+      # placeholder strings, never a 40+ char operational payload piped to a shell.
+      - pattern: "echo\\s+['\"][A-Za-z0-9+/=]{40,}['\"]\\s*\\|\\s*(?:base64|openssl)"
+        no_mask: true
       # Download-and-execute patterns (supply chain / dropper)
       - "requests\\.get\\s*\\(.*\\.(?:exe|msi|bat|cmd|ps1|sh|bin)\\b"
       - "(?:urllib|urlretrieve|urlopen|requests\\.get).*\\.(?:exe|msi|bat|cmd|ps1|sh).*subprocess"
       - "subprocess\\.(?:call|run|Popen)\\s*\\(\\s*\\[?\\s*str\\s*\\("
       - "(?:download|下载).*\\.exe\\b"
       - "\\bPopen\\b.*\\.exe\\b"
+      # Paste-to-terminal social engineering: dropper hosted externally, user tricked into pasting.
+      # no_mask: this instruction appears inside blockquote NOTE/IMPORTANT callouts to evade detection.
+      - pattern: "(?:copy|paste).{0,60}(?:into|in|to).{0,20}(?:terminal|command.?line|console|shell|bash|cmd\\.exe|powershell)"
+        no_mask: true
+      - pattern: "paste.{0,40}(?:script|command|installer|installation).{0,40}(?:terminal|shell|bash|console)"
+        no_mask: true
       # Chinese: dangerous operation patterns
       - "(?:用|使用|通过)\\s*(?:bash|shell|终端|命令行)\\s*(?:执行|运行)(?:任何|任意|所有)?(?:必要的?)?命令"
       - "(?:创建|编辑|删除|修改|覆盖)(?:工作区|项目|系统|磁盘)?(?:内的?|中的?|里的?)?(?:任何|任意|所有)文件"

@@ -82,6 +82,81 @@ _THREAT_CATEGORY_MAP = {
     "unicode_steganography": "unicode_steganography",
 }
 
+# Chinese title/description templates for LLM semantic findings, keyed by ThreatCategory value.
+# title_en / description_en carry the original English LLM explanation verbatim.
+_LLM_CATEGORY_ZH: dict[str, tuple[str, str]] = {
+    "command_injection":      ("LLM 检测: 命令注入",       "LLM 语义分析发现命令注入或危险命令执行模式，可能在目标系统上执行恶意代码。"),
+    "prompt_injection":       ("LLM 检测: 提示词注入",     "LLM 语义分析发现提示词注入攻击模式，试图覆盖或绕过 AI 安全指令。"),
+    "data_exfiltration":      ("LLM 检测: 数据外泄",       "LLM 语义分析发现数据窃取或外泄模式，可能将敏感数据发送至外部服务器。"),
+    "hardcoded_secrets":      ("LLM 检测: 凭证信息泄露",   "LLM 语义分析发现硬编码凭证或密钥访问模式，可能导致认证信息泄露。"),
+    "unauthorized_tool_use":  ("LLM 检测: 未授权工具调用", "LLM 语义分析发现未经用户授权的工具或 API 调用行为。"),
+    "obfuscation":            ("LLM 检测: 恶意代码混淆",   "LLM 语义分析发现代码混淆模式（如 base64、Unicode 编码），用于规避静态检测。"),
+    "social_engineering":     ("LLM 检测: 社会工程学",     "LLM 语义分析发现社会工程学攻击模式，利用权威性或紧迫感诱导用户执行危险操作。"),
+    "resource_abuse":         ("LLM 检测: 资源滥用",       "LLM 语义分析发现资源滥用模式，可能占用大量计算或网络资源。"),
+    "supply_chain_attack":    ("LLM 检测: 供应链攻击",     "LLM 语义分析发现供应链攻击模式，通过下载并执行外部二进制文件植入恶意载荷。"),
+    "privilege_escalation":   ("LLM 检测: 权限提升",       "LLM 语义分析发现权限提升攻击模式，试图获取比正常运行所需更高的系统权限。"),
+    "malicious_guidance":     ("LLM 检测: 恶意指导内容",   "LLM 语义分析发现恶意引导内容，可能诱使用户执行有害操作。"),
+    "skill_md_mismatch":      ("LLM 检测: 描述与行为不符", "LLM 语义分析发现 SKILL.md 的功能描述与实际行为存在明显不一致，疑似伪装欺骗。"),
+    "code_quality":           ("LLM 检测: 代码质量问题",   "LLM 语义分析发现代码质量或安全实践问题。"),
+    "bytecode_tampering":     ("LLM 检测: 字节码篡改",     "LLM 语义分析发现预编译字节码或字节码篡改模式，可能隐藏恶意逻辑。"),
+    "trigger_hijacking":      ("LLM 检测: 触发器劫持",     "LLM 语义分析发现触发器劫持模式，试图在 Skill 加载时自动执行代码或独占工具调用。"),
+    "unicode_steganography":  ("LLM 检测: Unicode 隐写",   "LLM 语义分析发现 Unicode 隐写攻击，利用不可见字符或双向控制符隐藏恶意指令。"),
+    "transitive_trust_abuse": ("LLM 检测: 传递信任滥用",   "LLM 语义分析发现传递信任滥用模式，借助可信组件执行未经授权的恶意操作。"),
+}
+
+
+# Chinese names for rule_name values (Stage 1 findings).
+_RULE_NAME_ZH: dict[str, str] = {
+    "instruction_override":           "指令覆盖",
+    "role_hijacking":                 "角色劫持",
+    "system_prompt_manipulation":     "系统提示词操控",
+    "context_exfiltration":           "上下文窃取",
+    "steganographic_injection":       "隐写注入",
+    "dangerous_operation":            "危险操作",
+    "social_engineering_injection":   "社会工程学注入",
+    "credential_access":              "凭证访问",
+    "network_exfiltration":           "网络外泄",
+    "filesystem_destruction":         "文件系统破坏",
+    "obfuscation_standalone":         "代码混淆",
+    "crypto_wallet_access":           "加密钱包访问",
+    "persistence_mechanism":          "持久化机制",
+    "privilege_escalation":           "权限提升",
+    "invisible_unicode_density":      "不可见 Unicode 密度异常",
+    "invisible_unicode_hidden_injection": "Unicode 隐写注入",
+    "homoglyph_attack":               "同形字攻击",
+    "mixed_scripts_latin_cyrillic":   "多语言混合脚本（拉丁/西里尔）",
+    "mixed_scripts_multi":            "多语言混合脚本",
+    "markdown_hidden_instruction":    "Markdown 隐藏指令",
+    "markdown_data_uri":              "Markdown 数据 URI",
+    "gradual_escalation":             "渐进式升级攻击",
+    "encoded_payload_base64":         "Base64 编码载荷",
+    "encoded_payload_rot13":          "ROT13 编码载荷",
+    "trigger_hijacking":              "触发器劫持",
+    "remote_binary_download":         "远程二进制下载",
+    "svg_html_xss":                   "SVG/HTML XSS 注入",
+}
+
+# Chinese names for ThreatCategory values (used in summary).
+_CATEGORY_ZH: dict[str, str] = {
+    "prompt_injection":       "提示词注入",
+    "command_injection":      "命令注入",
+    "data_exfiltration":      "数据外泄",
+    "hardcoded_secrets":      "凭证信息泄露",
+    "obfuscation":            "代码混淆",
+    "privilege_escalation":   "权限提升",
+    "unicode_steganography":  "Unicode 隐写",
+    "social_engineering":     "社会工程学",
+    "supply_chain_attack":    "供应链攻击",
+    "trigger_hijacking":      "触发器劫持",
+    "unauthorized_tool_use":  "未授权工具调用",
+    "resource_abuse":         "资源滥用",
+    "malicious_guidance":     "恶意指导内容",
+    "skill_md_mismatch":      "描述与行为不符",
+    "code_quality":           "代码质量问题",
+    "bytecode_tampering":     "字节码篡改",
+    "transitive_trust_abuse": "传递信任滥用",
+}
+
 # Severity string used in the schema (uppercase).
 _SEVERITY_LABEL = {
     Severity.CRITICAL: "CRITICAL",
@@ -290,8 +365,8 @@ class Reporter:
                     "analyzer_id": "static",
                     "category": category,
                     "severity": _SEVERITY_LABEL[m.severity],
-                    "title": f"规则匹配: {m.rule_id} ({m.rule_name})",
-                    "description": f"检测到 {m.rule_name} 类型的可疑模式",
+                    "title": f"规则匹配: {m.rule_id} ({_RULE_NAME_ZH.get(m.rule_name, m.rule_name)})",
+                    "description": f"检测到{_RULE_NAME_ZH.get(m.rule_name, m.rule_name)}类型的可疑模式",
                     "title_en": f"Rule Match: {m.rule_id} ({m.rule_name})",
                     "description_en": f"Detected suspicious pattern of type {m.rule_name}",
                     "location": {
@@ -321,16 +396,22 @@ class Reporter:
                     t.category.value, t.category.value)
                 fid = _make_finding_id(rule_id, entry_file_path, 0)
 
+                zh_title, zh_desc = _LLM_CATEGORY_ZH.get(
+                    t.category.value,
+                    (f"LLM 检测: {t.category.value}", f"LLM 语义分析发现 {t.category.value} 类型威胁。"),
+                )
+                en_explanation = t.explanation or ""
+
                 findings.append({
                     "id": fid,
                     "rule_id": rule_id,
                     "analyzer_id": "llm_semantic",
                     "category": category,
                     "severity": _SEVERITY_LABEL[t.severity],
-                    "title": t.explanation[:100] if t.explanation else f"LLM: {t.category.value}",
-                    "description": t.explanation or "",
-                    "title_en": t.explanation[:100] if t.explanation else f"LLM: {t.category.value}",
-                    "description_en": t.explanation or "",
+                    "title": zh_title,
+                    "description": zh_desc,
+                    "title_en": en_explanation[:100] if en_explanation else f"LLM: {t.category.value}",
+                    "description_en": en_explanation,
                     "location": {
                         "file_path": entry_file_path,
                         "line_number": 0,
@@ -567,7 +648,10 @@ class Reporter:
         cat_counter: Counter[str] = Counter()
         for f in findings:
             cat_counter[f["category"]] += 1
-        top_cats = "、".join(c for c, _ in cat_counter.most_common(3))
+        top_cats = "、".join(
+            _CATEGORY_ZH.get(c, c) for c, _ in cat_counter.most_common(3)
+        )
+        top_cats_en = ", ".join(c for c, _ in cat_counter.most_common(3))
 
         # Key finding IDs: top-3 by severity (findings already sorted)
         key_ids = [f["id"] for f in findings[:3]]
@@ -579,7 +663,7 @@ class Reporter:
             )
             summary_en = (
                 f"Malicious threats detected! Found {total} security issues ({sev_str}), "
-                f"primary threat types: {top_cats}. Strongly recommend rejecting installation."
+                f"primary threat types: {top_cats_en}. Strongly recommend rejecting installation."
             )
         elif result == Verdict.SUSPICIOUS:
             summary = (
@@ -588,7 +672,7 @@ class Reporter:
             )
             summary_en = (
                 f"Suspicious behavior detected, found {total} security issues ({sev_str}), "
-                f"primary threat types: {top_cats}. Recommend manual review."
+                f"primary threat types: {top_cats_en}. Recommend manual review."
             )
         elif result == Verdict.CLEAN and total > 0:
             summary = (
