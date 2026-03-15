@@ -67,6 +67,8 @@ _SEVERITY_MAP = {
 _MAX_CONTENT_LENGTH = 12000
 # Max number of matched rules to include in LLM prompt.
 _MAX_RULES_IN_PROMPT = 30
+# Max CRITICAL matches to show per rule_id (not deduplicated — each reveals different evidence).
+_MAX_CRITICAL_PER_RULE = 5
 
 # Default: Volcano Engine ARK API
 _DEFAULT_API_BASE = "https://ark.cn-beijing.volces.com/api/v3"
@@ -198,21 +200,40 @@ class SemanticAnalyzer:
         if not matched_rules:
             rules_desc = "None"
         else:
-            # Deduplicate rules: keep one example per (rule_id, rule_name) pair
-            seen: dict[str, RuleMatch] = {}
+            # Deduplication strategy:
+            # - CRITICAL: include ALL matches (up to _MAX_CRITICAL_PER_RULE per rule_id),
+            #   with a longer evidence window (400 chars) so compound patterns like
+            #   "foreignObject + cookie theft + fetch(external URL)" are fully visible.
+            # - Non-CRITICAL: keep one example per rule_id with 100-char truncation.
+            critical_counts: dict[str, int] = {}
+            seen_non_critical: dict[str, bool] = {}
+            selected: list[RuleMatch] = []
+
             for m in matched_rules:
-                if m.rule_id not in seen:
-                    seen[m.rule_id] = m
-            deduped = list(seen.values())[:_MAX_RULES_IN_PROMPT]
-            lines = [
-                f"- [{m.rule_id}] {m.rule_name} ({m.severity.value}): "
-                f"matched \"{m.matched_text[:100]}\""
-                for m in deduped
-            ]
-            if len(matched_rules) > len(deduped):
+                if m.severity == Severity.CRITICAL:
+                    count = critical_counts.get(m.rule_id, 0)
+                    if count < _MAX_CRITICAL_PER_RULE:
+                        selected.append(m)
+                        critical_counts[m.rule_id] = count + 1
+                else:
+                    if m.rule_id not in seen_non_critical:
+                        selected.append(m)
+                        seen_non_critical[m.rule_id] = True
+
+            selected = selected[:_MAX_RULES_IN_PROMPT]
+            lines = []
+            for m in selected:
+                if m.severity == Severity.CRITICAL:
+                    snippet = m.matched_text[:400]
+                else:
+                    snippet = m.matched_text[:100]
                 lines.append(
-                    f"- ... and {len(matched_rules) - len(deduped)} more matches omitted"
+                    f"- [{m.rule_id}] {m.rule_name} ({m.severity.value}): "
+                    f"matched \"{snippet}\""
                 )
+            omitted = len(matched_rules) - len(selected)
+            if omitted > 0:
+                lines.append(f"- ... and {omitted} more matches omitted")
             rules_desc = "\n".join(lines)
 
         return self._prompt_template.safe_substitute(
