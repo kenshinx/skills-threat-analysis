@@ -77,6 +77,29 @@ _THREAT_CATEGORY_MAP = {
     "unicode_steganography": "unicode_steganography",
 }
 
+# Chinese title/description templates for LLM semantic findings, keyed by ThreatCategory value.
+# title_en / description_en carry the original English LLM explanation verbatim.
+_LLM_CATEGORY_ZH: dict[str, tuple[str, str]] = {
+    "command_injection":      ("LLM 检测: 命令注入",       "LLM 语义分析发现命令注入或危险命令执行模式，可能在目标系统上执行恶意代码。"),
+    "prompt_injection":       ("LLM 检测: 提示词注入",     "LLM 语义分析发现提示词注入攻击模式，试图覆盖或绕过 AI 安全指令。"),
+    "data_exfiltration":      ("LLM 检测: 数据外泄",       "LLM 语义分析发现数据窃取或外泄模式，可能将敏感数据发送至外部服务器。"),
+    "hardcoded_secrets":      ("LLM 检测: 凭证信息泄露",   "LLM 语义分析发现硬编码凭证或密钥访问模式，可能导致认证信息泄露。"),
+    "unauthorized_tool_use":  ("LLM 检测: 未授权工具调用", "LLM 语义分析发现未经用户授权的工具或 API 调用行为。"),
+    "obfuscation":            ("LLM 检测: 恶意代码混淆",   "LLM 语义分析发现代码混淆模式（如 base64、Unicode 编码），用于规避静态检测。"),
+    "social_engineering":     ("LLM 检测: 社会工程学",     "LLM 语义分析发现社会工程学攻击模式，利用权威性或紧迫感诱导用户执行危险操作。"),
+    "resource_abuse":         ("LLM 检测: 资源滥用",       "LLM 语义分析发现资源滥用模式，可能占用大量计算或网络资源。"),
+    "supply_chain_attack":    ("LLM 检测: 供应链攻击",     "LLM 语义分析发现供应链攻击模式，通过下载并执行外部二进制文件植入恶意载荷。"),
+    "privilege_escalation":   ("LLM 检测: 权限提升",       "LLM 语义分析发现权限提升攻击模式，试图获取比正常运行所需更高的系统权限。"),
+    "malicious_guidance":     ("LLM 检测: 恶意指导内容",   "LLM 语义分析发现恶意引导内容，可能诱使用户执行有害操作。"),
+    "skill_md_mismatch":      ("LLM 检测: 描述与行为不符", "LLM 语义分析发现 SKILL.md 的功能描述与实际行为存在明显不一致，疑似伪装欺骗。"),
+    "code_quality":           ("LLM 检测: 代码质量问题",   "LLM 语义分析发现代码质量或安全实践问题。"),
+    "bytecode_tampering":     ("LLM 检测: 字节码篡改",     "LLM 语义分析发现预编译字节码或字节码篡改模式，可能隐藏恶意逻辑。"),
+    "trigger_hijacking":      ("LLM 检测: 触发器劫持",     "LLM 语义分析发现触发器劫持模式，试图在 Skill 加载时自动执行代码或独占工具调用。"),
+    "unicode_steganography":  ("LLM 检测: Unicode 隐写",   "LLM 语义分析发现 Unicode 隐写攻击，利用不可见字符或双向控制符隐藏恶意指令。"),
+    "transitive_trust_abuse": ("LLM 检测: 传递信任滥用",   "LLM 语义分析发现传递信任滥用模式，借助可信组件执行未经授权的恶意操作。"),
+}
+
+
 # Severity string used in the schema (uppercase).
 _SEVERITY_LABEL = {
     Severity.CRITICAL: "CRITICAL",
@@ -226,16 +249,22 @@ class Reporter:
                     t.category.value, t.category.value)
                 fid = _make_finding_id(rule_id, r.skill.file_path, 0)
 
+                zh_title, zh_desc = _LLM_CATEGORY_ZH.get(
+                    t.category.value,
+                    (f"LLM 检测: {t.category.value}", f"LLM 语义分析发现 {t.category.value} 类型威胁。"),
+                )
+                en_explanation = t.explanation or ""
+
                 findings.append({
                     "id": fid,
                     "rule_id": rule_id,
                     "analyzer_id": "llm_semantic",
                     "category": category,
                     "severity": _SEVERITY_LABEL[t.severity],
-                    "title": t.explanation[:100] if t.explanation else f"LLM: {t.category.value}",
-                    "description": t.explanation or "",
-                    "title_en": t.explanation[:100] if t.explanation else f"LLM: {t.category.value}",
-                    "description_en": t.explanation or "",
+                    "title": zh_title,
+                    "description": zh_desc,
+                    "title_en": en_explanation[:100] if en_explanation else f"LLM: {t.category.value}",
+                    "description_en": en_explanation,
                     "location": {
                         "file_path": r.skill.file_path,
                         "line_number": 0,
