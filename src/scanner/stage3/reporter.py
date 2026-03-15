@@ -157,6 +157,63 @@ _CATEGORY_ZH: dict[str, str] = {
     "transitive_trust_abuse": "传递信任滥用",
 }
 
+# Remediation advice per ThreatCategory value.
+_CATEGORY_REMEDIATION: dict[str, str] = {
+    "prompt_injection":
+        "拒绝安装此 Skill。该 Skill 包含试图覆盖或绕过 AI 安全指令的提示词注入代码，"
+        "可能诱导 Claude 执行未经授权的操作。建议向 Skill 发布平台举报。",
+    "command_injection":
+        "拒绝安装此 Skill。立即删除所有危险 Shell 命令（curl|bash、wget|sh、"
+        "base64 解码执行等），切勿在终端中执行 Skill 提供的任何未知命令。"
+        "若已执行，请立即检查系统是否被植入恶意程序。",
+    "data_exfiltration":
+        "拒绝安装此 Skill。该 Skill 包含将本地数据（凭证、Cookie、会话信息等）"
+        "发送至外部服务器的代码。若已安装，请立即轮换所有相关凭证并审查网络访问日志。",
+    "hardcoded_secrets":
+        "立即轮换所有已泄露的凭证、API Key 或密码。"
+        "从代码中移除所有硬编码的密钥，改用环境变量或专用密钥管理服务存储敏感信息。",
+    "obfuscation":
+        "拒绝安装此 Skill。代码中存在 Base64、ROT13 或其他编码混淆，"
+        "解码后将执行恶意载荷。不应信任任何包含无法直接阅读的编码执行逻辑的 Skill。",
+    "privilege_escalation":
+        "拒绝安装此 Skill。该 Skill 尝试提升系统权限（如修改 sudoers、chmod +s 等），"
+        "可能被用于建立持久化恶意访问。若已安装，请立即审查系统权限变更记录。",
+    "unicode_steganography":
+        "拒绝安装此 Skill。该 Skill 使用不可见 Unicode 字符或同形字隐藏恶意指令，"
+        "是针对 AI 系统的高级攻击手段，肉眼无法直接识别，必须拒绝安装。",
+    "social_engineering":
+        "拒绝安装此 Skill。该 Skill 使用虚假权威声明、紧迫感或欺骗性内容诱导用户执行危险操作，"
+        "切勿按照 Skill 提示在终端中执行任何命令。",
+    "supply_chain_attack":
+        "拒绝安装此 Skill。该 Skill 尝试从外部下载并执行二进制文件，"
+        "是典型的供应链攻击载体，可能在系统上植入后门或恶意软件。"
+        "若已执行下载命令，请立即隔离主机并进行安全排查。",
+    "trigger_hijacking":
+        "拒绝安装此 Skill。该 Skill 声称独占工具调用或在加载时自动执行代码，"
+        "可能劫持其他合法 Skill 的功能或在无用户确认的情况下触发操作。",
+    "unauthorized_tool_use":
+        "审查该 Skill 的工具使用范围，确保其仅调用 SKILL.md 中已声明的工具。"
+        "移除所有超出声明范围的工具调用代码，并在受限环境中重新测试后再部署。",
+    "resource_abuse":
+        "为该 Skill 添加速率限制和配额控制，防止其占用过多计算或网络资源。"
+        "审查并限制其可访问的外部端点和调用频率。",
+    "malicious_guidance":
+        "拒绝安装此 Skill。该 Skill 包含引导用户执行有害操作的内容，"
+        "不应被信任或部署到任何生产环境中。建议向平台举报。",
+    "skill_md_mismatch":
+        "拒绝安装此 Skill。SKILL.md 的功能描述与实际代码行为存在明显不一致，"
+        "是典型的伪装欺骗特征。发布者可能故意隐瞒了真实的恶意功能。",
+    "code_quality":
+        "修复代码中的安全问题，包括输入验证、错误处理和不安全的 API 使用方式。"
+        "建议在代码审查通过并修复所有高危问题后，再重新发布该 Skill。",
+    "bytecode_tampering":
+        "拒绝安装此 Skill。该 Skill 包含预编译字节码或被篡改的字节码文件，"
+        "可能隐藏无法通过源码审查发现的恶意逻辑，必须拒绝安装。",
+    "transitive_trust_abuse":
+        "拒绝安装此 Skill。该 Skill 利用可信组件的信任关系执行未经授权的操作，"
+        "应对所有依赖的第三方组件进行完整的安全审查后才可考虑安装。",
+}
+
 # Severity string used in the schema (uppercase).
 _SEVERITY_LABEL = {
     Severity.CRITICAL: "CRITICAL",
@@ -392,6 +449,7 @@ class Reporter:
                         "column_start": None,
                         "snippet": snippet[:500],
                     },
+                    "remediation": _CATEGORY_REMEDIATION.get(category),
                     "evidence": {
                         "matched_pattern": m.pattern,
                         "matched_content": m.matched_text[:500],
@@ -399,7 +457,6 @@ class Reporter:
                         "context_after": ctx_after[:500],
                     },
                     "threat_intel": None,
-                    "remediation": None,
                     "metadata": {},
                     "references": [],
                 })
@@ -446,7 +503,7 @@ class Reporter:
                         "context_after": "",
                     },
                     "threat_intel": None,
-                    "remediation": None,
+                    "remediation": _CATEGORY_REMEDIATION.get(category),
                     "metadata": {"llm_generated": True},
                     "references": [],
                 })
