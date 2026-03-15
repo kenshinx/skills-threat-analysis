@@ -128,6 +128,9 @@ python -m scanner.cli --path ./skills/ --concurrency 5 --batch-size 10
 # Resume an interrupted scan
 python -m scanner.cli --resume scan-20260310-143000-abc123
 
+# Output per-skill report for every skill (threats → threats/, clean → clean/)
+python -m scanner.cli --path ./skills/ --report-all-skills
+
 # Verbose debug logging
 python -m scanner.cli --path ./skills/ -v
 ```
@@ -155,6 +158,7 @@ python -m scanner.cli --path ./skills/ -v
 | `--api-key-env` | `ARK_API_KEY` | Environment variable name for API key |
 | `--log-level` | `INFO` | Logging level: `DEBUG`, `INFO`, `WARNING`, `ERROR` |
 | `--verbose` / `-v` | — | Shorthand for `--log-level DEBUG` |
+| `--report-all-skills` | — | Output per-skill report for every skill: skills with findings → `threats/`, clean skills → `clean/` (default: only skills with findings get `threats/<id>.json`) |
 
 ## Output
 
@@ -165,10 +169,15 @@ report/
 ├── summary.json        # Machine-readable scan summary (with skill lists)
 ├── summary.md          # Human-readable report with tables
 ├── checkpoint.json     # Resume checkpoint (during scan)
-└── threats/
-    ├── {skill-name}-{hash}.json  # Per-skill threat detail (QAX ScanReport schema)
+├── threats/            # Per-skill reports for skills with findings (QAX ScanReport schema)
+│   ├── {skill-name}-{hash}.json
+│   └── ...
+└── clean/              # Only when --report-all-skills: per-skill reports for skills with no findings
+    ├── {skill-name}-{hash}.json
     └── ...
 ```
+
+By default, only skills that have stage1/stage2 findings or a non-clean verdict get a per-skill JSON file under `threats/`. With `--report-all-skills`, every skill gets a report: those with findings go to `threats/`, those with no findings go to `clean/`.
 
 ### Summary Report
 
@@ -189,6 +198,197 @@ report/
 }
 ```
 
+## Worker Mode (RabbitMQ + MongoDB)
+
+In addition to the CLI batch mode, the scanner can run as a **long-lived worker** that consumes scan tasks from RabbitMQ and writes reports to MongoDB.
+
+### Architecture
+
+```
+RabbitMQ Queue ──► Consumer (main thread: IO + heartbeat)
+                       │
+                       ▼
+                   Worker thread ──► Download skill ZIP
+                                     ──► Stage 1 (rules)
+                                     ──► Stage 2 (LLM, if needed)
+                                     ──► Build QAX report
+                                     ──► Write report to MongoDB
+                                     ──► ACK message
+```
+
+### Install Worker Dependencies
+
+```bash
+poetry install --extras worker
+```
+
+### Configuration
+
+Copy the example config and edit it:
+
+```bash
+cp config.yaml.example config.yaml
+```
+
+Key sections in `config.yaml`:
+
+| Section | Field | Description |
+|---------|-------|-------------|
+| `rabbitmq` | `host`, `port`, `username`, `password` | RabbitMQ connection |
+| `rabbitmq` | `queue_name` | Queue to consume from |
+| `rabbitmq` | `prefetch_count` | Messages per worker (default: 1) |
+| `rabbitmq` | `heartbeat` | Heartbeat interval in seconds (default: 600) |
+| `rabbitmq` | `max_retries` | Max retry attempts before marking failed (default: 3) |
+| `mongodb` | `uri` | MongoDB connection string (supports replica sets) |
+| `mongodb` | `database` | Database name |
+| `mongodb` | `tasks_collection` | Collection for task status tracking |
+| `mongodb` | `reports_collection` | Collection for scan reports |
+| `scan` | `stage` | `full`, `1`, or `2` |
+| `scan` | `model`, `api_base`, `api_key_env` | LLM settings for Stage 2 |
+
+### Start a Worker
+
+```bash
+# Single worker (default)
+scan-worker --config config.yaml
+
+# Multiple workers — built-in supervisor auto-restarts crashed processes
+scan-worker --config config.yaml --workers 4
+
+# Debug logging
+scan-worker --config config.yaml -w 4 -v
+
+# Equivalent module invocation
+python -m scanner.worker.cli --config config.yaml --workers 4
+```
+
+With `--workers N` (N > 1), a **supervisor process** manages N child worker processes:
+- Each child independently connects to RabbitMQ and consumes tasks
+- If a child crashes, the supervisor automatically restarts it
+- `SIGTERM` / `Ctrl+C` is forwarded to all children for graceful shutdown
+- The supervisor waits for all children to finish their current tasks before exiting
+
+### Scaling Across Machines
+
+Workers on different machines can share the same queue — RabbitMQ handles load balancing automatically:
+
+```bash
+# Machine A
+scan-worker --config config.yaml -w 4
+
+# Machine B
+scan-worker --config config.yaml -w 4
+```
+
+### Graceful Shutdown and Restart
+
+**Graceful stop** — send `SIGTERM` or `SIGINT` (Ctrl+C):
+
+```bash
+# Single worker or supervisor — both handle signals correctly
+kill -SIGTERM <pid>
+```
+
+The shutdown sequence:
+1. Supervisor forwards `SIGTERM` to all child workers
+2. Each worker stops accepting new messages
+3. Each worker finishes the task currently being processed
+4. Each worker ACKs the completed message and exits
+5. Supervisor waits up to 30s per child, then force-kills any that hang
+
+**No task loss on restart** — the worker uses manual ACK. If a worker is killed or crashes mid-task:
+- The unacknowledged message is automatically re-delivered by RabbitMQ
+- MongoDB writes use `upsert`, so re-processing is idempotent
+- Task status in the `tasks` collection is updated throughout the lifecycle
+
+| Worker state when stopped | What happens |
+|--------------------------|--------------|
+| Downloading skill | Message re-delivered, scan restarts |
+| Running Stage 1 / Stage 2 | Message re-delivered, scan restarts |
+| Report written, before ACK | Message re-delivered, upsert overwrites (idempotent) |
+| After ACK | Task fully complete, nothing to redo |
+
+### Fault Recovery
+
+- **Transient failures** (download timeout, network error) are retried up to `max_retries` times
+- **Permanent failures** are recorded in MongoDB with `status: "failed"` and an error message
+- Query failed tasks: `db.tasks.find({status: "failed"})`
+
+### Message Format
+
+Tasks are submitted as JSON messages to the RabbitMQ queue:
+
+```json
+{
+  "task_id": "hex_uuid",
+  "skill_download_url": "https://...",
+  "scan_options": {
+    "policy": "balanced",
+    "enable_llm": true
+  },
+  "priority": 5,
+  "enqueue_time": "2025-01-01T00:00:00+00:00"
+}
+```
+
+See `script/send_test_message.py` for a working example that uploads a skill to S3 and submits a scan task.
+
+### Production Deployment
+
+`deploy/` 目录提供了 supervisord 和 systemd 两种部署方案，以及一键更新脚本。
+
+#### Option A: Supervisord (推荐，无需 root)
+
+```bash
+# 安装 supervisor（如果没有）
+pip install supervisor
+
+# 启动（前台，Ctrl+C 停止）
+supervisord -c deploy/supervisord.conf -n
+
+# 或后台启动
+supervisord -c deploy/supervisord.conf
+
+# 管理命令
+supervisorctl -c deploy/supervisord.conf status          # 查看状态
+supervisorctl -c deploy/supervisord.conf restart scan-worker  # 重启
+supervisorctl -c deploy/supervisord.conf stop scan-worker     # 停止
+supervisorctl -c deploy/supervisord.conf tail -f scan-worker  # 查看日志
+```
+
+#### Option B: systemd (需要 root)
+
+```bash
+sudo cp deploy/scan-worker.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable scan-worker   # 开机自启
+sudo systemctl start scan-worker
+
+# 管理命令
+sudo systemctl status scan-worker   # 查看状态
+sudo systemctl restart scan-worker  # 重启
+sudo journalctl -u scan-worker -f   # 查看日志
+```
+
+#### One-click Update
+
+拉取最新代码、安装依赖、重启 worker，一条命令完成：
+
+```bash
+bash deploy/update.sh              # supervisord 模式
+bash deploy/update.sh systemd      # systemd 模式
+```
+
+两种方案的特点对比：
+
+| Feature | supervisord | systemd |
+|---------|------------|---------|
+| 需要 root | 否 | 是 |
+| 开机自启 | 需额外配置 | `systemctl enable` |
+| 日志 | 自动轮转 (50MB x 10) | journald |
+| 崩溃自动重启 | `autorestart=true` | `Restart=always` |
+| 优雅停止超时 | `stopwaitsecs=60` | `TimeoutStopSec=60` |
+
 ## Project Structure
 
 ```
@@ -203,8 +403,15 @@ src/scanner/
 ├── stage2/
 │   ├── analyzer.py     # Async LLM semantic analyzer
 │   └── prompt_template.md
-└── stage3/
-    └── reporter.py     # JSON + Markdown report generator (QAX schema)
+├── stage3/
+│   └── reporter.py     # JSON + Markdown report generator (QAX schema)
+└── worker/
+    ├── cli.py          # Worker CLI entry point
+    ├── config.py       # YAML config loader
+    ├── consumer.py     # RabbitMQ consumer (dual-thread architecture)
+    ├── task_runner.py   # Single-task scan pipeline
+    ├── mongo_store.py   # MongoDB task + report storage
+    └── downloader.py    # HTTP download + ZIP extraction
 ```
 
 ## Development

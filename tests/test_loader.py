@@ -2,11 +2,16 @@
 
 from __future__ import annotations
 
+import hashlib
+import re
 import tempfile
 import zipfile
 from pathlib import Path
 
 from scanner.loader import detect_source, generate_id, load_skills
+
+_HEX_MD5 = re.compile(r"^[0-9a-f]{32}$")
+_HEX_SHA1 = re.compile(r"^[0-9a-f]{40}$")
 
 
 class TestLoader:
@@ -50,6 +55,20 @@ class TestLoader:
             assert "key" in skills[0].content
             assert "print" in skills[0].content  # .py is supported
             assert "a,b,c" not in skills[0].content  # .csv is not
+            assert skills[0].name == "my-skill"
+            assert skills[0].skill_dir == str(skill_dir)
+            # file hashes cover all files (including .csv)
+            assert "SKILL.md" in skills[0].file_md5s
+            assert "references/guide.md" in skills[0].file_md5s
+            assert "references/data.json" in skills[0].file_md5s
+            assert "references/helper.py" in skills[0].file_md5s
+            assert "references/ignore.csv" in skills[0].file_md5s
+            for v in skills[0].file_md5s.values():
+                assert _HEX_MD5.match(v)
+            for v in skills[0].file_sha1s.values():
+                assert _HEX_SHA1.match(v)
+            assert skills[0].package_md5 == ""
+            assert skills[0].package_sha1 == ""
 
     def test_load_multiple_skill_directories(self):
         """Each skill directory yields one SkillFile."""
@@ -73,6 +92,11 @@ class TestLoader:
             skills = list(load_skills(tmpdir))
             assert len(skills) == 3  # .md + .yaml + .py
             assert all(s.content for s in skills)
+            by_name = {s.name: s for s in skills}
+            assert "skill1" in by_name
+            assert by_name["skill1"].skill_dir == tmpdir
+            assert "skill1.md" in by_name["skill1"].file_md5s
+            assert _HEX_MD5.match(by_name["skill1"].file_md5s["skill1.md"])
 
     def test_load_skills_empty_dir(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -101,6 +125,16 @@ class TestLoader:
             assert "# Zipped Skill" in skills[0].content
             assert "Reference guide" in skills[0].content
             assert "detail.json" not in skills[0].content
+            assert skills[0].name == "my-skill"
+            assert skills[0].skill_dir == str(skill_dir)
+            # zip-based: file hashes from extracted content
+            assert "SKILL.md" in skills[0].file_md5s
+            assert "references/guide.md" in skills[0].file_md5s
+            # zip-based: package hash from zip file
+            assert _HEX_MD5.match(skills[0].package_md5)
+            assert _HEX_SHA1.match(skills[0].package_sha1)
+            expected_pkg_md5 = hashlib.md5(zip_path.read_bytes()).hexdigest()
+            assert skills[0].package_md5 == expected_pkg_md5
 
     def test_load_zip_clawhub_layout(self):
         """Clawhub layout: <root>/<author>/<skill-name>/<skill>.zip."""
@@ -153,3 +187,53 @@ class TestLoader:
 
             skills = list(load_skills(tmpdir))
             assert len(skills) == 0
+
+    def test_load_skill_extension(self):
+        """A .skill file is equivalent to .zip per spec §3.1."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            skill_dir = Path(tmpdir) / "my-skill"
+            skill_dir.mkdir()
+            skill_path = skill_dir / "my-skill.skill"
+            with zipfile.ZipFile(skill_path, "w") as zf:
+                zf.writestr("SKILL.md", "# Skill Extension Test")
+                zf.writestr("lib/helper.py", "def run(): pass")
+
+            skills = list(load_skills(tmpdir))
+            assert len(skills) == 1
+            assert "# Skill Extension Test" in skills[0].content
+            assert "SKILL.md" in skills[0].file_md5s
+            assert "lib/helper.py" in skills[0].file_md5s
+            assert _HEX_MD5.match(skills[0].package_md5)
+
+    def test_normalize_zip_flat_format_not_unwrapped(self):
+        """Flat zip (SKILL.md at root with other files) must not be unwrapped (spec §4.1)."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            skill_dir = Path(tmpdir) / "flat-skill"
+            skill_dir.mkdir()
+            with zipfile.ZipFile(skill_dir / "flat.zip", "w") as zf:
+                zf.writestr("SKILL.md", "# Flat Format")
+                zf.writestr("run.sh", "echo hi")
+                zf.writestr("scripts/main.py", "print('main')")
+
+            skills = list(load_skills(tmpdir))
+            assert len(skills) == 1
+            assert "# Flat Format" in skills[0].content
+            # File keys must be relative to root (not inside a wrapper dir)
+            assert "SKILL.md" in skills[0].file_md5s
+            assert "run.sh" in skills[0].file_md5s
+            assert "scripts/main.py" in skills[0].file_md5s
+
+    def test_normalize_zip_top_level_files_prevent_unwrap(self):
+        """Zip with top-level files alongside subdirs stays at root (spec §4.1)."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            skill_dir = Path(tmpdir) / "mixed-skill"
+            skill_dir.mkdir()
+            with zipfile.ZipFile(skill_dir / "mixed.zip", "w") as zf:
+                # SKILL.md at root + inner dir: top_files=[SKILL.md], so no unwrap
+                zf.writestr("SKILL.md", "# Mixed Root")
+                zf.writestr("inner/extra.py", "pass")
+
+            skills = list(load_skills(tmpdir))
+            assert len(skills) == 1
+            assert "SKILL.md" in skills[0].file_md5s
+            assert "inner/extra.py" in skills[0].file_md5s

@@ -1,0 +1,36 @@
+# Skills Threat Analysis — Worker Configuration
+# Copy this file to config.yaml and adjust values for your environment.
+
+rabbitmq:
+  host: localhost
+  port: 5672
+  username: rabbitmq
+  password: changeme
+  vhost: /
+  queue_name: skill.scan.queue.engine01
+  # Max unacknowledged messages per worker (keep at 1 for fair dispatch)
+  prefetch_count: 1
+  # Heartbeat interval in seconds (must exceed max scan duration)
+  heartbeat: 600
+  # Retry limit before marking a task as failed
+  max_retries: 3
+
+mongodb:
+  uri: "mongodb://user:password@host1:port,host2:port,host3:port/?authSource=admin&replicaSet=rsName"
+  database: skillscan_engine1
+  tasks_collection: tasks
+  reports_collection: reports
+
+scan:
+  # Scan mode: "full" (Stage 1 + 2), "1" (rules only), "2" (LLM only)
+  stage: full
+  # LLM model name (null = use default glm-4-plus)
+  model: null
+  # OpenAI-compatible API base URL (null = Volcano Engine ARK)
+  api_base: null
+  # API key — set directly here, or leave null and use api_key_env instead
+  api_key: null
+  # Fallback: environment variable name to read the API key from
+  api_key_env: ARK_API_KEY
+  batch_size: 5
+  concurrency: 3

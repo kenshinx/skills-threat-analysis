@@ -1,6 +1,6 @@
 """Stage 3: Result aggregation and report generation.
 
-Outputs per-skill reports conforming to the QAX ScanReport schema v1.0,
+Outputs per-skill reports conforming to the QAX ScanReport schema v2.0,
 covering only the `static` (Stage 1) and `llm_semantic` (Stage 2) analyzers.
 """
 
@@ -8,10 +8,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
+
+import yaml
 
 from scanner.models import (
     AnalyzerStatus,
@@ -19,6 +23,7 @@ from scanner.models import (
     ScanResult,
     ScanSummary,
     Severity,
+    SkillFile,
     Verdict,
 )
 
@@ -211,11 +216,85 @@ def _get_snippet(content: str, start: int, end: int) -> str:
     return content[line_start:line_end].strip()
 
 
+def _compute_files_hash(
+    file_hashes: dict[str, str], algo: str, package_hash: str = ""
+) -> str:
+    """Compute aggregate hash per spec §6.2-6.3.
+
+    Prepend package_hash (empty string for directory-loaded skills),
+    then sorted per-file hashes, then hash the concatenation.
+    """
+    parts = [package_hash] + [file_hashes[k] for k in sorted(file_hashes)]
+    combined = "".join(parts)
+    if not combined:
+        return ""
+    if algo == "md5":
+        return hashlib.md5(combined.encode()).hexdigest()
+    return hashlib.sha1(combined.encode()).hexdigest()
+
+
+_FRONTMATTER_RE = re.compile(r"\A---\s*\n(.*?\n)---", re.DOTALL)
+
+
+def _parse_frontmatter(content: str) -> dict[str, Any]:
+    """Extract metadata from YAML frontmatter (``--- ... ---``) at the top of *content*."""
+    m = _FRONTMATTER_RE.match(content)
+    if not m:
+        return {}
+    try:
+        data = yaml.safe_load(m.group(1))
+    except yaml.YAMLError:
+        return {}
+    if not isinstance(data, dict):
+        return {}
+
+    result: dict[str, Any] = {}
+    if "name" in data:
+        result["name"] = str(data["name"])
+    if "description" in data:
+        result["description"] = str(data["description"])
+    if "trigger" in data:
+        result["trigger"] = str(data["trigger"])
+    if "author" in data:
+        result["author"] = str(data["author"])
+
+    version = data.get("version")
+    if version is None and isinstance(data.get("metadata"), dict):
+        version = data["metadata"].get("version")
+    if version is not None:
+        result["version"] = str(version)
+
+    return result
+
+
+def _resolve_entry_file_path(skill: SkillFile) -> str:
+    """Return the relative path of the skill's entry file for use in findings location.
+
+    Prefers the explicitly stored ``entry_file`` field.  Falls back to deriving
+    a relative path from ``file_path`` and ``skill_dir``, or – for URL-based
+    skills – extracting just the filename from the URL.
+    """
+    if skill.entry_file:
+        return skill.entry_file
+    fp = skill.file_path
+    if fp.startswith(("http://", "https://")):
+        path_part = urlparse(fp).path.rstrip("/")
+        return path_part.rsplit("/", 1)[-1] if "/" in path_part else (path_part or "SKILL.md")
+    if skill.skill_dir:
+        try:
+            return Path(fp).relative_to(skill.skill_dir).as_posix()
+        except ValueError:
+            pass
+    return Path(fp).name
+
+
 class Reporter:
-    def __init__(self, output_dir: str | Path):
+    def __init__(self, output_dir: str | Path, *, report_all_skills: bool = False):
         self._output_dir = Path(output_dir)
         self._threats_dir = self._output_dir / "threats"
         self._threats_dir.mkdir(parents=True, exist_ok=True)
+        self._clean_dir = self._output_dir / "clean"
+        self._report_all_skills = report_all_skills
 
     def generate(self, scan_id: str, results: list[ScanResult]) -> ScanSummary:
         summary = self._build_summary(scan_id, results)
@@ -224,23 +303,38 @@ class Reporter:
         self._write_summary_md(summary, results)
         return summary
 
+    def build_skill_report(self, result: ScanResult, scan_id: str) -> dict[str, Any]:
+        """Build a QAX report dict for a single skill without writing to disk.
+
+        This is the public API consumed by the worker mode (MongoDB reporter).
+        """
+        return self._build_skill_report(result, scan_id)
+
     # ------------------------------------------------------------------ #
-    #  Per-skill report (QAX ScanReport schema v1.0)
+    #  Per-skill report (QAX ScanReport schema v2.0)
     # ------------------------------------------------------------------ #
 
     def _write_threat_reports(self, results: list[ScanResult], scan_id: str) -> None:
         for r in results:
-            # Output report if ANY stage detected issues:
             has_stage1_findings = bool(
                 r.stage1 and r.stage1.matched_rules)
             has_stage2_findings = bool(
                 r.stage2 and r.stage2.threats)
             has_non_clean_verdict = r.final_verdict in (
                 Verdict.MALICIOUS, Verdict.SUSPICIOUS)
+            has_findings = has_non_clean_verdict or has_stage1_findings or has_stage2_findings
 
-            if has_non_clean_verdict or has_stage1_findings or has_stage2_findings:
+            if has_findings:
                 report = self._build_skill_report(r, scan_id)
                 path = self._threats_dir / f"{r.skill.id}.json"
+                path.write_text(
+                    json.dumps(report, ensure_ascii=False, indent=2),
+                    encoding="utf-8",
+                )
+            elif self._report_all_skills:
+                self._clean_dir.mkdir(parents=True, exist_ok=True)
+                report = self._build_skill_report(r, scan_id)
+                path = self._clean_dir / f"{r.skill.id}.json"
                 path.write_text(
                     json.dumps(report, ensure_ascii=False, indent=2),
                     encoding="utf-8",
@@ -253,6 +347,7 @@ class Reporter:
 
         # Build findings from both stages
         findings: list[dict[str, Any]] = []
+        entry_file_path = _resolve_entry_file_path(r.skill)
 
         # --- Static findings (Stage 1) ---
         if r.stage1 and r.stage1.matched_rules:
@@ -262,7 +357,7 @@ class Reporter:
                 ctx_before, ctx_after = _get_context(
                     content, m.position[0], m.position[1])
                 category = _RULE_CATEGORY_MAP.get(m.rule_name, m.rule_name)
-                fid = _make_finding_id(m.rule_id, r.skill.file_path, line_no)
+                fid = _make_finding_id(m.rule_id, entry_file_path, line_no)
 
                 findings.append({
                     "id": fid,
@@ -275,7 +370,7 @@ class Reporter:
                     "title_en": f"Rule Match: {m.rule_id} ({m.rule_name})",
                     "description_en": f"Detected suspicious pattern of type {m.rule_name}",
                     "location": {
-                        "file_path": r.skill.file_path,
+                        "file_path": entry_file_path,
                         "line_number": line_no,
                         "line_end": None,
                         "column_start": None,
@@ -299,7 +394,7 @@ class Reporter:
                 rule_id = f"LLM_{t.category.value.upper()}"
                 category = _THREAT_CATEGORY_MAP.get(
                     t.category.value, t.category.value)
-                fid = _make_finding_id(rule_id, r.skill.file_path, 0)
+                fid = _make_finding_id(rule_id, entry_file_path, 0)
 
                 zh_title, zh_desc = _LLM_CATEGORY_ZH.get(
                     t.category.value,
@@ -318,7 +413,7 @@ class Reporter:
                     "title_en": en_explanation[:100] if en_explanation else f"LLM: {t.category.value}",
                     "description_en": en_explanation,
                     "location": {
-                        "file_path": r.skill.file_path,
+                        "file_path": entry_file_path,
                         "line_number": 0,
                         "line_end": None,
                         "column_start": None,
@@ -350,31 +445,18 @@ class Reporter:
         severity_counter: dict[str, int] = {
             "CRITICAL": 0, "HIGH": 0, "MEDIUM": 0, "LOW": 0, "INFO": 0}
         category_counter: Counter[str] = Counter()
+        analyzer_counter: Counter[str] = Counter()
         for f in findings:
             severity_counter[f["severity"]] = severity_counter.get(
                 f["severity"], 0) + 1
             category_counter[f["category"]] += 1
-
-        analyzers_used = []
-        if r.stage1:
-            analyzers_used.append("static")
-        if r.stage2:
-            analyzers_used.append("llm_semantic")
-
-        # Determine analyzer statuses
-        analyzers_failed = []
-        analyzers_skipped = []
-        if r.stage2 and r.stage2.status == AnalyzerStatus.FAILED:
-            analyzers_failed.append("llm_semantic")
+            analyzer_counter[f["analyzer_id"]] += 1
 
         stats = {
             "total_findings": len(findings),
             "by_severity": severity_counter,
             "by_category": dict(category_counter),
-            "analyzers_used": analyzers_used,
-            "analyzers_failed": analyzers_failed,
-            "analyzers_skipped": analyzers_skipped,
-            "files_scanned": 1,
+            "by_analyzer": dict(analyzer_counter),
         }
 
         # --- Analyzer results ---
@@ -389,7 +471,10 @@ class Reporter:
                 "findings": static_findings,
                 "verdict": r.stage1.verdict.value.upper(),
                 "verdict_confidence": 0.0,
-                "extra": {},
+                "extra": {
+                    "rules_triggered": len(r.stage1.matched_rules),
+                    "files_scanned": 1,
+                },
                 "error": None,
             }
         if r.stage2:
@@ -403,6 +488,9 @@ class Reporter:
                 "verdict": r.stage2.verdict.value.upper(),
                 "verdict_confidence": r.stage2.confidence,
                 "extra": {
+                    "provider": "",
+                    "total_batches": 1,
+                    "batch_errors": 0,
                     "llm_findings_count": len(llm_findings),
                 },
                 "error": r.stage2.summary if r.stage2.status == AnalyzerStatus.FAILED else None,
@@ -412,11 +500,21 @@ class Reporter:
         total_ms = (r.stage1.duration_ms if r.stage1 else 0) + \
                    (r.stage2.duration_ms if r.stage2 else 0)
 
+        # --- Determine which analyzers were used ---
+        analyzers_used = list(analyzer_results.keys())
+
+        meta = _parse_frontmatter(r.skill.content)
+        skill_name = meta.get("name") or r.skill.name or r.skill.id
+
+        version_val = meta.get("version", "")
+        if not version_val and isinstance(meta.get("metadata"), dict):
+            version_val = str(meta["metadata"].get("version", ""))
+
         return {
-            "schema_version": "1.0",
+            "schema_version": "2.0",
             "scan_id": scan_id,
-            "skill_name": r.skill.id,
-            "skill_path": r.skill.file_path,
+            "skill_name": skill_name,
+            "skill_path": r.skill.skill_dir or r.skill.file_path,
             "scan_timestamp": now.isoformat(),
             "scan_duration_ms": total_ms,
             "verdict": verdict_obj,
@@ -424,17 +522,35 @@ class Reporter:
             "findings": findings,
             "analyzer_results": analyzer_results,
             "skill_metadata": {
-                "name": r.skill.id,
-                "description": "",
+                "name": skill_name,
+                "description": meta.get("description", ""),
                 "allowed_tools": [],
-                "file_count": 1,
-                "binary_files": [],
-                "has_pyc": False,
+                "trigger_description": meta.get("trigger", ""),
+                "author": meta.get("author", ""),
+                "version": version_val,
+                "md5_info": {
+                    "files_md5": _compute_files_hash(r.skill.file_md5s, "md5", r.skill.package_md5),
+                    "package_md5": r.skill.package_md5,
+                    "file_md5s": dict(r.skill.file_md5s),
+                },
+                "sha1_info": {
+                    "files_sha1": _compute_files_hash(r.skill.file_sha1s, "sha1", r.skill.package_sha1),
+                    "package_sha1": r.skill.package_sha1,
+                    "file_sha1s": dict(r.skill.file_sha1s),
+                },
             },
             "scan_config": {
-                "policy": "balanced",
-                "analyzers_used": analyzers_used,
-                "llm_enabled": r.stage2 is not None,
+                "name": "balanced",
+                "mode": "balanced",
+                "disabled_rules": [],
+                "severity_overrides": {},
+                "disabled_analyzers": [],
+                "yara_mode": "balanced",
+                "max_findings_per_rule": 5,
+                "enable_cross_file": True,
+                "sensitive_file_patterns": [],
+                "known_test_values": [],
+                "file_size_limit_kb": 0,
             },
         }
 
@@ -537,8 +653,8 @@ class Reporter:
         )
         top_cats_en = ", ".join(c for c, _ in cat_counter.most_common(3))
 
-        # Key finding IDs (all findings, already sorted by severity)
-        key_ids = [f["id"] for f in findings]
+        # Key finding IDs: top-3 by severity (findings already sorted)
+        key_ids = [f["id"] for f in findings[:3]]
 
         if result == Verdict.MALICIOUS:
             summary = (

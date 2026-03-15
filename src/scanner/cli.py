@@ -86,6 +86,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="Shorthand for --log-level DEBUG",
     )
+    parser.add_argument(
+        "--report-all-skills",
+        action="store_true",
+        help="Output per-skill report for every skill: with findings -> threats/, no findings -> clean/ (default: only skills with findings get threats/<id>.json)",
+    )
     return parser.parse_args(argv)
 
 
@@ -113,6 +118,7 @@ def main(argv: list[str] | None = None) -> None:
         model=args.model,
         api_base=args.api_base,
         api_key_env=args.api_key_env,
+        report_all_skills=args.report_all_skills,
     )
     orchestrator.run()
 
