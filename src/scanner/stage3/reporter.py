@@ -270,22 +270,29 @@ def _parse_frontmatter(content: str) -> dict[str, Any]:
 def _resolve_entry_file_path(skill: SkillFile) -> str:
     """Return the relative path of the skill's entry file for use in findings location.
 
-    Prefers the explicitly stored ``entry_file`` field.  Falls back to deriving
-    a relative path from ``file_path`` and ``skill_dir``, or – for URL-based
-    skills – extracting just the filename from the URL.
+    Always includes the skill directory name as a prefix so the path reads as
+    ``<skill-dir>/<file>``, e.g. ``x-twitter2/SKILL.md``.
     """
+    dir_name = Path(skill.skill_dir).name if skill.skill_dir else ""
+
     if skill.entry_file:
-        return skill.entry_file
-    fp = skill.file_path
-    if fp.startswith(("http://", "https://")):
-        path_part = urlparse(fp).path.rstrip("/")
-        return path_part.rsplit("/", 1)[-1] if "/" in path_part else (path_part or "SKILL.md")
-    if skill.skill_dir:
-        try:
-            return Path(fp).relative_to(skill.skill_dir).as_posix()
-        except ValueError:
-            pass
-    return Path(fp).name
+        rel = skill.entry_file
+    else:
+        fp = skill.file_path
+        if fp.startswith(("http://", "https://")):
+            path_part = urlparse(fp).path.rstrip("/")
+            rel = path_part.rsplit("/", 1)[-1] if "/" in path_part else (path_part or "SKILL.md")
+        elif skill.skill_dir:
+            try:
+                rel = Path(fp).relative_to(skill.skill_dir).as_posix()
+            except ValueError:
+                rel = Path(fp).name
+        else:
+            rel = Path(fp).name
+
+    if dir_name and not rel.startswith(dir_name + "/"):
+        return f"{dir_name}/{rel}"
+    return rel
 
 
 class Reporter:
@@ -359,16 +366,25 @@ class Reporter:
                 category = _RULE_CATEGORY_MAP.get(m.rule_name, m.rule_name)
                 fid = _make_finding_id(m.rule_id, entry_file_path, line_no)
 
+                rule_name_zh = _RULE_NAME_ZH.get(m.rule_name, m.rule_name)
+                matched_preview = m.matched_text[:120].replace("\n", " ")
                 findings.append({
                     "id": fid,
                     "rule_id": m.rule_id,
                     "analyzer_id": "static",
                     "category": category,
                     "severity": _SEVERITY_LABEL[m.severity],
-                    "title": f"规则匹配: {m.rule_id} ({_RULE_NAME_ZH.get(m.rule_name, m.rule_name)})",
-                    "description": f"检测到{_RULE_NAME_ZH.get(m.rule_name, m.rule_name)}类型的可疑模式",
-                    "title_en": f"Rule Match: {m.rule_id} ({m.rule_name})",
-                    "description_en": f"Detected suspicious pattern of type {m.rule_name}",
+                    "title": f"规则匹配: {m.rule_id} ({rule_name_zh}) — {matched_preview}",
+                    "description": (
+                        f"在 {entry_file_path} 第 {line_no} 行检测到{rule_name_zh}类型的可疑模式。\n\n"
+                        f"匹配内容：{m.matched_text[:400]}"
+                    ),
+                    "title_en": f"Rule Match: {m.rule_id} ({m.rule_name}) — {matched_preview}",
+                    "description_en": (
+                        f"Detected suspicious pattern of type {m.rule_name} "
+                        f"at {entry_file_path} line {line_no}.\n\n"
+                        f"Matched content: {m.matched_text[:400]}"
+                    ),
                     "location": {
                         "file_path": entry_file_path,
                         "line_number": line_no,
@@ -402,14 +418,18 @@ class Reporter:
                 )
                 en_explanation = t.explanation or ""
 
+                evidence_preview = (t.evidence or "")[:120].replace("\n", " ")
+                full_zh_desc = (
+                    f"{zh_desc}\n\n{en_explanation}" if en_explanation else zh_desc
+                )
                 findings.append({
                     "id": fid,
                     "rule_id": rule_id,
                     "analyzer_id": "llm_semantic",
                     "category": category,
                     "severity": _SEVERITY_LABEL[t.severity],
-                    "title": zh_title,
-                    "description": zh_desc,
+                    "title": f"{zh_title} — {evidence_preview}" if evidence_preview else zh_title,
+                    "description": full_zh_desc,
                     "title_en": en_explanation[:100] if en_explanation else f"LLM: {t.category.value}",
                     "description_en": en_explanation,
                     "location": {
