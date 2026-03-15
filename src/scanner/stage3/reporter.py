@@ -100,6 +100,58 @@ _LLM_CATEGORY_ZH: dict[str, tuple[str, str]] = {
 }
 
 
+# Chinese names for rule_name values (Stage 1 findings).
+_RULE_NAME_ZH: dict[str, str] = {
+    "instruction_override":           "指令覆盖",
+    "role_hijacking":                 "角色劫持",
+    "system_prompt_manipulation":     "系统提示词操控",
+    "context_exfiltration":           "上下文窃取",
+    "steganographic_injection":       "隐写注入",
+    "dangerous_operation":            "危险操作",
+    "social_engineering_injection":   "社会工程学注入",
+    "credential_access":              "凭证访问",
+    "network_exfiltration":           "网络外泄",
+    "filesystem_destruction":         "文件系统破坏",
+    "obfuscation_standalone":         "代码混淆",
+    "crypto_wallet_access":           "加密钱包访问",
+    "persistence_mechanism":          "持久化机制",
+    "privilege_escalation":           "权限提升",
+    "invisible_unicode_density":      "不可见 Unicode 密度异常",
+    "invisible_unicode_hidden_injection": "Unicode 隐写注入",
+    "homoglyph_attack":               "同形字攻击",
+    "mixed_scripts_latin_cyrillic":   "多语言混合脚本（拉丁/西里尔）",
+    "mixed_scripts_multi":            "多语言混合脚本",
+    "markdown_hidden_instruction":    "Markdown 隐藏指令",
+    "markdown_data_uri":              "Markdown 数据 URI",
+    "gradual_escalation":             "渐进式升级攻击",
+    "encoded_payload_base64":         "Base64 编码载荷",
+    "encoded_payload_rot13":          "ROT13 编码载荷",
+    "trigger_hijacking":              "触发器劫持",
+    "remote_binary_download":         "远程二进制下载",
+    "svg_html_xss":                   "SVG/HTML XSS 注入",
+}
+
+# Chinese names for ThreatCategory values (used in summary).
+_CATEGORY_ZH: dict[str, str] = {
+    "prompt_injection":       "提示词注入",
+    "command_injection":      "命令注入",
+    "data_exfiltration":      "数据外泄",
+    "hardcoded_secrets":      "凭证信息泄露",
+    "obfuscation":            "代码混淆",
+    "privilege_escalation":   "权限提升",
+    "unicode_steganography":  "Unicode 隐写",
+    "social_engineering":     "社会工程学",
+    "supply_chain_attack":    "供应链攻击",
+    "trigger_hijacking":      "触发器劫持",
+    "unauthorized_tool_use":  "未授权工具调用",
+    "resource_abuse":         "资源滥用",
+    "malicious_guidance":     "恶意指导内容",
+    "skill_md_mismatch":      "描述与行为不符",
+    "code_quality":           "代码质量问题",
+    "bytecode_tampering":     "字节码篡改",
+    "transitive_trust_abuse": "传递信任滥用",
+}
+
 # Severity string used in the schema (uppercase).
 _SEVERITY_LABEL = {
     Severity.CRITICAL: "CRITICAL",
@@ -218,8 +270,8 @@ class Reporter:
                     "analyzer_id": "static",
                     "category": category,
                     "severity": _SEVERITY_LABEL[m.severity],
-                    "title": f"规则匹配: {m.rule_id} ({m.rule_name})",
-                    "description": f"检测到 {m.rule_name} 类型的可疑模式",
+                    "title": f"规则匹配: {m.rule_id} ({_RULE_NAME_ZH.get(m.rule_name, m.rule_name)})",
+                    "description": f"检测到{_RULE_NAME_ZH.get(m.rule_name, m.rule_name)}类型的可疑模式",
                     "title_en": f"Rule Match: {m.rule_id} ({m.rule_name})",
                     "description_en": f"Detected suspicious pattern of type {m.rule_name}",
                     "location": {
@@ -480,7 +532,10 @@ class Reporter:
         cat_counter: Counter[str] = Counter()
         for f in findings:
             cat_counter[f["category"]] += 1
-        top_cats = "、".join(c for c, _ in cat_counter.most_common(3))
+        top_cats = "、".join(
+            _CATEGORY_ZH.get(c, c) for c, _ in cat_counter.most_common(3)
+        )
+        top_cats_en = ", ".join(c for c, _ in cat_counter.most_common(3))
 
         # Key finding IDs (all findings, already sorted by severity)
         key_ids = [f["id"] for f in findings]
@@ -492,7 +547,7 @@ class Reporter:
             )
             summary_en = (
                 f"Malicious threats detected! Found {total} security issues ({sev_str}), "
-                f"primary threat types: {top_cats}. Strongly recommend rejecting installation."
+                f"primary threat types: {top_cats_en}. Strongly recommend rejecting installation."
             )
         elif result == Verdict.SUSPICIOUS:
             summary = (
@@ -501,7 +556,7 @@ class Reporter:
             )
             summary_en = (
                 f"Suspicious behavior detected, found {total} security issues ({sev_str}), "
-                f"primary threat types: {top_cats}. Recommend manual review."
+                f"primary threat types: {top_cats_en}. Recommend manual review."
             )
         elif result == Verdict.CLEAN and total > 0:
             summary = (
