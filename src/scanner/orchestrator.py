@@ -144,11 +144,11 @@ class Orchestrator:
             batch_size=self._batch_size,
         )
 
-        if self._stage == "2":
-            # In stage 2-only mode, analyze all skills
+        if self._stage in ("2", "full"):
+            # Stage 2-only or full mode: analyze all skills
             to_analyze = stage1_results
         else:
-            # Normal mode: only analyze SUSPICIOUS (non-CLEAN)
+            # Other modes: only analyze SUSPICIOUS (non-CLEAN)
             to_analyze = [
                 r for r in stage1_results if r.stage1.verdict == Verdict.SUSPICIOUS]
 
