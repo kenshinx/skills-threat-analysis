@@ -72,7 +72,7 @@ def download_and_load(url: str, *, timeout: int = _DOWNLOAD_TIMEOUT) -> SkillFil
 def _load_from_zip(archive_path: Path, url: str) -> SkillFile:
     """Extract a ZIP and build a SkillFile from its contents."""
     extract_dir = archive_path.parent / "extracted"
-    extract_dir.mkdir()
+    extract_dir.mkdir(exist_ok=True)
 
     with zipfile.ZipFile(archive_path, "r") as zf:
         zf.extractall(extract_dir)
@@ -95,7 +95,7 @@ def _load_from_zip(archive_path: Path, url: str) -> SkillFile:
         if aux:
             content += aux
         file_path = entry.name
-        entry_file = entry.relative_to(skill_root).as_posix()
+        entry_file = entry.relative_to(extract_dir).as_posix()
 
     source = detect_source(Path(filename))
     skill_id = _generate_skill_id(filename, url)

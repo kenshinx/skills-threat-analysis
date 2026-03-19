@@ -581,7 +581,16 @@ class Reporter:
         analyzers_used = list(analyzer_results.keys())
 
         meta = _parse_frontmatter(r.skill.content)
-        skill_name = meta.get("name") or r.skill.name or r.skill.id
+        raw_name = meta.get("name")
+        if raw_name:
+            skill_name = raw_name
+            skill_metadata_name = raw_name
+        else:
+            # 当 SKILL.md 缺少规范的 frontmatter（没有 name 等字段）时：
+            # - skill_name 统一设置为 "skill"，用于对外展示一个通用名称；
+            # - skill_metadata.name 保持为空字符串，避免误导下游以为有有效的技能名。
+            skill_name = "skill"
+            skill_metadata_name = ""
 
         version_val = meta.get("version", "")
         if not version_val and isinstance(meta.get("metadata"), dict):
@@ -599,7 +608,7 @@ class Reporter:
             "findings": findings,
             "analyzer_results": analyzer_results,
             "skill_metadata": {
-                "name": skill_name,
+                "name": skill_metadata_name,
                 "description": meta.get("description", ""),
                 "allowed_tools": [],
                 "trigger_description": meta.get("trigger", ""),

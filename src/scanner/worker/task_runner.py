@@ -92,11 +92,8 @@ class TaskRunner:
         logger.info("Task stage1: verdict=%s, %d rules matched",
                      stage1.verdict.value, len(stage1.matched_rules))
 
-        need_stage2 = (
-            enable_llm
-            and self._config.stage in ("full", "2")
-            and stage1.verdict == Verdict.SUSPICIOUS
-        )
+        analyze_all = self._config.stage in ("full", "2")
+        need_stage2 = enable_llm and analyze_all
 
         if need_stage2:
             api_key = self._config.api_key or os.environ.get(self._config.api_key_env)

@@ -89,10 +89,28 @@ def generate_id(file_path: Path) -> str:
 
 
 def _find_entry_file(skill_dir: Path) -> Path | None:
-    """Find the skill entry file (SKILL.md etc.) in a directory."""
+    """Find the skill entry file (SKILL.md etc.) in a directory.
+
+    Search order:
+    1) Direct children of ``skill_dir`` (preserves existing behaviour).
+    2) Depth-first search of subdirectories in lexicographic order, returning
+       the first directory that contains a matching entry file.
+
+    This allows archives that contain multiple skills in nested directories to
+    still pick a stable “first” SKILL.md as the logical entry point.
+    """
+    # First, preserve existing behaviour: look at direct children only.
     for child in skill_dir.iterdir():
         if child.is_file() and child.name.lower() in SKILL_ENTRY_NAMES:
             return child
+
+    # If no direct entry file is found, search subdirectories recursively.
+    subdirs = sorted([c for c in skill_dir.iterdir() if c.is_dir()], key=lambda p: p.name)
+    for sub in subdirs:
+        entry = _find_entry_file(sub)
+        if entry is not None:
+            return entry
+
     return None
 
 
@@ -147,12 +165,17 @@ def _find_zip_files(directory: Path) -> list[Path]:
 
 
 def _normalize_zip_root(tmp: Path) -> Path:
-    """Implement spec §4.1: unwrap single top-level directory if no top-level files exist."""
+    """Implement spec §4.1: unwrap single top-level directory if no top-level files exist.
+
+    Ignores __MACOSX so that archives with macOS metadata still unwrap to the
+    single content directory (e.g. 065bbc1dae4e4b53be9918251c064761/).
+    """
     children = list(tmp.iterdir())
     top_dirs = [c for c in children if c.is_dir()]
     top_files = [c for c in children if c.is_file()]
-    if len(top_dirs) == 1 and len(top_files) == 0:
-        return top_dirs[0]
+    content_dirs = [c for c in top_dirs if c.name != "__MACOSX"]
+    if len(content_dirs) == 1 and len(top_files) == 0:
+        return content_dirs[0]
     return tmp
 
 

@@ -10,3 +10,5 @@ build/
 checkpoint.json
 config.yaml
 logs/
+deploy/
+script/
