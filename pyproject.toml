@@ -26,6 +26,8 @@ worker = [
 [project.scripts]
 scan-skills = "scanner.cli:main"
 scan-worker = "scanner.worker.cli:main"
+scan-worker-zip = "scanner.worker.local_cli:main"
+scan-worker-batch = "scanner.worker.local_cli:main_batch"
 
 [[tool.poetry.packages]]
 include = "scanner"

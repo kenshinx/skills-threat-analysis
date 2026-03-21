@@ -363,6 +363,58 @@ class Reporter:
         self._write_summary_md(summary, results)
         return summary
 
+    def generate_reports(
+        self,
+        scan_id: str,
+        results: list[ScanResult],
+        reports_dir: Path,
+    ) -> ScanSummary:
+        """Write all per-skill reports to a flat *reports_dir/* directory.
+
+        Unlike ``generate()``, which separates findings into ``threats/`` and
+        ``clean/``, this method writes every skill's report into the single
+        *reports_dir* folder regardless of verdict.  ``summary.json`` and
+        ``summary.md`` are written to the Reporter's output directory as usual.
+        """
+        summary = self._build_summary(scan_id, results)
+        reports_dir.mkdir(parents=True, exist_ok=True)
+        for r in results:
+            report = self._build_skill_report(r, scan_id)
+            (reports_dir / f"{r.skill.id}.json").write_text(
+                json.dumps(report, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+        self._write_summary_json(summary)
+        self._write_summary_md(summary, results)
+        return summary
+
+    def write_batch(
+        self,
+        scan_id: str,
+        batch_results: list[ScanResult],
+        all_results: list[ScanResult],
+        reports_dir: Path,
+    ) -> ScanSummary:
+        """Incrementally write per-skill reports for *batch_results* only.
+
+        Used by the batch CLI to write reports as each Stage 2 batch (or the
+        Stage 1-only group) completes, rather than rewriting everything each time.
+        ``summary.json`` and ``summary.md`` are always rewritten based on the
+        current state of *all_results* (which may include skills still awaiting
+        Stage 2).
+        """
+        reports_dir.mkdir(parents=True, exist_ok=True)
+        for r in batch_results:
+            report = self._build_skill_report(r, scan_id)
+            (reports_dir / f"{r.skill.id}.json").write_text(
+                json.dumps(report, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+        summary = self._build_summary(scan_id, all_results)
+        self._write_summary_json(summary)
+        self._write_summary_md(summary, all_results)
+        return summary
+
     def build_skill_report(self, result: ScanResult, scan_id: str) -> dict[str, Any]:
         """Build a QAX report dict for a single skill without writing to disk.
 
