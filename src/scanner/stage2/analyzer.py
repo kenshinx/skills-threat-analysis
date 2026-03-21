@@ -227,8 +227,9 @@ class SemanticAnalyzer:
                     snippet = m.matched_text[:400]
                 else:
                     snippet = m.matched_text[:100]
+                location = f" in {m.source_file}" if m.source_file else ""
                 lines.append(
-                    f"- [{m.rule_id}] {m.rule_name} ({m.severity.value}): "
+                    f"- [{m.rule_id}] {m.rule_name} ({m.severity.value}){location}: "
                     f"matched \"{snippet}\""
                 )
             omitted = len(matched_rules) - len(selected)

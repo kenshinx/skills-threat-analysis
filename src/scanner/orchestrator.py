@@ -147,7 +147,11 @@ class Orchestrator:
                 processed += 1
                 continue
 
-            stage1 = self._rule_engine.scan(skill.content)
+            stage1 = (
+                self._rule_engine.scan_files(skill.files)
+                if skill.files
+                else self._rule_engine.scan(skill.content)
+            )
             results.append(ScanResult(
                 skill=skill,
                 stage1=stage1,

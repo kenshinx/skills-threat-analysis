@@ -49,7 +49,11 @@ def _scan_single_skill(skill_zip: Path, scan_cfg: ScanConfig, enable_llm: bool) 
         skill = _load_from_zip(archive_path, skill_zip.as_posix())
 
     rule_engine = RuleEngine()
-    stage1 = rule_engine.scan(skill.content)
+    stage1 = (
+        rule_engine.scan_files(skill.files)
+        if skill.files
+        else rule_engine.scan(skill.content)
+    )
 
     result = ScanResult(
         skill=skill,

@@ -8,7 +8,7 @@ from pathlib import Path
 
 import yaml
 
-from scanner.models import RuleMatch, Severity, Stage1Result, Verdict
+from scanner.models import RuleMatch, Severity, SkillFileSegment, Stage1Result, Verdict
 from scanner.stage1.advanced import AdvancedAnalyzer
 
 _RULES_PATH = Path(__file__).parent / "rules.yaml"
@@ -54,6 +54,52 @@ class RuleEngine:
                 "severity": Severity(rule["severity"].lower()),
                 "patterns": compiled_patterns,
             })
+
+    def scan_files(self, files: list[SkillFileSegment]) -> Stage1Result:
+        """Scan each file segment independently, recording source_file on every match.
+
+        This replaces the legacy scan(content) approach where all files were
+        concatenated before scanning, causing two problems:
+          1. Files skipped due to the old 1 MB total cap had no coverage.
+          2. findings.location.file_path always pointed to the entry file.
+
+        Position offsets in each RuleMatch are now relative to that file's
+        own content, not the combined string.
+        """
+        start = time.monotonic()
+        all_matches: list[RuleMatch] = []
+
+        for seg in files:
+            content = seg.content
+            masked_ranges = self._get_masked_ranges(content)
+
+            for rule in self._compiled:
+                for pattern, no_mask in rule["patterns"]:
+                    for m in pattern.finditer(content):
+                        if not no_mask and self._is_in_masked_range(
+                            m.start(), m.end(), masked_ranges
+                        ):
+                            continue
+                        if m.group() == "\u200d" and self._is_emoji_zwj(content, m.start()):
+                            continue
+                        all_matches.append(RuleMatch(
+                            rule_id=rule["id"],
+                            rule_name=rule["name"],
+                            severity=rule["severity"],
+                            matched_text=m.group(),
+                            position=(m.start(), m.end()),
+                            pattern=pattern.pattern,
+                            source_file=seg.rel_path,
+                        ))
+
+            advanced = self._advanced.scan(content, masked_ranges)
+            for rm in advanced:
+                rm.source_file = seg.rel_path
+            all_matches.extend(advanced)
+
+        verdict = self._classify(all_matches)
+        elapsed_ms = int((time.monotonic() - start) * 1000)
+        return Stage1Result(verdict=verdict, matched_rules=all_matches, duration_ms=elapsed_ms)
 
     def scan(self, content: str) -> Stage1Result:
         start = time.monotonic()

@@ -83,7 +83,11 @@ class TaskRunner:
 
     def _scan(self, skill, enable_llm: bool) -> ScanResult:
         """Run Stage 1 (+ optional Stage 2) on a single skill."""
-        stage1 = self._rule_engine.scan(skill.content)
+        stage1 = (
+            self._rule_engine.scan_files(skill.files)
+            if skill.files
+            else self._rule_engine.scan(skill.content)
+        )
         result = ScanResult(
             skill=skill,
             stage1=stage1,
