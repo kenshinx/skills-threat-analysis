@@ -16,10 +16,11 @@ Scan skill files from ClawHub, Smithery, skills.sh and other sources for prompt 
 
 - `--path <dir>`: Directory containing skill files to scan (default: `./skills/`)
 - `--output <dir>`: Report output directory (default: `./report/`)
-- `--stage <1|2|full>`: Run only a specific stage (default: `full`)
+- `--stage <1|2|full|full-llm>`: Run only a specific stage (default: `full`)
   - `1`: Rules engine only (fast, no LLM cost)
-  - `2`: LLM semantic analysis only
-  - `full`: Both stages
+  - `2`: LLM semantic analysis only (no Stage 1)
+  - `full`: Stage 1 on all skills; Stage 2 only when Stage 1 is not CLEAN
+  - `full-llm`: Stage 1 then Stage 2 on every skill (legacy “full” behavior)
 - `--severity <critical|high|medium|all>`: Minimum severity to report (default: `all`)
 - `--format <json|md|both>`: Output format (default: `both`)
 - `--batch-size <n>`: Skills per LLM batch in Stage 2 (default: `5`)

@@ -56,8 +56,17 @@ def _scan_single_skill(skill_zip: Path, scan_cfg: ScanConfig, enable_llm: bool) 
         stage1=stage1,
         final_verdict=stage1.verdict,
     )
-    analyze_all = scan_cfg.stage in ("full", "2")
-    need_stage2 = enable_llm and analyze_all
+    st = scan_cfg.stage
+    if st == "1":
+        want_stage2 = False
+    elif st in ("full-llm", "2"):
+        want_stage2 = True
+    elif st == "full":
+        want_stage2 = stage1.verdict != Verdict.CLEAN
+    else:
+        want_stage2 = False
+
+    need_stage2 = enable_llm and want_stage2
 
     if not need_stage2:
         return result

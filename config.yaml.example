@@ -22,7 +22,8 @@ mongodb:
   reports_collection: reports
 
 scan:
-  # Scan mode: "full" (Stage 1 + 2), "1" (rules only), "2" (LLM only)
+  # "full" = Stage 1 then LLM only if rules are not CLEAN;
+  # "full-llm" = Stage 1 then LLM on every skill; "1" = rules only; "2" = LLM after rules (worker still runs Stage 1)
   stage: full
   # LLM model name (null = use default glm-4-plus)
   model: null

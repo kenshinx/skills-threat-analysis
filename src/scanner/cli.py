@@ -26,9 +26,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--stage",
-        choices=["1", "2", "full"],
+        choices=["1", "2", "full", "full-llm"],
         default="full",
-        help="Run only a specific stage: 1 (rules only), 2 (LLM only), full (default: full)",
+        help=(
+            "1=rules only; 2=LLM only; full=rules then LLM only when rules are not CLEAN; "
+            "full-llm=rules then LLM for every skill (default: full)"
+        ),
     )
     parser.add_argument(
         "--severity",

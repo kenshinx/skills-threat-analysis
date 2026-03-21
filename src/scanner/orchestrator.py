@@ -8,8 +8,6 @@ import logging
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Generator
-
 from scanner.loader import load_skills
 from scanner.models import AnalyzerStatus, ScanResult, SkillFile, Verdict
 from scanner.stage1.engine import RuleEngine
@@ -56,11 +54,12 @@ class Orchestrator:
 
     def run(self) -> None:
         """Main entry point — runs the full scan pipeline."""
+        import os
+
         logger.info("Starting scan %s on %s", self._scan_id, self._skills_dir)
 
-        # Check API key first if stage 2 is requested
-        if self._stage in ("2", "full"):
-            import os
+        # Stage 2 will always run: require API key up front
+        if self._stage in ("2", "full-llm"):
             api_key = os.environ.get(self._api_key_env)
             if not api_key:
                 logger.error(
@@ -101,6 +100,33 @@ class Orchestrator:
                 logger.info(
                     "Stage-1-only scan complete. Report at %s", self._output_dir)
                 return
+
+            if self._stage == "full":
+                needs_llm = any(
+                    r.stage1 and r.stage1.verdict != Verdict.CLEAN
+                    for r in stage1_results
+                )
+                if not needs_llm:
+                    logger.info(
+                        "Stage 2 skipped: all skills CLEAN in Stage 1. Report at %s",
+                        self._output_dir,
+                    )
+                    results = stage1_results
+                    summary = self._reporter.generate(self._scan_id, results)
+                    logger.info(
+                        "Scan complete. Malicious: %d, Suspicious: %d, Clean: %d. Report at %s",
+                        summary.malicious, summary.suspicious, summary.clean, self._output_dir,
+                    )
+                    return
+
+                api_key = os.environ.get(self._api_key_env)
+                if not api_key:
+                    logger.error(
+                        "%s not set. Stage 2 requires an API key for non-CLEAN skills. "
+                        "Use --stage 1 to run rules-only scan, or set the environment variable.",
+                        self._api_key_env,
+                    )
+                    return
 
             results = asyncio.run(self._run_stage2(stage1_results))
 
@@ -144,13 +170,15 @@ class Orchestrator:
             batch_size=self._batch_size,
         )
 
-        if self._stage in ("2", "full"):
-            # Stage 2-only or full mode: analyze all skills
+        if self._stage in ("2", "full-llm"):
             to_analyze = stage1_results
-        else:
-            # Other modes: only analyze SUSPICIOUS (non-CLEAN)
+        elif self._stage == "full":
             to_analyze = [
-                r for r in stage1_results if r.stage1.verdict == Verdict.SUSPICIOUS]
+                r for r in stage1_results
+                if r.stage1 and r.stage1.verdict != Verdict.CLEAN
+            ]
+        else:
+            to_analyze = []
 
         logger.info("Stage 2: analyzing %d skills with LLM", len(to_analyze))
 
@@ -202,7 +230,6 @@ class Orchestrator:
             completed = batch_start + len(batch)
             logger.info("Stage 2 progress: %d/%d, report updated", completed, len(to_analyze))
 
-        # Skills that were CLEAN in Stage 1 keep their verdict
         return stage1_results
 
     def _save_checkpoint(self, stage1_completed: int, stage2_completed: int, stage2_total: int) -> None:

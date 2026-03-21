@@ -110,13 +110,16 @@ poetry install
 ### As CLI
 
 ```bash
-# Full scan (Stage 1 + Stage 2 + Report)
+# Default: Stage 1 on all skills; Stage 2 (LLM) only for skills where Stage 1 is not CLEAN
 python -m scanner.cli --path ./skills/ --output ./report/
+
+# Stage 1 + LLM on every skill (previous default behavior; requires API key up front)
+python -m scanner.cli --path ./skills/ --stage full-llm
 
 # Stage 1 only (fast, no LLM cost)
 python -m scanner.cli --path ./skills/ --stage 1
 
-# Stage 2 only (LLM analysis for all skills)
+# Stage 2 only (LLM analysis for all skills; skips Stage 1 rule engine)
 python -m scanner.cli --path ./skills/ --stage 2
 
 # Custom LLM model and API endpoint
@@ -147,7 +150,7 @@ python -m scanner.cli --path ./skills/ -v
 |--------|---------|-------------|
 | `--path` | `./skills` | Directory containing skill files |
 | `--output` | `./report` | Report output directory |
-| `--stage` | `full` | `1` (rules only), `2` (LLM only), `full` |
+| `--stage` | `full` | `1` (rules only), `2` (LLM only), `full` (rules then LLM only if not CLEAN), `full-llm` (rules then LLM for every skill) |
 | `--severity` | `all` | Minimum severity: `critical`, `high`, `medium`, `all` |
 | `--format` | `both` | Output format: `json`, `md`, `both` |
 | `--batch-size` | `5` | Skills per LLM batch in Stage 2 |
@@ -159,6 +162,8 @@ python -m scanner.cli --path ./skills/ -v
 | `--log-level` | `INFO` | Logging level: `DEBUG`, `INFO`, `WARNING`, `ERROR` |
 | `--verbose` / `-v` | — | Shorthand for `--log-level DEBUG` |
 | `--report-all-skills` | — | Output per-skill report for every skill: skills with findings → `threats/`, clean skills → `clean/` (default: only skills with findings get `threats/<id>.json`) |
+
+**`--stage` behavior change:** Older releases treated `full` as “run LLM on every skill.” The default `full` now runs Stage 2 only when Stage 1 is not `CLEAN`. To restore the old behavior, use `--stage full-llm` (or set `scan.stage: full-llm` in the worker config).
 
 ## Output
 
@@ -243,7 +248,7 @@ Key sections in `config.yaml`:
 | `mongodb` | `database` | Database name |
 | `mongodb` | `tasks_collection` | Collection for task status tracking |
 | `mongodb` | `reports_collection` | Collection for scan reports |
-| `scan` | `stage` | `full`, `1`, or `2` |
+| `scan` | `stage` | `full` (conditional LLM), `full-llm` (LLM on every skill), `1`, or `2` |
 | `scan` | `model`, `api_base`, `api_key_env` | LLM settings for Stage 2 |
 
 ### Start a Worker
