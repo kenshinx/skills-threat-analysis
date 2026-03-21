@@ -9,6 +9,7 @@ import zipfile
 from pathlib import Path
 from typing import Generator
 
+from scanner.excluded_dirs import load_excluded_patterns, path_has_excluded_component
 from scanner.models import SkillFile, SkillFileSegment
 
 logger = logging.getLogger(__name__)
@@ -58,6 +59,8 @@ def _collect_file_hashes(root_dir: Path) -> tuple[dict[str, str], dict[str, str]
         try:
             data = p.read_bytes()
             rel = p.relative_to(root_dir).as_posix()
+            if path_has_excluded_component(rel, load_excluded_patterns()):
+                continue
             m, s = _hash_bytes(data)
             md5s[rel] = m
             sha1s[rel] = s
@@ -162,6 +165,8 @@ def _collect_auxiliary_segments(
         try:
             file_size = path.stat().st_size
             rel = path.relative_to(skill_dir).as_posix()
+            if path_has_excluded_component(rel, load_excluded_patterns()):
+                continue
             if total_bytes + file_size > _MAX_TOTAL_SCAN_BYTES:
                 logger.warning(
                     "Total scan limit (%d MB) reached, skipping %s",

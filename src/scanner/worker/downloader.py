@@ -21,6 +21,7 @@ from scanner.loader import (
     _segments_to_combined_content,
     detect_source,
 )
+from scanner.excluded_dirs import load_excluded_patterns, path_has_excluded_component
 from scanner.models import SkillFile, SkillFileSegment
 
 logger = logging.getLogger(__name__)
@@ -158,11 +159,14 @@ def _collect_all_segments(directory: Path) -> list[SkillFileSegment]:
     Paths are relative to *directory* so they match files_sha1s keys.
     """
     segments: list[SkillFileSegment] = []
+    excluded = load_excluded_patterns()
     for p in sorted(directory.rglob("*")):
         if p.is_file() and p.suffix.lower() in SUPPORTED_EXTENSIONS:
             try:
-                text = p.read_text(encoding="utf-8", errors="replace")
                 rel = p.relative_to(directory).as_posix()
+                if path_has_excluded_component(rel, excluded):
+                    continue
+                text = p.read_text(encoding="utf-8", errors="replace")
                 segments.append(SkillFileSegment(rel_path=rel, content=text))
             except OSError:
                 continue
@@ -172,9 +176,13 @@ def _collect_all_segments(directory: Path) -> list[SkillFileSegment]:
 def _collect_all_text(directory: Path) -> str:
     """Fallback: concatenate all supported text files in a directory."""
     parts: list[str] = []
+    excluded = load_excluded_patterns()
     for p in sorted(directory.rglob("*")):
         if p.is_file() and p.suffix.lower() in SUPPORTED_EXTENSIONS:
             try:
+                rel = p.relative_to(directory).as_posix()
+                if path_has_excluded_component(rel, excluded):
+                    continue
                 parts.append(p.read_text(encoding="utf-8", errors="replace"))
             except OSError:
                 continue
