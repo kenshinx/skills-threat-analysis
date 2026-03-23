@@ -327,11 +327,9 @@ def _parse_frontmatter(content: str) -> dict[str, Any]:
 def _resolve_entry_file_path(skill: SkillFile) -> str:
     """Return the relative path of the skill's entry file for use in findings location.
 
-    Always includes the skill directory name as a prefix so the path reads as
-    ``<skill-dir>/<file>``, e.g. ``x-twitter2/SKILL.md``.
+    Returns a path relative to skill_dir so it matches keys in files_sha1s/files_md5s,
+    e.g. ``SKILL.md`` or ``!security-clawsight/SKILL.md`` for multi-skill ZIPs.
     """
-    dir_name = Path(skill.skill_dir).name if skill.skill_dir else ""
-
     if skill.entry_file:
         rel = skill.entry_file
     else:
@@ -347,8 +345,6 @@ def _resolve_entry_file_path(skill: SkillFile) -> str:
         else:
             rel = Path(fp).name
 
-    if dir_name and not rel.startswith(dir_name + "/"):
-        return f"{dir_name}/{rel}"
     return rel
 
 
@@ -365,6 +361,58 @@ class Reporter:
         self._write_threat_reports(results, scan_id)
         self._write_summary_json(summary)
         self._write_summary_md(summary, results)
+        return summary
+
+    def generate_reports(
+        self,
+        scan_id: str,
+        results: list[ScanResult],
+        reports_dir: Path,
+    ) -> ScanSummary:
+        """Write all per-skill reports to a flat *reports_dir/* directory.
+
+        Unlike ``generate()``, which separates findings into ``threats/`` and
+        ``clean/``, this method writes every skill's report into the single
+        *reports_dir* folder regardless of verdict.  ``summary.json`` and
+        ``summary.md`` are written to the Reporter's output directory as usual.
+        """
+        summary = self._build_summary(scan_id, results)
+        reports_dir.mkdir(parents=True, exist_ok=True)
+        for r in results:
+            report = self._build_skill_report(r, scan_id)
+            (reports_dir / f"{r.skill.id}.json").write_text(
+                json.dumps(report, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+        self._write_summary_json(summary)
+        self._write_summary_md(summary, results)
+        return summary
+
+    def write_batch(
+        self,
+        scan_id: str,
+        batch_results: list[ScanResult],
+        all_results: list[ScanResult],
+        reports_dir: Path,
+    ) -> ScanSummary:
+        """Incrementally write per-skill reports for *batch_results* only.
+
+        Used by the batch CLI to write reports as each Stage 2 batch (or the
+        Stage 1-only group) completes, rather than rewriting everything each time.
+        ``summary.json`` and ``summary.md`` are always rewritten based on the
+        current state of *all_results* (which may include skills still awaiting
+        Stage 2).
+        """
+        reports_dir.mkdir(parents=True, exist_ok=True)
+        for r in batch_results:
+            report = self._build_skill_report(r, scan_id)
+            (reports_dir / f"{r.skill.id}.json").write_text(
+                json.dumps(report, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+        summary = self._build_summary(scan_id, all_results)
+        self._write_summary_json(summary)
+        self._write_summary_md(summary, all_results)
         return summary
 
     def build_skill_report(self, result: ScanResult, scan_id: str) -> dict[str, Any]:
@@ -413,15 +461,33 @@ class Reporter:
         findings: list[dict[str, Any]] = []
         entry_file_path = _resolve_entry_file_path(r.skill)
 
+        # Build per-file content map for accurate line-number resolution.
+        # Keys are rel_path values matching RuleMatch.source_file.
+        seg_content_map: dict[str, str] = {
+            s.rel_path: s.content for s in r.skill.files
+        } if r.skill.files else {}
+
         # --- Static findings (Stage 1) ---
         if r.stage1 and r.stage1.matched_rules:
             for m in r.stage1.matched_rules:
-                line_no = _offset_to_line(content, m.position[0])
-                snippet = _get_snippet(content, m.position[0], m.position[1])
+                # Resolve the actual source file content and path.
+                # file_rel is relative to skill_dir, matching files_sha1s keys.
+                if m.source_file and m.source_file in seg_content_map:
+                    seg_content = seg_content_map[m.source_file]
+                    file_rel = m.source_file
+                else:
+                    # Fallback: combined content (legacy path, source_file not set)
+                    seg_content = content
+                    file_rel = r.skill.entry_file or entry_file_path
+
+                actual_file_path = file_rel
+
+                line_no = _offset_to_line(seg_content, m.position[0])
+                snippet = _get_snippet(seg_content, m.position[0], m.position[1])
                 ctx_before, ctx_after = _get_context(
-                    content, m.position[0], m.position[1])
+                    seg_content, m.position[0], m.position[1])
                 category = _RULE_CATEGORY_MAP.get(m.rule_name, m.rule_name)
-                fid = _make_finding_id(m.rule_id, entry_file_path, line_no)
+                fid = _make_finding_id(m.rule_id, actual_file_path, line_no)
 
                 rule_name_zh = _RULE_NAME_ZH.get(m.rule_name, m.rule_name)
                 matched_preview = m.matched_text[:120].replace("\n", " ")
@@ -433,17 +499,17 @@ class Reporter:
                     "severity": _SEVERITY_LABEL[m.severity],
                     "title": f"规则匹配: {m.rule_id} ({rule_name_zh}) — {matched_preview}",
                     "description": (
-                        f"在 {entry_file_path} 第 {line_no} 行检测到{rule_name_zh}类型的可疑模式。\n\n"
+                        f"在 {actual_file_path} 第 {line_no} 行检测到{rule_name_zh}类型的可疑模式。\n\n"
                         f"匹配内容：{m.matched_text[:400]}"
                     ),
                     "title_en": f"Rule Match: {m.rule_id} ({m.rule_name}) — {matched_preview}",
                     "description_en": (
                         f"Detected suspicious pattern of type {m.rule_name} "
-                        f"at {entry_file_path} line {line_no}.\n\n"
+                        f"at {actual_file_path} line {line_no}.\n\n"
                         f"Matched content: {m.matched_text[:400]}"
                     ),
                     "location": {
-                        "file_path": entry_file_path,
+                        "file_path": actual_file_path,
                         "line_number": line_no,
                         "line_end": None,
                         "column_start": None,
@@ -581,7 +647,16 @@ class Reporter:
         analyzers_used = list(analyzer_results.keys())
 
         meta = _parse_frontmatter(r.skill.content)
-        skill_name = meta.get("name") or r.skill.name or r.skill.id
+        raw_name = meta.get("name")
+        if raw_name:
+            skill_name = raw_name
+            skill_metadata_name = raw_name
+        else:
+            # 当 SKILL.md 缺少规范的 frontmatter（没有 name 等字段）时：
+            # - skill_name 统一设置为 "skill"，用于对外展示一个通用名称；
+            # - skill_metadata.name 保持为空字符串，避免误导下游以为有有效的技能名。
+            skill_name = "skill"
+            skill_metadata_name = ""
 
         version_val = meta.get("version", "")
         if not version_val and isinstance(meta.get("metadata"), dict):
@@ -599,7 +674,7 @@ class Reporter:
             "findings": findings,
             "analyzer_results": analyzer_results,
             "skill_metadata": {
-                "name": skill_name,
+                "name": skill_metadata_name,
                 "description": meta.get("description", ""),
                 "allowed_tools": [],
                 "trigger_description": meta.get("trigger", ""),

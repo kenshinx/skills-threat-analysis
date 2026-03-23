@@ -1,0 +1,199 @@
+schema_version: '1.0'
+categories:
+  build: 构建 / 输出
+  go: Go
+  ide: IDE / 编辑器
+  infra: 基础设施工具
+  jvm: Java / Kotlin / Gradle
+  node_js: Node / JavaScript
+  os_artifact: OS 工件
+  other: ''
+  python: Python
+  ruby: Ruby
+  rust: Rust
+  vcs: 版本控制
+rules:
+- pattern: dist
+  category: build
+  description: 通用构建输出目录
+  enabled: false
+- pattern: build
+  category: build
+  description: 通用构建输出目录
+  enabled: false
+- pattern: .next
+  category: build
+  description: Next.js 构建输出
+  enabled: false
+- pattern: .nuxt
+  category: build
+  description: Nuxt.js 构建输出
+  enabled: false
+- pattern: .output
+  category: build
+  description: Nitro/Nuxt 输出目录
+  enabled: false
+- pattern: .turbo
+  category: build
+  description: Turborepo 缓存
+  enabled: true
+- pattern: .parcel-cache
+  category: build
+  description: Parcel 打包缓存
+  enabled: true
+- pattern: .cache
+  category: build
+  description: 通用缓存目录
+  enabled: true
+- pattern: .go
+  category: go
+  description: GOPATH 本地缓存
+  enabled: true
+- pattern: .idea
+  category: ide
+  description: JetBrains IDE 配置
+  enabled: true
+- pattern: .vscode
+  category: ide
+  description: VS Code 工作区配置
+  enabled: true
+- pattern: .vs
+  category: ide
+  description: Visual Studio 配置
+  enabled: true
+- pattern: .eclipse
+  category: ide
+  description: Eclipse 配置
+  enabled: true
+- pattern: .settings
+  category: ide
+  description: Eclipse 项目配置
+  enabled: true
+- pattern: .terraform
+  category: infra
+  description: Terraform 提供者缓存与状态
+  enabled: true
+- pattern: .serverless
+  category: infra
+  description: Serverless Framework 部署缓存
+  enabled: true
+- pattern: .aws-sam
+  category: infra
+  description: AWS SAM 本地构建缓存
+  enabled: true
+- pattern: .vagrant
+  category: infra
+  description: Vagrant 虚拟机元数据
+  enabled: true
+- pattern: .docker
+  category: infra
+  description: Docker CLI 配置缓存
+  enabled: true
+- pattern: .gradle
+  category: jvm
+  description: Gradle 构建缓存
+  enabled: true
+- pattern: .m2
+  category: jvm
+  description: Maven 本地仓库缓存
+  enabled: true
+- pattern: node_modules
+  category: node_js
+  description: npm/yarn/pnpm 依赖目录
+  enabled: true
+- pattern: .npm
+  category: node_js
+  description: npm 本地缓存
+  enabled: true
+- pattern: .yarn
+  category: node_js
+  description: Yarn Berry PnP 缓存
+  enabled: true
+- pattern: .pnpm-store
+  category: node_js
+  description: pnpm 全局内容寻址存储
+  enabled: true
+- pattern: bower_components
+  category: node_js
+  description: Bower 前端包目录 (legacy)
+  enabled: true
+- pattern: __MACOSX
+  category: os_artifact
+  description: macOS ZIP 压缩自动生成的资源 fork 目录
+  enabled: true
+- pattern: .DS_Store
+  category: os_artifact
+  description: macOS Finder 元数据 (偶尔以目录形式出现)
+  enabled: true
+- pattern: Thumbs.db
+  category: os_artifact
+  description: Windows 缩略图缓存 (偶尔以目录形式出现)
+  enabled: true
+- pattern: ooxml
+  category: other
+  description: 静态资源
+  enabled: true
+- pattern: canvas-fonts
+  category: other
+  description: 静态资源
+  enabled: true
+- pattern: venv
+  category: python
+  description: Python 虚拟环境 (venv)
+  enabled: true
+- pattern: .venv
+  category: python
+  description: Python 虚拟环境 (.venv)
+  enabled: true
+- pattern: __pycache__
+  category: python
+  description: Python 字节码缓存目录
+  enabled: true
+- pattern: .eggs
+  category: python
+  description: Python setuptools egg 缓存
+  enabled: true
+- pattern: .tox
+  category: python
+  description: tox 测试虚拟环境
+  enabled: true
+- pattern: .nox
+  category: python
+  description: nox 测试虚拟环境
+  enabled: true
+- pattern: .mypy_cache
+  category: python
+  description: mypy 类型检查缓存
+  enabled: true
+- pattern: .pytest_cache
+  category: python
+  description: pytest 缓存
+  enabled: true
+- pattern: .ruff_cache
+  category: python
+  description: ruff linter 缓存
+  enabled: true
+- pattern: .pytype
+  category: python
+  description: pytype 类型检查缓存
+  enabled: true
+- pattern: .bundle
+  category: ruby
+  description: Bundler gem 缓存
+  enabled: true
+- pattern: target
+  category: rust
+  description: Cargo 编译输出目录
+  enabled: false
+- pattern: .git
+  category: vcs
+  description: Git 仓库元数据
+  enabled: true
+- pattern: .svn
+  category: vcs
+  description: Subversion 工作副本元数据
+  enabled: true
+- pattern: .hg
+  category: vcs
+  description: Mercurial 仓库元数据
+  enabled: true

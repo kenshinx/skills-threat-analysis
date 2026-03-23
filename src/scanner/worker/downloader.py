@@ -13,14 +13,16 @@ import requests
 
 from scanner.loader import (
     SUPPORTED_EXTENSIONS,
-    _collect_auxiliary_content,
+    _collect_auxiliary_segments,
     _collect_file_hashes,
     _find_entry_file,
     _hash_bytes,
     _normalize_zip_root,
+    _segments_to_combined_content,
     detect_source,
 )
-from scanner.models import SkillFile
+from scanner.excluded_dirs import load_excluded_patterns, path_has_excluded_component
+from scanner.models import SkillFile, SkillFileSegment
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +74,7 @@ def download_and_load(url: str, *, timeout: int = _DOWNLOAD_TIMEOUT) -> SkillFil
 def _load_from_zip(archive_path: Path, url: str) -> SkillFile:
     """Extract a ZIP and build a SkillFile from its contents."""
     extract_dir = archive_path.parent / "extracted"
-    extract_dir.mkdir()
+    extract_dir.mkdir(exist_ok=True)
 
     with zipfile.ZipFile(archive_path, "r") as zf:
         zf.extractall(extract_dir)
@@ -82,26 +84,30 @@ def _load_from_zip(archive_path: Path, url: str) -> SkillFile:
     entry = _find_entry_file(skill_root)
 
     filename = _filename_from_url(url)
-    if entry is None:
-        all_files = _collect_all_text(extract_dir)
-        if not all_files:
-            raise ValueError(f"No readable skill content found in archive from {url}")
-        content = all_files
-        file_path = url
-        entry_file = filename
-    else:
-        content = entry.read_text(encoding="utf-8", errors="replace")
-        aux = _collect_auxiliary_content(skill_root, entry)
-        if aux:
-            content += aux
-        file_path = entry.name
-        entry_file = entry.relative_to(skill_root).as_posix()
-
     source = detect_source(Path(filename))
     skill_id = _generate_skill_id(filename, url)
-
     file_md5s, file_sha1s = _collect_file_hashes(skill_root)
     pkg_md5, pkg_sha1 = _hash_bytes(archive_path.read_bytes())
+
+    if entry is None:
+        # No SKILL.md found — collect every supported text file as individual segments.
+        seg_list = _collect_all_segments(skill_root)
+        if not seg_list:
+            raise ValueError(f"No readable skill content found in archive from {url}")
+        content = "\n".join(s.content for s in seg_list)
+        file_path = url
+        entry_file = seg_list[0].rel_path   # first real file (e.g. "890.a7dd5365.js")
+        files: list[SkillFileSegment] = seg_list
+    else:
+        entry_content = entry.read_text(encoding="utf-8", errors="replace")
+        aux_segments = _collect_auxiliary_segments(skill_root, entry)
+        content = _segments_to_combined_content(entry_content, aux_segments)
+        file_path = entry.name
+        # Fix A: relative to skill_root (not extract_dir) so the path matches
+        # files_sha1s keys and does not include the unwrapped top-level directory.
+        entry_file = entry.relative_to(skill_root).as_posix()
+        entry_seg = SkillFileSegment(rel_path=entry_file, content=entry_content, is_entry=True)
+        files = [entry_seg] + aux_segments
 
     return SkillFile(
         id=skill_id,
@@ -116,6 +122,7 @@ def _load_from_zip(archive_path: Path, url: str) -> SkillFile:
         file_sha1s=file_sha1s,
         package_md5=pkg_md5,
         package_sha1=pkg_sha1,
+        files=files,
     )
 
 
@@ -141,15 +148,41 @@ def _load_single_file(file_path: Path, url: str) -> SkillFile:
         skill_dir="",
         file_md5s={rel: m},
         file_sha1s={rel: s},
+        files=[SkillFileSegment(rel_path=rel, content=content, is_entry=True)],
     )
+
+
+def _collect_all_segments(directory: Path) -> list[SkillFileSegment]:
+    """Fallback: collect all supported text files as individual SkillFileSegments.
+
+    Used when a ZIP archive contains no SKILL.md entry file.
+    Paths are relative to *directory* so they match files_sha1s keys.
+    """
+    segments: list[SkillFileSegment] = []
+    excluded = load_excluded_patterns()
+    for p in sorted(directory.rglob("*")):
+        if p.is_file() and p.suffix.lower() in SUPPORTED_EXTENSIONS:
+            try:
+                rel = p.relative_to(directory).as_posix()
+                if path_has_excluded_component(rel, excluded):
+                    continue
+                text = p.read_text(encoding="utf-8", errors="replace")
+                segments.append(SkillFileSegment(rel_path=rel, content=text))
+            except OSError:
+                continue
+    return segments
 
 
 def _collect_all_text(directory: Path) -> str:
     """Fallback: concatenate all supported text files in a directory."""
     parts: list[str] = []
+    excluded = load_excluded_patterns()
     for p in sorted(directory.rglob("*")):
         if p.is_file() and p.suffix.lower() in SUPPORTED_EXTENSIONS:
             try:
+                rel = p.relative_to(directory).as_posix()
+                if path_has_excluded_component(rel, excluded):
+                    continue
                 parts.append(p.read_text(encoding="utf-8", errors="replace"))
             except OSError:
                 continue

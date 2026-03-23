@@ -83,7 +83,11 @@ class TaskRunner:
 
     def _scan(self, skill, enable_llm: bool) -> ScanResult:
         """Run Stage 1 (+ optional Stage 2) on a single skill."""
-        stage1 = self._rule_engine.scan(skill.content)
+        stage1 = (
+            self._rule_engine.scan_files(skill.files)
+            if skill.files
+            else self._rule_engine.scan(skill.content)
+        )
         result = ScanResult(
             skill=skill,
             stage1=stage1,
@@ -92,11 +96,17 @@ class TaskRunner:
         logger.info("Task stage1: verdict=%s, %d rules matched",
                      stage1.verdict.value, len(stage1.matched_rules))
 
-        need_stage2 = (
-            enable_llm
-            and self._config.stage in ("full", "2")
-            and stage1.verdict == Verdict.SUSPICIOUS
-        )
+        st = self._config.stage
+        if st == "1":
+            want_stage2 = False
+        elif st in ("full-llm", "2"):
+            want_stage2 = True
+        elif st == "full":
+            want_stage2 = stage1.verdict != Verdict.CLEAN
+        else:
+            want_stage2 = False
+
+        need_stage2 = enable_llm and want_stage2
 
         if need_stage2:
             api_key = self._config.api_key or os.environ.get(self._config.api_key_env)

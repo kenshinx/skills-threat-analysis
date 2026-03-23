@@ -110,13 +110,16 @@ poetry install
 ### As CLI
 
 ```bash
-# Full scan (Stage 1 + Stage 2 + Report)
+# Default: Stage 1 on all skills; Stage 2 (LLM) only for skills where Stage 1 is not CLEAN
 python -m scanner.cli --path ./skills/ --output ./report/
+
+# Stage 1 + LLM on every skill (previous default behavior; requires API key up front)
+python -m scanner.cli --path ./skills/ --stage full-llm
 
 # Stage 1 only (fast, no LLM cost)
 python -m scanner.cli --path ./skills/ --stage 1
 
-# Stage 2 only (LLM analysis for all skills)
+# Stage 2 only (LLM analysis for all skills; skips Stage 1 rule engine)
 python -m scanner.cli --path ./skills/ --stage 2
 
 # Custom LLM model and API endpoint
@@ -147,7 +150,7 @@ python -m scanner.cli --path ./skills/ -v
 |--------|---------|-------------|
 | `--path` | `./skills` | Directory containing skill files |
 | `--output` | `./report` | Report output directory |
-| `--stage` | `full` | `1` (rules only), `2` (LLM only), `full` |
+| `--stage` | `full` | `1` (rules only), `2` (LLM only), `full` (rules then LLM only if not CLEAN), `full-llm` (rules then LLM for every skill) |
 | `--severity` | `all` | Minimum severity: `critical`, `high`, `medium`, `all` |
 | `--format` | `both` | Output format: `json`, `md`, `both` |
 | `--batch-size` | `5` | Skills per LLM batch in Stage 2 |
@@ -159,6 +162,8 @@ python -m scanner.cli --path ./skills/ -v
 | `--log-level` | `INFO` | Logging level: `DEBUG`, `INFO`, `WARNING`, `ERROR` |
 | `--verbose` / `-v` | — | Shorthand for `--log-level DEBUG` |
 | `--report-all-skills` | — | Output per-skill report for every skill: skills with findings → `threats/`, clean skills → `clean/` (default: only skills with findings get `threats/<id>.json`) |
+
+**`--stage` behavior change:** Older releases treated `full` as “run LLM on every skill.” The default `full` now runs Stage 2 only when Stage 1 is not `CLEAN`. To restore the old behavior, use `--stage full-llm` (or set `scan.stage: full-llm` in the worker config).
 
 ## Output
 
@@ -200,9 +205,64 @@ By default, only skills that have stage1/stage2 findings or a non-clean verdict 
 
 ## Worker Mode (RabbitMQ + MongoDB)
 
-In addition to the CLI batch mode, the scanner can run as a **long-lived worker** that consumes scan tasks from RabbitMQ and writes reports to MongoDB.
+In addition to the CLI batch mode, the scanner ships two lightweight local commands for scanning skills directly from ZIP files on disk — no RabbitMQ or MongoDB required.
 
-### Architecture
+### Local Batch Scan
+
+#### Single-ZIP scan (`scan-worker-zip`)
+
+Scan one ZIP file and print a QAX-format JSON report to stdout. Useful for quick debugging.
+
+```bash
+# Stage 1 only (rules, no LLM)
+scan-worker-zip --zip ./skills/foo.zip --config config.yaml
+
+# Stage 1 + Stage 2 LLM (reads scan.* settings from config.yaml)
+scan-worker-zip --zip ./skills/foo.zip --config config.yaml --enable-llm
+```
+
+#### Batch scan (`scan-worker-batch`)
+
+Recursively scan **all ZIP files** under a directory and write structured reports to an output directory.  Stage 1 runs on every ZIP first; Stage 2 LLM is batched across all skills using `scan.batch_size` and `scan.concurrency` from `config.yaml` (same logic as `scan-skills`).
+
+```bash
+# Stage 1 only
+scan-worker-batch --path ./skills-store/ --output ./batch-report/ --config config.yaml
+
+# Stage 1 + Stage 2 LLM
+scan-worker-batch --path ./skills-store/ --output ./batch-report/ --config config.yaml --enable-llm
+
+# Change log verbosity
+scan-worker-batch --path ./skills-store/ --output ./batch-report/ --log-level DEBUG
+```
+
+#### Parameters
+
+| Option | Command | Default | Description |
+|--------|---------|---------|-------------|
+| `--config` | both | `config.yaml` | Worker config YAML; reads `scan.*` section for stage, model, api_key, api_base, batch_size, concurrency |
+| `--zip` | `scan-worker-zip` | — | Path to a single ZIP file |
+| `--path` | `scan-worker-batch` | — | Directory to search recursively for `.zip` files |
+| `--output` | `scan-worker-batch` | — | Output directory for reports |
+| `--enable-llm` | both | off | Enable Stage 2 LLM analysis |
+| `--log-level` | both | `INFO` | `DEBUG`, `INFO`, `WARNING`, `ERROR` |
+
+#### Batch scan output
+
+```
+<output>/
+├── summary.json        # Machine-readable scan summary
+├── summary.md          # Human-readable summary with tables
+└── reports/
+    ├── {skill-id}.json # Per-skill QAX report (all skills, regardless of verdict)
+    └── ...
+```
+
+`skill_path` in every report is the ZIP file's absolute path with the home directory prefix stripped (e.g. `skills-store/author/foo.zip`).
+
+---
+
+### RabbitMQ Worker Architecture
 
 ```
 RabbitMQ Queue ──► Consumer (main thread: IO + heartbeat)
@@ -243,7 +303,7 @@ Key sections in `config.yaml`:
 | `mongodb` | `database` | Database name |
 | `mongodb` | `tasks_collection` | Collection for task status tracking |
 | `mongodb` | `reports_collection` | Collection for scan reports |
-| `scan` | `stage` | `full`, `1`, or `2` |
+| `scan` | `stage` | `full` (conditional LLM), `full-llm` (LLM on every skill), `1`, or `2` |
 | `scan` | `model`, `api_base`, `api_key_env` | LLM settings for Stage 2 |
 
 ### Start a Worker
@@ -406,7 +466,8 @@ src/scanner/
 ├── stage3/
 │   └── reporter.py     # JSON + Markdown report generator (QAX schema)
 └── worker/
-    ├── cli.py          # Worker CLI entry point
+    ├── cli.py          # Worker CLI entry point (scan-worker, RabbitMQ mode)
+    ├── local_cli.py    # Local CLI entry points (scan-worker-zip / scan-worker-batch)
     ├── config.py       # YAML config loader
     ├── consumer.py     # RabbitMQ consumer (dual-thread architecture)
     ├── task_runner.py   # Single-task scan pipeline

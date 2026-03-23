@@ -60,6 +60,14 @@ ThreatType = ThreatCategory
 
 
 @dataclass
+class SkillFileSegment:
+    """A single file within a skill package, used for per-file scanning."""
+    rel_path: str    # Relative path within skill_dir, e.g. "SKILL.md" or "scripts/run.js"
+    content: str
+    is_entry: bool = False
+
+
+@dataclass
 class SkillFile:
     id: str
     source: str
@@ -73,6 +81,8 @@ class SkillFile:
     file_sha1s: dict[str, str] = field(default_factory=dict)
     package_md5: str = ""
     package_sha1: str = ""
+    # Per-file segments for Stage 1 per-file scanning (populated by loader)
+    files: list[SkillFileSegment] = field(default_factory=list)
 
 
 @dataclass
@@ -82,7 +92,8 @@ class RuleMatch:
     severity: Severity
     matched_text: str
     position: tuple[int, int]
-    pattern: str = ""  # Original regex pattern string
+    pattern: str = ""        # Original regex pattern string
+    source_file: str = ""    # rel_path of the file where match was found
 
 
 @dataclass

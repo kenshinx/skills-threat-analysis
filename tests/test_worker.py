@@ -282,6 +282,164 @@ class TestTaskRunner:
                       if c[0][1] == "completed"]
         assert len(final_call) == 1
 
+    @patch("scanner.worker.task_runner.SemanticAnalyzer")
+    def test_stage2_runs_for_clean_skill_in_full_llm_mode(self, MockAnalyzer):
+        """In stage='full-llm', CLEAN skills still go through Stage 2."""
+        from scanner.worker.task_runner import TaskRunner
+
+        # Arrange: runner in full-llm mode with enable_llm=True
+        config = ScanConfig(stage="full-llm", api_key_env="ARK_API_KEY", api_key="dummy")
+        mongo = MagicMock()
+        runner = TaskRunner(config, mongo)
+
+        # Fake a CLEAN stage1 result by monkeypatching RuleEngine.scan
+        clean_stage1 = Stage1Result(verdict=Verdict.CLEAN, matched_rules=[], duration_ms=1)
+        runner._rule_engine.scan = MagicMock(return_value=clean_stage1)
+
+        # Configure SemanticAnalyzer mock
+        mock_analyzer = MockAnalyzer.return_value
+        mock_s2 = Stage2Result(
+            verdict=Verdict.CLEAN,
+            status=AnalyzerStatus.SUCCESS,
+            confidence=0.9,
+            details={},
+        )
+        mock_analyzer.analyze_batch.return_value = [mock_s2]
+
+        skill = SkillFile(
+            id="test-skill",
+            source="unknown",
+            file_path="test.md",
+            content="This is a perfectly clean skill.",
+            size_bytes=30,
+        )
+
+        # Act
+        result = runner._scan(skill, enable_llm=True)
+
+        # Assert: Stage 2 should have been invoked once
+        mock_analyzer.analyze_batch.assert_called_once()
+        assert result.stage2 is mock_s2
+
+    @patch("scanner.worker.task_runner.SemanticAnalyzer")
+    def test_stage2_skipped_for_clean_skill_in_full_mode(self, MockAnalyzer):
+        """In stage='full', CLEAN Stage 1 verdict skips Stage 2."""
+        from scanner.worker.task_runner import TaskRunner
+
+        config = ScanConfig(stage="full", api_key_env="ARK_API_KEY", api_key="dummy")
+        mongo = MagicMock()
+        runner = TaskRunner(config, mongo)
+
+        clean_stage1 = Stage1Result(verdict=Verdict.CLEAN, matched_rules=[], duration_ms=1)
+        runner._rule_engine.scan = MagicMock(return_value=clean_stage1)
+
+        skill = SkillFile(
+            id="test-skill",
+            source="unknown",
+            file_path="test.md",
+            content="This is a perfectly clean skill.",
+            size_bytes=30,
+        )
+
+        result = runner._scan(skill, enable_llm=True)
+
+        MockAnalyzer.assert_not_called()
+        assert result.stage2 is None
+
+    @patch("scanner.worker.task_runner.SemanticAnalyzer")
+    def test_stage2_runs_for_non_clean_skill_in_full_mode(self, MockAnalyzer):
+        """In stage='full', non-CLEAN Stage 1 verdict runs Stage 2."""
+        from scanner.worker.task_runner import TaskRunner
+
+        config = ScanConfig(stage="full", api_key_env="ARK_API_KEY", api_key="dummy")
+        mongo = MagicMock()
+        runner = TaskRunner(config, mongo)
+
+        stage1 = Stage1Result(verdict=Verdict.SUSPICIOUS, matched_rules=[], duration_ms=1)
+        runner._rule_engine.scan = MagicMock(return_value=stage1)
+
+        mock_analyzer = MockAnalyzer.return_value
+        mock_s2 = Stage2Result(
+            verdict=Verdict.SUSPICIOUS,
+            status=AnalyzerStatus.SUCCESS,
+            confidence=0.85,
+            details={},
+        )
+        mock_analyzer.analyze_batch.return_value = [mock_s2]
+
+        skill = SkillFile(
+            id="test-skill",
+            source="unknown",
+            file_path="test.md",
+            content="suspicious content",
+            size_bytes=30,
+        )
+
+        result = runner._scan(skill, enable_llm=True)
+
+        mock_analyzer.analyze_batch.assert_called_once()
+        assert result.stage2 is mock_s2
+
+    @patch("scanner.worker.task_runner.SemanticAnalyzer")
+    def test_stage2_not_run_when_stage1_only(self, MockAnalyzer):
+        """When stage='1', Stage 2 must never run even if enable_llm is True."""
+        from scanner.worker.task_runner import TaskRunner
+
+        config = ScanConfig(stage="1", api_key_env="ARK_API_KEY", api_key="dummy")
+        mongo = MagicMock()
+        runner = TaskRunner(config, mongo)
+
+        stage1 = Stage1Result(verdict=Verdict.SUSPICIOUS, matched_rules=[], duration_ms=1)
+        runner._rule_engine.scan = MagicMock(return_value=stage1)
+
+        skill = SkillFile(
+            id="test-skill",
+            source="unknown",
+            file_path="test.md",
+            content="suspicious content",
+            size_bytes=30,
+        )
+
+        result = runner._scan(skill, enable_llm=True)
+
+        MockAnalyzer.assert_not_called()
+        assert result.stage2 is None
+
+    @patch("scanner.worker.task_runner.SemanticAnalyzer")
+    def test_stage2_runs_for_all_skills_in_stage2_mode(self, MockAnalyzer):
+        """When stage='2', every skill should go through Stage 2."""
+        from scanner.worker.task_runner import TaskRunner
+
+        config = ScanConfig(stage="2", api_key_env="ARK_API_KEY", api_key="dummy")
+        mongo = MagicMock()
+        runner = TaskRunner(config, mongo)
+
+        # Stage1 verdict shouldn't matter in stage='2' mode
+        stage1 = Stage1Result(verdict=Verdict.CLEAN, matched_rules=[], duration_ms=1)
+        runner._rule_engine.scan = MagicMock(return_value=stage1)
+
+        mock_analyzer = MockAnalyzer.return_value
+        mock_s2 = Stage2Result(
+            verdict=Verdict.SUSPICIOUS,
+            status=AnalyzerStatus.SUCCESS,
+            confidence=0.8,
+            details={},
+        )
+        mock_analyzer.analyze_batch.return_value = [mock_s2]
+
+        skill = SkillFile(
+            id="test-skill",
+            source="unknown",
+            file_path="test.md",
+            content="any content",
+            size_bytes=30,
+        )
+
+        result = runner._scan(skill, enable_llm=True)
+
+        mock_analyzer.analyze_batch.assert_called_once()
+        assert result.stage2 is mock_s2
+
     @patch("scanner.worker.task_runner.download_and_load")
     def test_execute_download_failure_raises(self, mock_download):
         runner, mongo = self._make_runner()
