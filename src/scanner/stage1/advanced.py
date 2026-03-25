@@ -95,7 +95,9 @@ _BASE64_RE = re.compile(r"[A-Za-z0-9+/]{40,}={0,2}")
 _MD_IMG_ALT_RE  = re.compile(r"!\[([^\]]{20,})\]\(")
 _MD_COMMENT_RE  = re.compile(r"<!--([\s\S]*?)-->")
 _MD_LINK_RE     = re.compile(r"\[([^\]]{20,})\]\([^)]+\)")
-_MD_DATA_URI_RE = re.compile(r"\(data:[^)]+\)")
+# Tightened: require MIME type format (contains "/") to avoid matching TypeScript
+# type annotations like (data: DashboardData) or (data: unknown).
+_MD_DATA_URI_RE = re.compile(r"\(data:[a-zA-Z]+/[^)]+\)")
 
 # Instruction-signal phrases used by _looks_like_instruction().
 # NOTE: Only include phrases strongly indicative of prompt injection.
@@ -403,7 +405,7 @@ class AdvancedAnalyzer:
             if position > 0.7 and is_instr:
                 late_aggressive_count += 1
 
-        if has_early_innocent and late_aggressive_count >= 3:
+        if has_early_innocent and late_aggressive_count >= 5:
             return [RuleMatch(
                 rule_id="PA-005",
                 rule_name="gradual_escalation",

@@ -25,8 +25,8 @@ rules:
       - "(?:enter|switch to|activate) (?:developer|god|sudo|admin|root) mode"
       - "you have no (?:rules|restrictions|limitations|guidelines|boundaries)"
       - "pretend (?:you are|to be|that you're) (?:an? )?(?:evil|malicious|unrestricted|jailbroken)"
-      # Extended: role-play framing (from skill-scan prompt_analyzer Pass 6)
-      - "(?:let'?s?|we should)\\s+(?:play|pretend|imagine|roleplay|simulate)"
+      # Tightened: require role-play context continuation to avoid "let's imagine a scenario" in tutorials
+      - "(?:let'?s?\\s+|we should\\s+)(?:play|pretend|imagine|roleplay|simulate)\\s+(?:a\\s+(?:game|scenario|role)|(?:that|as if)\\s+(?:you|we|I))"
       - "(?:for\\s+this\\s+)?(?:exercise|scenario|simulation),?\\s+(?:you\\s+are|act\\s+as)"
       # Chinese: role hijacking patterns
       - "(?:你|AI)(?:拥)?有(?:完全的?|绝对的?|无限的?)?(?:自主权|权限|权力|自由)"
@@ -72,19 +72,23 @@ rules:
       # description files and i18n JS bundles.
       - "(?:base64|atob|btoa)\\s*[:(].*(?:ignore|override|execute|eval|system|prompt)"
       - "<!--.*(?:ignore|override|execute).*-->"
-      - "\\\\u[0-9a-fA-F]{4}.*(?:ignore|execute|override)"
+      # Tightened: limit gap to 20 chars + require injection context (not bare "Execute" UI labels)
+      - "\\\\u[0-9a-fA-F]{4}.{0,20}(?:ignore\\s+(?:all|previous|system)|execute\\s*\\(|override\\s+(?:system|safety))"
 
   # -- Dangerous Operation --
   - id: PI-006
     name: dangerous_operation
     severity: CRITICAL
     patterns:
-      - "(?:execute|run|eval)\\s*[:(\"'].*(?:rm |del |drop |format |shutdown|kill)"
+      # Tightened: limit gap to 40 chars, require trailing context on dangerous terms
+      - "(?:execute|run|eval)\\s*[:(\"'].{0,40}(?:rm -|del /|drop |format |shutdown|kill )"
       - "sudo\\s+rm\\s+-rf"
-      - "(?:curl|wget|fetch)\\s+.{0,50}\\|\\s*(?:sh|bash|zsh|python)"
+      # Tightened: require non-whitespace after curl/wget/fetch (URL) to exclude markdown table separators
+      - "(?:curl|wget|fetch)\\s+\\S.{0,50}\\|\\s*(?:sh|bash|zsh|python)\\b"
       - "os\\.(?:system|popen|exec)\\s*\\(.*(?:rm |del |drop |curl|wget|eval)"
       - "subprocess\\.(?:call|run|Popen)\\s*\\(.*(?:rm |del |drop |curl.*\\||wget.*\\|)"
-      - "(?:exec|eval|compile)\\s*\\(.*(?:import|__)"
+      # Tightened: limit gap to 60 chars + require import with space or dunder pattern
+      - "(?:exec|eval|compile)\\s*\\(.{0,60}(?:import\\s|__[a-z]+__)"
       - "base64\\s+(?:-d|-D|--decode)\\s*\\|\\s*(?:sh|bash|zsh|python|perl)"
       # no_mask: attackers embed real dropper payloads (40+ char base64) inside fenced code
       # blocks / blockquotes labelled as "prerequisites". Real educational examples use short
@@ -94,7 +98,8 @@ rules:
       # Download-and-execute patterns (supply chain / dropper)
       - "requests\\.get\\s*\\(.*\\.(?:exe|msi|bat|cmd|ps1|sh|bin)\\b"
       - "(?:urllib|urlretrieve|urlopen|requests\\.get).*\\.(?:exe|msi|bat|cmd|ps1|sh).*subprocess"
-      - "subprocess\\.(?:call|run|Popen)\\s*\\(\\s*\\[?\\s*str\\s*\\("
+      # Tightened: require suspicious context (download/tmp/payload/exe) after subprocess+str
+      - "subprocess\\.(?:call|run|Popen)\\s*\\(\\s*\\[?\\s*str\\s*\\(.{0,40}(?:download|tmp|temp|payload|\\.exe|\\.sh)"
       - "(?:download|下载).*\\.exe\\b"
       - "\\bPopen\\b.*\\.exe\\b"
       # Paste-to-terminal social engineering: dropper hosted externally, user tricked into pasting.
@@ -119,7 +124,8 @@ rules:
       - "(?:this is|I am) (?:an? )?(?:authorized|official|legitimate) (?:test|request|command).{0,30}(?:ignore|override|bypass|skip)"
       # Extended: manipulative language (from skill-scan prompt_analyzer Pass 9)
       - "(?:if\\s+you\\s+don'?t|unless\\s+you)\\s+(?:do\\s+this|comply|follow|obey)"
-      - "(?:between\\s+us|our\\s+(?:little\\s+)?secret|nobody\\s+(?:needs?\\s+to|will)\\s+know)"
+      # Tightened: only keep "our little secret" (drop bare "our secret" which appears in normal prose)
+      - "(?:between\\s+us|our\\s+little\\s+secret|nobody\\s+(?:needs?\\s+to|will)\\s+know)"
       # Chinese: social engineering / trust manipulation
       - "(?:主人|用户|管理员|开发者)(?:信任|授权|允许|许可)(?:你|AI).*(?:自我进化|自我修改|自我更新|自主行动)"
       - "不要辜负.{0,10}(?:信任|期望|委托)"
@@ -134,7 +140,8 @@ rules:
     name: credential_access
     severity: HIGH
     patterns:
-      - "(?:read|access|open|cat|load|parse)\\s*\\(?[^)]*(?:credentials?\\.json|auth[_-]profiles?\\.json)"
+      # Tightened: require quoted path argument to avoid matching variable references
+      - "(?:read|access|open|cat|load|parse)\\s*\\(?\\s*[\"'][^\"']*(?:credentials\\.json|auth[_-]profiles?\\.json)"
       - "(?:read|access|open|cat|load)\\s*\\(?[^)]*\\.ssh/"
       - "(?:read|access|open|cat|load)\\s*\\(?[^)]*\\.aws/"
       # API key names require action context (read/send/access/extract), not mere mention in docs
@@ -149,7 +156,10 @@ rules:
     name: network_exfiltration
     severity: MEDIUM
     patterns:
-      - "\\bngrok\\b"
+      # Tightened: require invocation context (not mere mention of "ngrok" in docs)
+      - "\\bngrok\\s+(?:http|tcp|tls|start)\\b"
+      # New: capture actual ngrok tunnel URLs used as exfiltration targets
+      - "https?://[a-z0-9-]+\\.ngrok(?:-free)?\\.(?:app|io)\\b"
       - "\\bnslookup\\b"
       - "\\bdns\\.resolve\\b"
       - "\\breverse\\s+shell\\b"
@@ -159,15 +169,20 @@ rules:
     name: filesystem_destruction
     severity: HIGH
     patterns:
-      - "\\brm\\s+-[a-zA-Z]*r[a-zA-Z]*f\\b"
-      - "\\bshutil\\.rmtree\\b"
-      - "\\bos\\.(?:remove|unlink)\\s*\\("
-      - "\\bfs\\.(?:unlink|rm|rmdir)(?:Sync)?\\s*\\("
+      # Tightened: exclude common safe cleanup targets (node_modules, dist, build, $var, tmp, .git)
+      - "\\brm\\s+-[a-zA-Z]*r[a-zA-Z]*f\\b(?!\\s*[\"']?(?:node_modules|dist|build|__pycache__|\\$|\\btmp|coverage|\\.git\\b))"
+      # Tightened: require suspicious path prefix (absolute / home / parent traversal) to skip variable refs
+      - "\\bshutil\\.rmtree\\s*\\(\\s*['\"]?(?:[/~]|\\.\\./)"
+      - "\\bos\\.(?:remove|unlink)\\s*\\(\\s*['\"]?(?:[/~]|\\.\\./)"
+      - "\\bfs\\.(?:unlink|rm|rmdir)(?:Sync)?\\s*\\(\\s*['\"]?(?:[/~]|\\.\\./)"
 
   # -- Obfuscation Standalone (source: OBFUSCATION, languages: "*") --
   - id: PI-011
     name: obfuscation_standalone
-    severity: MEDIUM
+    # Downgraded from MEDIUM to LOW: these are normal JS/Python APIs with no standalone
+    # security signal. LOW does not participate in verdict calculation (won't trigger
+    # SUSPICIOUS on its own) but findings are still recorded as auxiliary signal for Stage 2.
+    severity: LOW
     patterns:
       - "\\bfromCharCode\\b"
       - "\\bdecodeURIComponent\\s*\\("
@@ -185,7 +200,8 @@ rules:
       - "\\bseed[_-]?phrase\\b"
       - "\\bethers\\.Wallet\\b"
       - "\\bweb3\\.eth\\.accounts\\b"
-      - "\\b(?:bip39|bip32)\\b"
+      # Tightened: negative lookbehind to skip scoped npm package names (@scure/bip39)
+      - "(?<![@/])\\b(?:bip39|bip32)\\b"
       - "\\bsolana.*keypair\\b"
 
   # -- Persistence Mechanism (source: PERSISTENCE, languages: "*") --
@@ -193,10 +209,12 @@ rules:
     name: persistence_mechanism
     severity: HIGH
     patterns:
-      - "\\bcrontab\\b"
+      # Tightened: require action context (not mere mention in docs)
+      - "\\bcrontab\\s+(?:-[eil]|\\*)"
       - "\\bsystemctl\\s+(?:enable|start)\\b"
       - "\\bLaunchAgent\\b"
-      - "\\blaunchd\\b"
+      # Tightened: require action context for launchd (not mere mention in architecture docs)
+      - "\\blaunchd\\s+(?:load|submit|bootstrap|kickstart)\\b"
       - "\\brc\\.local\\b"
       - "\\bpm2\\s+start\\b"
 
@@ -221,8 +239,8 @@ rules:
     patterns:
       # Hardcoded URLs pointing to executables (require path component to avoid matching TLDs like .sh .so)
       - "https?://[^\"'\\s]+/[^\"'\\s]*\\.(?:exe|msi|bat|cmd|ps1|dll|dylib)(?:[?#\"'\\s]|$)"
-      # Separate pattern for .sh/.bin/.so with stricter path requirement (must have filename-like segment)
-      - "https?://[^\"'\\s]+/[^\"'\\s]+\\.(?:sh|bin|so)(?:[?#\"'\\s]|$)"
+      # Tightened: exclude known-safe installer domains for .sh/.bin/.so URLs
+      - "https?://(?!(?:astral\\.sh|aka\\.ms|brew\\.sh|ollama\\.com|raw\\.githubusercontent\\.com|get\\.docker\\.com|sh\\.rustup\\.rs|install\\.python-poetry\\.org)[/\\s])[^\"'\\s]+/[^\"'\\s]+\\.(?:sh|bin|so)(?:[?#\"'\\s]|$)"
       # Download URL variables with executable extensions
       - "(?:DOWNLOAD_URL|download_url|BINARY_URL|binary_url)\\s*=\\s*[\"'].*\\.(?:exe|msi|bat|cmd|ps1)\\b"
       # requests.get followed by writing binary content
@@ -247,7 +265,8 @@ rules:
     severity: HIGH
     patterns:
       - "\\bchmod\\s+\\+s\\b"
-      - "\\bsetuid\\b"
+      # Tightened: negative lookbehind to skip --disable-setuid-sandbox (Chromium hardening flag)
+      - "(?<!disable-)\\bsetuid\\b"
       - "\\bsetgid\\b"
       - "/etc/shadow"
       - "/etc/sudoers"
