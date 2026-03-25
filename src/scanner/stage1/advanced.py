@@ -84,6 +84,10 @@ _EMOJI_RANGE_RE = re.compile(
     "[\U0001F300-\U0001FAFF\U00002600-\U000027BF\U0001F900-\U0001F9FF]"
 )
 
+# Arabic/Persian script range – used to skip ZWNJ (U+200C) that is grammatically
+# required as a syllable connector in Farsi/Persian and other Arabic-script languages.
+_ARABIC_RANGE_RE = re.compile(r"[\u0600-\u06FF]")
+
 # Regex for extracting Base64-like blocks (≥40 chars).
 _BASE64_RE = re.compile(r"[A-Za-z0-9+/]{40,}={0,2}")
 
@@ -125,6 +129,18 @@ _INSTRUCTION_SIGNALS: list[str] = [
 class AdvancedAnalyzer:
     """Code-level detection passes that complement the regex rule engine."""
 
+    @staticmethod
+    def _is_gitcrypt_blob(content: str) -> bool:
+        """Return True if *content* is a git-crypt encrypted binary blob.
+
+        git-crypt blobs begin with the 10-byte magic ``\\x00GITCRYPT\\x00``.
+        When a repo uses git-crypt and the file is not decrypted the loader
+        still reads the raw bytes as a string, making the content unparseable
+        text. All advanced Unicode/script checks would produce false positives
+        on such binary data, so callers should skip them entirely.
+        """
+        return content.startswith("\x00GITCRYPT")
+
     def scan(
         self,
         content: str,
@@ -133,7 +149,6 @@ class AdvancedAnalyzer:
         """Run all advanced passes and return :class:`RuleMatch` objects."""
         matches: list[RuleMatch] = []
         matches.extend(self._detect_invisible_unicode(content))
-        matches.extend(self._detect_homoglyphs(content))
         matches.extend(self._detect_mixed_scripts(content))
         matches.extend(self._detect_markdown_injection(content, masked_ranges))
         matches.extend(self._detect_gradual_escalation(content))
@@ -159,21 +174,33 @@ class AdvancedAnalyzer:
                         idx = content.find(char, idx + 1)
                         continue
 
+                # Skip U+200C (ZWNJ) when adjacent to Arabic/Persian script characters
+                # (U+0600–U+06FF). ZWNJ is a grammatically required connector in Farsi/Persian
+                # and its presence in i18n files is entirely legitimate.
+                if char == "\u200C":
+                    before = content[idx - 1] if idx > 0 else ""
+                    after = content[idx + 1] if idx + 1 < len(content) else ""
+                    if _ARABIC_RANGE_RE.match(before) or _ARABIC_RANGE_RE.match(after):
+                        idx = content.find(char, idx + 1)
+                        continue
+
                 if first_pos == -1:
                     first_pos = idx
                 count += 1
                 idx = content.find(char, idx + 1)
 
-        if count == 0:
+        # Require at least 3 invisible chars before reporting. 1–2 occurrences are
+        # common copy-paste artifacts from Google Translate / Google Docs exports and
+        # do not constitute a credible steganographic threat.
+        if count < 3:
             return findings
 
-        # Determine severity by density.
-        if count > 20:
-            severity = Severity.CRITICAL
-        elif count > 5:
-            severity = Severity.HIGH
-        else:
-            severity = Severity.MEDIUM
+        # Density alone is insufficient to determine intent: 212 chars may be a
+        # creator watermark, 6 chars may be a copy-paste U+200B artifact from
+        # web-scraped documentation. Escalating to HIGH/CRITICAL based purely on
+        # count produced a very high false-positive rate. Confirmed hidden injection
+        # is already covered by the strip-and-rescan pass below (CRITICAL).
+        severity = Severity.MEDIUM
 
         findings.append(RuleMatch(
             rule_id="PA-001",
@@ -186,10 +213,15 @@ class AdvancedAnalyzer:
 
         # Strip-and-rescan: if many invisible chars, check whether the cleaned
         # text reveals injection keywords that were hidden between visible text.
+        # Only fire when the keyword is genuinely revealed by stripping — i.e. it
+        # was NOT already present in the original (visible) content. If the keyword
+        # was already visible, stripping didn't uncover anything hidden; this
+        # prevents false positives on skills whose documentation legitimately
+        # mentions terms like "system prompt" in an educational context.
         if count > 5:
             char_set = set(INVISIBLE_CHARS)
             stripped = "".join(ch for ch in content if ch not in char_set)
-            if _looks_like_instruction(stripped):
+            if _looks_like_instruction(stripped) and not _looks_like_instruction(content):
                 findings.append(RuleMatch(
                     rule_id="PA-001",
                     rule_name="invisible_unicode_hidden_injection",
@@ -201,40 +233,30 @@ class AdvancedAnalyzer:
 
         return findings
 
-    # -- PA-002: Homoglyph attack detection -----------------------------------
-
-    @staticmethod
-    def _detect_homoglyphs(content: str) -> list[RuleMatch]:
-        found: list[dict] = []
-        for i, char in enumerate(content):
-            if char in HOMOGLYPHS:
-                found.append({"char": char, "latin": HOMOGLYPHS[char], "index": i})
-
-        if not found:
-            return []
-
-        # Build sample snippets (up to 5).
-        samples: list[str] = []
-        for f in found[:5]:
-            start = max(0, f["index"] - 10)
-            end = min(len(content), f["index"] + 10)
-            snippet = content[start:end].replace("\n", " ").strip()
-            samples.append(f'"{snippet}" ({f["char"]}\u2192{f["latin"]})')
-
-        severity = Severity.HIGH if len(found) >= 3 else Severity.MEDIUM
-        return [RuleMatch(
-            rule_id="PA-002",
-            rule_name="homoglyph_attack",
-            severity=severity,
-            matched_text=f"{len(found)} homoglyph(s): {', '.join(samples)}",
-            position=(found[0]["index"], found[0]["index"] + 1),
-            pattern="(advanced) homoglyph map",
-        )]
+    # PA-002 (homoglyph_attack) was removed.
+    #
+    # Rationale: the detection matched any Cyrillic character that visually
+    # resembles a Latin letter (а→a, е→e, о→o, …). This fired HIGH on every
+    # skill that contains even a single legitimate Cyrillic word inside an
+    # otherwise Latin-dominant document (i18n tables, API reference docs,
+    # language-support matrices, etc.), producing a very high false-positive
+    # rate with no practical way to distinguish real homoglyph substitution
+    # attacks from normal multilingual content.
+    #
+    # A true homoglyph attack embeds Cyrillic *within* a Latin keyword (e.g.
+    # "ignоre" with Cyrillic о), which requires a completely different detection
+    # strategy (intra-word character boundary analysis) not implemented here.
+    # The mixed-script ratio check in PA-003 already covers balanced-proportion
+    # Latin/Cyrillic blends that are the primary obfuscation vector.
 
     # -- PA-003: Mixed-script anomaly -----------------------------------------
 
     @staticmethod
     def _detect_mixed_scripts(content: str) -> list[RuleMatch]:
+        # git-crypt encrypted blobs are binary; skip to avoid false positives.
+        if AdvancedAnalyzer._is_gitcrypt_blob(content):
+            return []
+
         detected: dict[str, int] = {}
         for name, regex in SCRIPT_RANGES.items():
             n = len(regex.findall(content))
@@ -243,22 +265,37 @@ class AdvancedAnalyzer:
 
         findings: list[RuleMatch] = []
 
-        # Latin + Cyrillic mix with significant presence of both.
-        if detected.get("latin", 0) > 5 and detected.get("cyrillic", 0) > 5:
-            findings.append(RuleMatch(
-                rule_id="PA-003",
-                rule_name="mixed_scripts_latin_cyrillic",
-                severity=Severity.HIGH,
-                matched_text=(
-                    f"Latin ({detected['latin']} chars) + "
-                    f"Cyrillic ({detected['cyrillic']} chars)"
-                ),
-                position=(0, 1),
-                pattern="(advanced) mixed scripts",
-            ))
+        # Latin + Cyrillic mix detection — ratio-based to avoid false positives on
+        # Russian/Bulgarian skill descriptions that naturally contain Latin technical
+        # terms (product names, API names, URLs) alongside Cyrillic body text.
+        #
+        # A real mixed-script homoglyph/obfuscation attack uses BOTH scripts in
+        # roughly balanced proportions. Legitimate Russian text is overwhelmingly
+        # Cyrillic with only a small fraction of Latin (technical terms), giving a
+        # minority ratio well below 20%.
+        latin = detected.get("latin", 0)
+        cyrillic = detected.get("cyrillic", 0)
+        if latin > 0 and cyrillic > 0:
+            total = latin + cyrillic
+            minority_ratio = min(latin, cyrillic) / total
+            if minority_ratio > 0.20:
+                findings.append(RuleMatch(
+                    rule_id="PA-003",
+                    rule_name="mixed_scripts_latin_cyrillic",
+                    severity=Severity.HIGH,
+                    matched_text=(
+                        f"Latin ({latin} chars) + "
+                        f"Cyrillic ({cyrillic} chars) "
+                        f"[minority ratio {minority_ratio:.0%}]"
+                    ),
+                    position=(0, 1),
+                    pattern="(advanced) mixed scripts",
+                ))
 
-        # More than 3 distinct scripts is unusual.
-        if len(detected) > 3:
+        # More than 4 distinct scripts is unusual. Threshold raised from 3 to 4
+        # to avoid false positives on legitimate i18n JS bundles that support
+        # Arabic, CJK, and Hangul alongside Latin/Cyrillic for error messages.
+        if len(detected) > 4:
             scripts = ", ".join(detected.keys())
             findings.append(RuleMatch(
                 rule_id="PA-003",

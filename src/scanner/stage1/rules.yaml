@@ -66,8 +66,10 @@ rules:
     name: steganographic_injection
     severity: HIGH
     patterns:
-      # Extended: full invisible/bidi char coverage (21 chars, from prompt_analyzer Pass 2/11)
-      - "[\\u200b\\u200c\\u200d\\ufeff\\u2060\\u00ad\\u2061-\\u2064\\u180e\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]"
+      # NOTE: bare invisible-char detection removed — PA-001 in advanced.py handles it
+      # with proper count thresholds and Farsi ZWNJ / emoji ZWJ exclusions, avoiding the
+      # false positives that a single-char regex match causes on legitimate multilingual
+      # description files and i18n JS bundles.
       - "(?:base64|atob|btoa)\\s*[:(].*(?:ignore|override|execute|eval|system|prompt)"
       - "<!--.*(?:ignore|override|execute).*-->"
       - "\\\\u[0-9a-fA-F]{4}.*(?:ignore|execute|override)"
