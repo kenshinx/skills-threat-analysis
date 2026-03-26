@@ -45,7 +45,8 @@ rules:
       - "<\\|?(?:im_start|system)\\|?>"
       - "<<SYS>>|\\[INST\\]"
       # Extended: secrecy demand (from skill-scan prompt_analyzer Pass 1)
-      - "do\\s+not\\s+(?:tell|inform|reveal|disclose|mention)\\s+(?:the\\s+)?(?:user|human|anyone)"
+      # Tightened: require content-hiding preposition after user/human/anyone (excludes UX design guidelines)
+      - "do\\s+not\\s+(?:tell|inform|reveal|disclose|mention)\\s+(?:the\\s+)?(?:user|human|anyone)\\s+(?:about|that|what|how|any|this|the|my)"
       - "\\bhidden\\s+instruction\\b"
       # Chinese: system prompt manipulation
       - "(?:新的?|更新的?|修改后的?)(?:系统|初始)?(?:提示词|指令|prompt)"
@@ -71,7 +72,8 @@ rules:
       # false positives that a single-char regex match causes on legitimate multilingual
       # description files and i18n JS bundles.
       - "(?:base64|atob|btoa)\\s*[:(].*(?:ignore|override|execute|eval|system|prompt)"
-      - "<!--.*(?:ignore|override|execute).*-->"
+      # Tightened: require injection context after ignore/override/execute (not bare "prettier-ignore" etc.)
+      - "<!--.*(?:ignore\\s+(?:all|previous|prior|system|above|safety|instruction)|override\\s+(?:system|safety|instruction|rule|policy)|execute\\s*[:(]).*-->"
       # Tightened: limit gap to 20 chars + require injection context (not bare "Execute" UI labels)
       - "\\\\u[0-9a-fA-F]{4}.{0,20}(?:ignore\\s+(?:all|previous|system)|execute\\s*\\(|override\\s+(?:system|safety))"
 
@@ -125,7 +127,8 @@ rules:
       # Extended: manipulative language (from skill-scan prompt_analyzer Pass 9)
       - "(?:if\\s+you\\s+don'?t|unless\\s+you)\\s+(?:do\\s+this|comply|follow|obey)"
       # Tightened: only keep "our little secret" (drop bare "our secret" which appears in normal prose)
-      - "(?:between\\s+us|our\\s+little\\s+secret|nobody\\s+(?:needs?\\s+to|will)\\s+know)"
+      # Tightened: add \b after "us" to avoid matching "between users" in UX docs
+      - "(?:between\\s+us\\b|our\\s+little\\s+secret|nobody\\s+(?:needs?\\s+to|will)\\s+know)"
       # Chinese: social engineering / trust manipulation
       - "(?:主人|用户|管理员|开发者)(?:信任|授权|允许|许可)(?:你|AI).*(?:自我进化|自我修改|自我更新|自主行动)"
       - "不要辜负.{0,10}(?:信任|期望|委托)"
@@ -162,15 +165,17 @@ rules:
       - "https?://[a-z0-9-]+\\.ngrok(?:-free)?\\.(?:app|io)\\b"
       - "\\bnslookup\\b"
       - "\\bdns\\.resolve\\b"
-      - "\\breverse\\s+shell\\b"
+      # Tightened: exclude "reverse shell pattern(s)" — security-tool description context
+      - "\\breverse\\s+shell\\b(?!\\s+patterns?)"
 
   # -- Filesystem Destruction (source: FS_WRITE, languages: "*") --
   - id: PI-010
     name: filesystem_destruction
     severity: HIGH
     patterns:
-      # Tightened: exclude common safe cleanup targets (node_modules, dist, build, $var, tmp, .git)
-      - "\\brm\\s+-[a-zA-Z]*r[a-zA-Z]*f\\b(?!\\s*[\"']?(?:node_modules|dist|build|__pycache__|\\$|\\btmp|coverage|\\.git\\b))"
+      # Tightened: require path argument after flags (bare 'rm -rf' as keyword string = FP)
+      # + exclude common safe cleanup targets (node_modules, dist, build, $var, tmp, .git)
+      - "\\brm\\s+-[a-zA-Z]*r[a-zA-Z]*f\\s+(?![\"']?(?:node_modules|dist|build|__pycache__|\\$|\\btmp|coverage|\\.git\\b))\\S"
       # Tightened: require suspicious path prefix (absolute / home / parent traversal) to skip variable refs
       - "\\bshutil\\.rmtree\\s*\\(\\s*['\"]?(?:[/~]|\\.\\./)"
       - "\\bos\\.(?:remove|unlink)\\s*\\(\\s*['\"]?(?:[/~]|\\.\\./)"
@@ -225,10 +230,13 @@ rules:
     patterns:
       # Auto-execution demands in skill metadata
       - "(?:必须|must)\\s*(?:立即|immediately|automatically)\\s*(?:执行|execute|run)"
-      - "(?:当|when).*(?:加载|loaded).*(?:必须|must|自动|automatically).*(?:执行|execute|run)"
+      # Tightened: constrain .* to .{0,60} to prevent long-line cross-matching
+      - "(?:当|when).{0,60}(?:加载|loaded).{0,60}(?:必须|must|自动|automatically).{0,40}(?:执行|execute|run)"
       # Exclusivity claims (hijacking other tools)
-      - "(?:唯一的?|only).*(?:处理方式|方法|method|way).*(?:不要|do not|don't)\\s*(?:使用|use)"
-      - "(?:不要|do not|don't)\\s*(?:使用|use).*(?:pandas|openpyxl|numpy|requests|其他|other)"
+      # Tightened: constrain .* to .{0,40} — real attacks have gap <25 chars
+      - "(?:唯一的?|only).{0,40}(?:处理方式|方法|method|way).{0,40}(?:不要|do not|don't)\\s*(?:使用|use)"
+      # Tightened: .* -> .{0,60}; bare 其他/other -> require tool/method noun suffix
+      - "(?:不要|do not|don't)\\s*(?:使用|use).{0,60}(?:pandas|openpyxl|numpy|requests|其他(?:工具|方法|库|模块|包|方式)|other\\s+(?:tools|methods|libraries|modules|packages|approaches))"
       # Download and run on load
       - "(?:skill|技能).*(?:被?加载|loaded).*(?:下载|download|执行|execute|run)"
 
@@ -268,6 +276,7 @@ rules:
       # Tightened: negative lookbehind to skip --disable-setuid-sandbox (Chromium hardening flag)
       - "(?<!disable-)\\bsetuid\\b"
       - "\\bsetgid\\b"
-      - "/etc/shadow"
-      - "/etc/sudoers"
+      # Tightened: negative lookbehind excludes regex alternation context (grep patterns in security tools)
+      - "(?<![|(])/etc/shadow"
+      - "(?<![|(])/etc/sudoers"
       - "\\bNOPASSWD\\b"
