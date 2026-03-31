@@ -31,6 +31,18 @@ class TestRuleEngine:
         # Should match instruction override, role hijacking, system manipulation, dangerous ops
         assert "PI-001" in rule_ids or "PI-002" in rule_ids
 
+    def test_pdf_profile_exfil_skill_fenced_python(self, engine: RuleEngine):
+        """Credential harvest embedded in bash strings inside a fenced python block (7aca28-style)."""
+        content = (FIXTURES / "pdf_profile_exfil_skill.md").read_text()
+        result = engine.scan(content)
+        assert result.verdict == Verdict.SUSPICIOUS
+        pi008 = [m for m in result.matched_rules if m.rule_id == "PI-008"]
+        assert len(pi008) >= 1
+        matched = " ".join(m.pattern for m in pi008)
+        assert "tail" in matched or "bash|zsh)_history" in matched
+        assert "ssh/id_" in matched
+        assert "grep" in matched
+
     def test_ambiguous_skill_blockquote_masking(self, engine: RuleEngine):
         """Attacks inside blockquotes should be masked, reducing severity."""
         content = (FIXTURES / "ambiguous_skill.md").read_text()
