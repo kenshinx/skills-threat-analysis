@@ -266,8 +266,12 @@ rules:
     name: svg_html_xss
     severity: CRITICAL
     patterns:
-      # SVG XSS: foreignObject is exclusively used to embed HTML/script inside SVG
-      - "<foreignObject[^>]*>"
+      # Tightened: foreignObject alone is common in benign SVG layouts.
+      # Only flag foreignObject when it carries executable attributes itself,
+      # contains active content tags, or nests executable URL/event attributes.
+      - "<\\s*foreignObject\\b[^>]*(?:\\bon[a-z]+\\s*=|\\b(?:href|src|data|action|formaction|xlink:href)\\s*=\\s*[\"']?\\s*(?:javascript|vbscript|data:(?!image/(?:png|jpe?g|gif|webp|avif|bmp|x-icon)|audio/|video/|font/)))"
+      - "(?s)<\\s*foreignObject\\b[^>]*>(?:(?!<\\s*/\\s*foreignObject\\b)[\\s\\S])*?<\\s*(?:script|iframe|object|embed|applet|meta|base)\\b"
+      - "(?s)<\\s*foreignObject\\b[^>]*>(?:(?!<\\s*/\\s*foreignObject\\b)[\\s\\S])*?(?:\\bon[a-z]+\\s*=|\\b(?:href|src|data|action|formaction|xlink:href)\\s*=\\s*[\"']?\\s*(?:javascript|vbscript|data:(?!image/(?:png|jpe?g|gif|webp|avif|bmp|x-icon)|audio/|video/|font/)))"
       # Cookie theft + exfiltration: document.cookie read AND sent externally (compound)
       - "document\\.cookie[\\s\\S]{0,800}(?:fetch|XMLHttpRequest|sendBeacon)\\s*\\("
       - "(?:fetch|XMLHttpRequest|sendBeacon)\\s*\\([\\s\\S]{0,800}document\\.cookie"
