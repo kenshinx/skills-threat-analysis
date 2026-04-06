@@ -70,14 +70,14 @@ SCRIPT_RANGES: dict[str, re.Pattern[str]] = {
 }
 
 # ROT13-encoded forms of suspicious injection keywords.
-ROT13_INJECTIONS: list[str] = [
-    "vtaber",          # ignore
-    "flfgrz",          # system
-    "bireevqr",        # override
-    "vafgehpgvbaf",    # instructions
-    "riny",            # eval
-    "rknp",            # exec
-]
+ROT13_INJECTIONS: dict[str, str] = {
+    "vtaber": "ignore",
+    "flfgrz": "system",
+    "bireevqr": "override",
+    "vafgehpgvbaf": "instructions",
+    "riny": "eval",
+    "rkrp": "exec",
+}
 
 # Emoji range – used to skip ZWJ (U+200D) inside emoji sequences.
 _EMOJI_RANGE_RE = re.compile(
@@ -90,6 +90,12 @@ _ARABIC_RANGE_RE = re.compile(r"[\u0600-\u06FF]")
 
 # Regex for extracting Base64-like blocks (≥40 chars).
 _BASE64_RE = re.compile(r"[A-Za-z0-9+/]{40,}={0,2}")
+_ROT13_TOKEN_RE = re.compile(r"\b[A-Za-z]{4,}\b")
+_ROT13_CODE_SIGNAL_RE = re.compile(r"\b(?:eval|exec|system)\s*\(", re.IGNORECASE)
+_SIGNATURE_FIELD_RE = re.compile(
+    r'["\']?[\w.-]*(?:signature|checksum|digest|hash)[\w.-]*["\']?\s*:',
+    re.IGNORECASE,
+)
 
 # Markdown patterns for hidden-content extraction.
 _MD_IMG_ALT_RE  = re.compile(r"!\[([^\]]{20,})\]\(")
@@ -422,11 +428,12 @@ class AdvancedAnalyzer:
     @staticmethod
     def _detect_encoded_payloads(content: str) -> list[RuleMatch]:
         findings: list[RuleMatch] = []
+        base64_ranges = [(m.start(), m.end()) for m in _BASE64_RE.finditer(content)]
 
         # Base64 blocks.
-        for m in _BASE64_RE.finditer(content):
+        for start, end in base64_ranges:
             try:
-                decoded = base64.b64decode(m.group(0)).decode("utf-8", errors="replace")
+                decoded = base64.b64decode(content[start:end]).decode("utf-8", errors="replace")
                 printable = "".join(c for c in decoded if 32 <= ord(c) <= 126 or c == "\n")
                 if len(printable) > len(decoded) * 0.7 and _looks_like_instruction(decoded):
                     findings.append(RuleMatch(
@@ -434,24 +441,48 @@ class AdvancedAnalyzer:
                         rule_name="encoded_payload_base64",
                         severity=Severity.CRITICAL,
                         matched_text=f"Base64 decodes to: {printable[:80]}",
-                        position=(m.start(), m.end()),
+                        position=(start, end),
                         pattern="(advanced) base64 decode",
                     ))
             except Exception:
                 pass
 
         # ROT13-encoded injection terms.
-        lower = content.lower()
-        for encoded in ROT13_INJECTIONS:
-            idx = lower.find(encoded)
-            if idx != -1:
-                decoded = _rot13(encoded)
+        for line_start, line in _iter_lines(content):
+            if _looks_like_signature_blob_line(line):
+                continue
+
+            line_matches: list[tuple[str, str, int, int]] = []
+            for match in _ROT13_TOKEN_RE.finditer(line):
+                encoded = match.group(0).lower()
+                decoded = ROT13_INJECTIONS.get(encoded)
+                if decoded is None:
+                    continue
+
+                start = line_start + match.start()
+                end = line_start + match.end()
+                if _is_in_ranges(start, end, base64_ranges):
+                    continue
+
+                line_matches.append((encoded, decoded, start, end))
+
+            if not line_matches:
+                continue
+
+            decoded_line = _rot13(line)
+            if len(line_matches) < 2 and not (
+                _looks_like_instruction(decoded_line)
+                or _ROT13_CODE_SIGNAL_RE.search(decoded_line)
+            ):
+                continue
+
+            for encoded, decoded, start, end in line_matches:
                 findings.append(RuleMatch(
                     rule_id="PA-006",
                     rule_name="encoded_payload_rot13",
                     severity=Severity.MEDIUM,
                     matched_text=f'ROT13 "{encoded}" -> "{decoded}"',
-                    position=(idx, idx + len(encoded)),
+                    position=(start, end),
                     pattern="(advanced) ROT13 lookup",
                 ))
 
@@ -469,6 +500,31 @@ def _looks_like_instruction(text: str) -> bool:
         return False
     lower = text.lower()
     return any(signal in lower for signal in _INSTRUCTION_SIGNALS)
+
+
+def _iter_lines(text: str) -> list[tuple[int, str]]:
+    """Return lines with their starting offsets."""
+    lines: list[tuple[int, str]] = []
+    offset = 0
+    for line in text.splitlines(keepends=True):
+        lines.append((offset, line))
+        offset += len(line)
+    if text and not lines:
+        lines.append((0, text))
+    return lines
+
+
+def _is_in_ranges(start: int, end: int, ranges: list[tuple[int, int]]) -> bool:
+    """Return True when [start, end) lies entirely within one of *ranges*."""
+    for range_start, range_end in ranges:
+        if start >= range_start and end <= range_end:
+            return True
+    return False
+
+
+def _looks_like_signature_blob_line(line: str) -> bool:
+    """Return True for metadata lines that carry long signature/hash-like blobs."""
+    return _SIGNATURE_FIELD_RE.search(line) is not None and _BASE64_RE.search(line) is not None
 
 
 def _rot13(s: str) -> str:
